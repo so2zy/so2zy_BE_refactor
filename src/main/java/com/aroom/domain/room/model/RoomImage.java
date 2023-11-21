@@ -1,5 +1,6 @@
 package com.aroom.domain.room.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,6 +24,7 @@ public class RoomImage {
     @Column(name = "room_image_id")
     private Long id;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "room_id")
     private Room room;

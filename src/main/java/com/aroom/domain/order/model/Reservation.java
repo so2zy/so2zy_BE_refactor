@@ -19,11 +19,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Order {
+public class Reservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "order_id")
+    @Column(name = "reservation_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -33,7 +33,7 @@ public class Order {
     private boolean agreement;
 
     @Builder
-    public Order(Member member, boolean agreement) {
+    public Reservation(Member member, boolean agreement) {
         this.member = member;
         this.agreement = agreement;
     }

@@ -1,7 +1,7 @@
 package com.aroom.domain.order_room.model;
 
 import com.aroom.domain.accommodation.model.Accommodation;
-import com.aroom.domain.order.model.Order;
+import com.aroom.domain.order.model.Reservation;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -20,11 +20,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OrderRoom {
+public class ReservationRoom {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "order_room_id")
+    @Column(name = "reservation_room_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -33,7 +33,7 @@ public class OrderRoom {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
-    private Order order;
+    private Reservation reservation;
 
     private LocalDate startDate;
 
@@ -44,11 +44,11 @@ public class OrderRoom {
     private int personnel;
 
     @Builder
-    public OrderRoom(Accommodation accommodation, Order order, LocalDate startDate,
+    public ReservationRoom(Accommodation accommodation, Reservation reservation, LocalDate startDate,
         LocalDate endDate,
         int price, int personnel) {
         this.accommodation = accommodation;
-        this.order = order;
+        this.reservation = reservation;
         this.startDate = startDate;
         this.endDate = endDate;
         this.price = price;

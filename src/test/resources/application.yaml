@@ -1,0 +1,7 @@
+# Test 환경에서 개발 시 사용될 profile 입니다.
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa

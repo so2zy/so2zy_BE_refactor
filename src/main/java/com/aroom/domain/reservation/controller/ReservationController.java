@@ -22,6 +22,8 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<ReservedReservationResponse>> reservationRoom(@RequestBody ReservationRequest request){
-        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(LocalDateTime.now(),
+            "객실 예약에 성공했습니다.", reservationService.reserveRoom(request)));
     }
 }

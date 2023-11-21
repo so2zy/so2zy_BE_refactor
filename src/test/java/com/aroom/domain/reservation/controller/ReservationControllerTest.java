@@ -11,7 +11,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.aroom.domain.reservation.dto.request.ReservationRequest;
 import com.aroom.domain.reservation.dto.response.ReservedReservationResponse;
 import com.aroom.domain.reservation.service.ReservationService;
+import com.aroom.domain.room.dto.request.ReservationRoomRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -34,6 +36,7 @@ class ReservationControllerTest {
     private ReservationService reservationService;
 
     private ReservedReservationResponse reservationResponse;
+    private ReservationRoomRequest roomRequest;
 
     @BeforeEach
     private void init(){
@@ -49,13 +52,18 @@ class ReservationControllerTest {
             .dealDateTime(LocalDateTime.now())
             .build();
 
+        roomRequest = ReservationRoomRequest.builder()
+            .roomId(1L)
+            .startDate(LocalDate.of(2023, 12, 22))
+            .endDate(LocalDate.of(2023, 12, 23))
+            .build();
     }
 
     @Test
     @DisplayName("하나의 숙소의 하나의 객실을 예약에 성공")
     void reserve_one_room_of_one_accommodation_success() throws Exception{
         ReservationRequest reservationRequest = ReservationRequest.builder()
-            .roomIdList(List.of(1L))
+            .roomList(List.of(roomRequest))
             .personnel(2)
             .build();
         given(reservationService.reserveRoom(any())).willReturn(reservationResponse);

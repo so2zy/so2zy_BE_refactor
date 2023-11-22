@@ -19,6 +19,7 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -29,6 +30,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 @WebMvcTest(ReservationRestController.class)
 class ReservationRestControllerTest {
+
     @Autowired
     private MockMvc mvc;
 
@@ -39,7 +41,7 @@ class ReservationRestControllerTest {
     private ReservationRoomRequest roomRequest;
 
     @BeforeEach
-    private void init(){
+    private void init() {
         reservationResponse = ReservationResponse.builder()
             .roomId(1L)
             .roomType("패밀리")
@@ -59,40 +61,52 @@ class ReservationRestControllerTest {
             .build();
     }
 
-    @Test
-    @DisplayName("하나의 숙소의 하나의 객실을 예약에 성공")
-    void reserve_one_room_of_one_accommodation_success() throws Exception{
-        ReservationRequest request = ReservationRequest.builder()
-            .roomList(List.of(roomRequest))
-            .personnel(2)
-            .agreement(true)
-            .build();
-        given(reservationService.reserveRoom(any())).willReturn(reservationResponse);
+    @Nested
+    @DisplayName("예약 저장")
+    class SaveReservation {
 
-        ResultActions response = mvc.perform(post("/v1/reservations")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(new ObjectMapper().writeValueAsBytes(request)));
+        @Test
+        @DisplayName("하나의 숙소의 하나의 객실을 예약에 성공")
+        void reserve_one_room_of_one_accommodation_success() throws Exception {
+            // given
+            ReservationRequest request = ReservationRequest.builder()
+                .roomList(List.of(roomRequest))
+                .personnel(2)
+                .agreement(true)
+                .build();
+            given(reservationService.reserveRoom(any())).willReturn(reservationResponse);
 
-        response.andExpect(status().isCreated())
+            // when
+            ResultActions response = mvc.perform(post("/v1/reservations")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsBytes(request)));
+
+            // then
+            response.andExpect(status().isCreated())
                 .andDo(print())
                 .andExpect(jsonPath("$.data.roomType", is(reservationResponse.getRoomType())));
-    }
+        }
 
-    @Test
-    @DisplayName("객실 예약 데이터 중 객실 데이터가 없는 경우")
-    void reserve_no_room_data_fail() throws Exception{
-        ReservationRequest request = ReservationRequest.builder()
-            .personnel(2)
-            .agreement(true)
-            .build();
-        given(reservationService.reserveRoom(any())).willReturn(reservationResponse);
+        @Test
+        @DisplayName("객실 예약 데이터 중 객실 데이터가 없는 경우")
+        void reserve_no_room_data_fail() throws Exception {
+            // given
+            ReservationRequest request = ReservationRequest.builder()
+                .personnel(2)
+                .agreement(true)
+                .build();
+            given(reservationService.reserveRoom(any())).willReturn(reservationResponse);
 
-        ResultActions response = mvc.perform(post("/v1/reservations")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(new ObjectMapper().writeValueAsBytes(request)));
+            // when
+            ResultActions response = mvc.perform(post("/v1/reservations")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsBytes(request)));
 
-        response.andExpect(status().isBadRequest())
-            .andDo(print());
+            // then
+            response.andExpect(status().isBadRequest())
+                .andDo(print());
+        }
+
     }
 
 }

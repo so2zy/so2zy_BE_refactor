@@ -1,7 +1,7 @@
-package com.aroom.domain.order_room.model;
+package com.aroom.domain.reservationRoom.model;
 
 import com.aroom.domain.accommodation.model.Accommodation;
-import com.aroom.domain.order.model.Reservation;
+import com.aroom.domain.reservation.model.Reservation;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

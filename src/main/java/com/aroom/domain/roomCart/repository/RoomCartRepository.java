@@ -1,6 +1,6 @@
-package com.aroom.domain.room_cart.repository;
+package com.aroom.domain.roomCart.repository;
 
-import com.aroom.domain.room_cart.model.RoomCart;
+import com.aroom.domain.roomCart.model.RoomCart;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RoomCartRepository extends JpaRepository<RoomCart, Long> {

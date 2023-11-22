@@ -1,7 +1,7 @@
 package com.aroom.domain.reservation.controller;
 
 import com.aroom.domain.reservation.dto.request.ReservationRequest;
-import com.aroom.domain.reservation.dto.response.ReservedReservationResponse;
+import com.aroom.domain.reservation.dto.response.ReservationResponse;
 import com.aroom.domain.reservation.service.ReservationService;
 import com.aroom.global.response.ApiResponse;
 import java.time.LocalDateTime;
@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/reservations")
-public class ReservationController {
+public class ReservationRestController {
 
     private final ReservationService reservationService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<ReservedReservationResponse>> reservationRoom(@RequestBody ReservationRequest request){
+    public ResponseEntity<ApiResponse<ReservationResponse>> reservationRoom(@RequestBody ReservationRequest request){
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(LocalDateTime.now(),
             "객실 예약에 성공했습니다.", reservationService.reserveRoom(request)));

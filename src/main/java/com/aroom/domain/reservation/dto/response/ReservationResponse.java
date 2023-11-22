@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class ReservedReservationResponse {
+public class ReservationResponse {
     private Long roomId;
     private String roomType;
     private LocalTime checkIn;
@@ -14,12 +14,11 @@ public class ReservedReservationResponse {
     private int capacity;
     private int maxCapacity;
     private Long roomReservationNumber;
-
     private Long reservationNumber;
     private LocalDateTime dealDateTime;
 
     @Builder
-    public ReservedReservationResponse(Long roomId, String roomType, LocalTime checkIn,
+    public ReservationResponse(Long roomId, String roomType, LocalTime checkIn,
         LocalTime checkOut, int capacity, int maxCapacity, Long roomReservationNumber,
         Long reservationNumber, LocalDateTime dealDateTime) {
         this.roomId = roomId;

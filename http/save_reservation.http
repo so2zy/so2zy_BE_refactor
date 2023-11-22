@@ -1,0 +1,16 @@
+POST http://localhost:8080/v1/reservations
+Content-Type: application/json
+
+{
+  "roomList": [
+    {
+      "roomId": 1,
+      "startDate": "2023-12-22",
+      "endDate": "2023-12-23",
+      "price": 100000
+    }
+  ],
+  "personnel": 2,
+  "agreement": true,
+  "isFromCart": false
+}

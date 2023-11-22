@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.aroom.domain.reservation.dto.request.ReservationRequest;
-import com.aroom.domain.reservation.dto.response.ReservedReservationResponse;
+import com.aroom.domain.reservation.dto.response.ReservationResponse;
 import com.aroom.domain.reservation.service.ReservationService;
 import com.aroom.domain.room.dto.request.ReservationRoomRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,20 +27,20 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-@WebMvcTest(ReservationController.class)
-class ReservationControllerTest {
+@WebMvcTest(ReservationRestController.class)
+class ReservationRestControllerTest {
     @Autowired
     private MockMvc mvc;
 
     @MockBean
     private ReservationService reservationService;
 
-    private ReservedReservationResponse reservationResponse;
+    private ReservationResponse reservationResponse;
     private ReservationRoomRequest roomRequest;
 
     @BeforeEach
     private void init(){
-        reservationResponse = ReservedReservationResponse.builder()
+        reservationResponse = ReservationResponse.builder()
             .roomId(1L)
             .roomType("패밀리")
             .checkIn(LocalTime.of(15, 00))
@@ -62,19 +62,37 @@ class ReservationControllerTest {
     @Test
     @DisplayName("하나의 숙소의 하나의 객실을 예약에 성공")
     void reserve_one_room_of_one_accommodation_success() throws Exception{
-        ReservationRequest reservationRequest = ReservationRequest.builder()
+        ReservationRequest request = ReservationRequest.builder()
             .roomList(List.of(roomRequest))
             .personnel(2)
+            .agreement(true)
             .build();
         given(reservationService.reserveRoom(any())).willReturn(reservationResponse);
 
         ResultActions response = mvc.perform(post("/v1/reservations")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(new ObjectMapper().writeValueAsBytes(reservationRequest)));
+            .content(new ObjectMapper().writeValueAsBytes(request)));
 
         response.andExpect(status().isCreated())
                 .andDo(print())
                 .andExpect(jsonPath("$.data.roomType", is(reservationResponse.getRoomType())));
+    }
+
+    @Test
+    @DisplayName("객실 예약 데이터 중 객실 데이터가 없는 경우")
+    void reserve_no_room_data_fail() throws Exception{
+        ReservationRequest request = ReservationRequest.builder()
+            .personnel(2)
+            .agreement(true)
+            .build();
+        given(reservationService.reserveRoom(any())).willReturn(reservationResponse);
+
+        ResultActions response = mvc.perform(post("/v1/reservations")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(new ObjectMapper().writeValueAsBytes(request)));
+
+        response.andExpect(status().isBadRequest())
+            .andDo(print());
     }
 
 }

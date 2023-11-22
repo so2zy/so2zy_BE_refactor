@@ -1,4 +1,4 @@
-package com.aroom.domain.reservation_room.model;
+package com.aroom.domain.reservationRoom.model;
 
 import com.aroom.domain.accommodation.model.Accommodation;
 import com.aroom.domain.reservation.model.Reservation;

@@ -1,7 +1,7 @@
-package com.aroom.domain.room.controller;
+package com.aroom.domain.accommodation.controller;
 
-import com.aroom.domain.room.dto.response.RoomResponseDTO;
-import com.aroom.domain.room.service.RoomService;
+import com.aroom.domain.accommodation.dto.response.AccommodationResponseDTO;
+import com.aroom.domain.accommodation.service.AccommodationService;
 import com.aroom.global.response.ApiResponse;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -14,16 +14,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/rooms")
-public class RoomRestController {
+@RequestMapping("/v1/accommodations")
+public class AccommodationRestController {
 
-    private final RoomService roomService;
+    private final AccommodationService roomService;
 
     @GetMapping("/{accommodation_id}")
-    public ResponseEntity<ApiResponse<RoomResponseDTO>> getRoom(
+    public ResponseEntity<ApiResponse<AccommodationResponseDTO>> getSpecificAccommodation(
         @PathVariable long accommodation_id) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            new ApiResponse(LocalDateTime.now(), "객실 상세 정보를 성공적으로 조회했습니다.",
+            new ApiResponse<>(LocalDateTime.now(), "숙소 상세 정보를 성공적으로 조회했습니다.",
                 roomService.getRoom(accommodation_id)));
     }
 }

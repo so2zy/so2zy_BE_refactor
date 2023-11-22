@@ -1,7 +1,6 @@
 package com.aroom.domain.accommodation.model;
 
 import com.aroom.domain.room.model.Room;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

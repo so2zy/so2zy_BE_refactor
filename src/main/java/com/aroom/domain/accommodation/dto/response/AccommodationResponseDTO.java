@@ -1,4 +1,4 @@
-package com.aroom.domain.room.dto.response;
+package com.aroom.domain.accommodation.dto.response;
 
 import com.aroom.domain.accommodation.model.Accommodation;
 import com.aroom.domain.accommodation.model.AccommodationImage;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class RoomResponseDTO {
+public class AccommodationResponseDTO {
 
     private String accommodationName;
     private Float latitude;
@@ -21,7 +21,7 @@ public class RoomResponseDTO {
     private List<Room> roomList;
 
     @Builder
-    public RoomResponseDTO(String accommodationName, Float latitude, Float longitude,
+    public AccommodationResponseDTO(String accommodationName, Float latitude, Float longitude,
         String addressCode, String phoneNumber, List<Room> roomList,
         List<AccommodationImage> accommodationImageList) {
         this.accommodationName = accommodationName;
@@ -33,7 +33,7 @@ public class RoomResponseDTO {
         this.roomList = roomList;
     }
 
-    public RoomResponseDTO(Accommodation accommodation) {
+    public AccommodationResponseDTO(Accommodation accommodation) {
         this.accommodationName = accommodation.getName();
         this.latitude = accommodation.getLatitude();
         this.longitude = accommodation.getLongitude();

@@ -1,10 +1,6 @@
 package com.aroom.domain.accommodation.dto;
 
 import com.aroom.domain.accommodation.model.Accommodation;
-import com.aroom.domain.accommodation.model.AccommodationImage;
-import com.aroom.domain.room.model.Room;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -17,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class AccommodationListResponse {
+
     private Long id;
 
     private String name;
@@ -31,10 +28,16 @@ public class AccommodationListResponse {
 
     private String phoneNumber;
 
+    private List<AccommodationImageList> accommodationImageLists = new ArrayList<>();
 
-    public static AccommodationListResponse fromEntity(Accommodation accommodation){
 
-        //accommodation.getRoomList에서 스트림으로 roomDto 타입으로 변환 후 넣어줘야함
+    public static AccommodationListResponse fromEntity(Accommodation accommodation) {
+
+
+        List<AccommodationImageList> list = accommodation.getAccommodationImageList()
+            .stream()
+            .map(AccommodationImageList::fromEntity)
+            .toList();
 
         return AccommodationListResponse.builder()
             .id(accommodation.getId())
@@ -44,7 +47,7 @@ public class AccommodationListResponse {
             .addressCode(accommodation.getAddressCode())
             .likeCount(accommodation.getLikeCount())
             .phoneNumber(accommodation.getPhoneNumber())
-
+            .accommodationImageLists(list)
             .build();
 
 

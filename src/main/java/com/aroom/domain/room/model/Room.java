@@ -1,6 +1,8 @@
 package com.aroom.domain.room.model;
 
 import com.aroom.domain.accommodation.model.Accommodation;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,7 +12,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import java.sql.Time;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -29,6 +33,7 @@ public class Room {
     @Column(name = "room_id")
     private Long id;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "accommodation_id")
     private Accommodation accommodation;
@@ -41,18 +46,19 @@ public class Room {
 
     private int maxCapacity;
 
-    private LocalDateTime checkIn;
+    private LocalTime checkIn;
 
-    private LocalDateTime checkOut;
+    private LocalTime checkOut;
 
     private int stock;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
     private List<RoomImage> roomImageList = new ArrayList<>();
 
     @Builder
     public Room(Accommodation accommodation, String type, int price, int capacity, int maxCapacity,
-        LocalDateTime checkIn, LocalDateTime checkOut, int stock, List<RoomImage> roomImageList) {
+        LocalTime checkIn, LocalTime checkOut, int stock, List<RoomImage> roomImageList) {
         this.accommodation = accommodation;
         this.type = type;
         this.price = price;

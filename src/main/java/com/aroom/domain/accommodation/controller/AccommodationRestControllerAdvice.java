@@ -17,6 +17,5 @@ public class AccommodationRestControllerAdvice {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(new ApiResponse<>(LocalDateTime.now(), e.getMessage(), null));
     }
-
 }
 

@@ -1,6 +1,7 @@
 package com.aroom.domain.room.model;
 
 import com.aroom.domain.accommodation.model.Accommodation;
+import com.aroom.domain.roomCart.model.RoomCart;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -62,5 +63,9 @@ public class Room {
         this.checkOut = checkOut;
         this.stock = stock;
         this.roomImageList = roomImageList;
+    }
+
+    public void updateRoomStock(int changedStock) {
+        this.stock = changedStock;
     }
 }

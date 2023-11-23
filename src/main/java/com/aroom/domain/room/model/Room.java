@@ -52,6 +52,21 @@ public class Room {
     private List<RoomImage> roomImageList = new ArrayList<>();
 
     @Builder
+    public Room(Long id, Accommodation accommodation, String type, int price, int capacity, int maxCapacity,
+        LocalDateTime checkIn, LocalDateTime checkOut, int stock, List<RoomImage> roomImageList) {
+        this.id = id;
+        this.accommodation = accommodation;
+        this.type = type;
+        this.price = price;
+        this.capacity = capacity;
+        this.maxCapacity = maxCapacity;
+        this.checkIn = checkIn;
+        this.checkOut = checkOut;
+        this.stock = stock;
+        this.roomImageList = roomImageList;
+    }
+
+    @Builder
     public Room(Accommodation accommodation, String type, int price, int capacity, int maxCapacity,
         LocalDateTime checkIn, LocalDateTime checkOut, int stock, List<RoomImage> roomImageList) {
         this.accommodation = accommodation;
@@ -64,6 +79,7 @@ public class Room {
         this.stock = stock;
         this.roomImageList = roomImageList;
     }
+
 
     public void updateRoomStock(int changedStock) {
         this.stock = changedStock;

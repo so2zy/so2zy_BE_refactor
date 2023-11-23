@@ -40,6 +40,13 @@ public class Cart {
     }
 
     @Builder
+    public Cart(Long id, Member member, List<RoomCart> roomCartList) {
+        this.id = id;
+        this.member = member;
+        this.roomCartList = roomCartList;
+    }
+
+    @Builder
     public Cart(Member member, List<RoomCart> roomCartList) {
         this.member = member;
         this.roomCartList = roomCartList;

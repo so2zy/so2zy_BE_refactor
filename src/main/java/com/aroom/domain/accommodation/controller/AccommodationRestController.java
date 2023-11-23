@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/accommodations")
 public class AccommodationRestController {
 
-    private final AccommodationService roomService;
+    private final AccommodationService accommodationService;
 
     @GetMapping("/{accommodation_id}")
     public ResponseEntity<ApiResponse<AccommodationResponseDTO>> getSpecificAccommodation(
         @PathVariable long accommodation_id) {
         return ResponseEntity.status(HttpStatus.OK).body(
             new ApiResponse<>(LocalDateTime.now(), "숙소 상세 정보를 성공적으로 조회했습니다.",
-                roomService.getRoom(accommodation_id)));
+                accommodationService.getRoom(accommodation_id)));
     }
 }

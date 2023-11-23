@@ -1,14 +1,13 @@
 package com.aroom.domain.accommodation.controller;
 
 import com.aroom.domain.accommodation.dto.AccommodationListResponse;
-import com.aroom.domain.accommodation.dto.OrderCondition;
 import com.aroom.domain.accommodation.dto.SearchCondition;
 import com.aroom.domain.accommodation.service.AccommodationService;
 import com.aroom.global.response.ApiResponse;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
+import java.util.Optional;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AccommodationRestController {
 
     private final AccommodationService accommodationService;
+    public static final String NO_ORDER_CONDITION = "default";
 
     @GetMapping("")
     public ResponseEntity<ApiResponse<List<AccommodationListResponse>>> findAllAccommodation(
@@ -38,13 +38,19 @@ public class AccommodationRestController {
         @Nullable @RequestParam(defaultValue = "10") int size
     ) {
 
-        if (searchCondition != null) {
-            System.out.println(searchCondition.getOrderBy());
-            PageRequest pageRequest = PageRequest.of(page, size, Sort.by(
-                Sort.Direction.fromOptionalString(searchCondition.getOrderBy()).orElse(Direction.ASC),searchCondition.getOrderCondition()));
+        if (searchCondition!=null) {
+
+            Sort sortCondition = Sort.by(
+                Direction.fromOptionalString(searchCondition.getOrderBy())
+                    .orElse(Direction.ASC),
+                searchCondition.getOrderCondition()==null?NO_ORDER_CONDITION:searchCondition.getOrderCondition());
+
+
+            PageRequest pageRequest = PageRequest.of(page, size);
+
             return ResponseEntity.status(HttpStatus.OK)
                 .body(new ApiResponse<>(LocalDateTime.now(), "숙소 정보를 성공적으로 조회했습니다.",
-                    accommodationService.getAccommodationListBySearchCondition(searchCondition, pageRequest)));
+                    accommodationService.getAccommodationListBySearchCondition(searchCondition, pageRequest, sortCondition)));
         }
         return ResponseEntity.status(HttpStatus.OK)
             .body(new ApiResponse<>(LocalDateTime.now(), "숙소 정보를 성공적으로 조회했습니다.",

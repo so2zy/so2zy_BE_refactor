@@ -1,4 +1,4 @@
-package com.aroom.domain.room_cart.model;
+package com.aroom.domain.roomCart.model;
 
 import com.aroom.domain.cart.model.Cart;
 import com.aroom.domain.room.model.Room;

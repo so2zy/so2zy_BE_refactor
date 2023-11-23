@@ -1,7 +1,9 @@
 package com.aroom.domain.reservation.exception;
 
 import com.aroom.global.error.ErrorCode;
+import lombok.Getter;
 
+@Getter
 public class OutOfStockException extends RuntimeException{
     private final ReservationErrorCode errorCode;
 

@@ -3,6 +3,9 @@ package com.aroom.domain.reservation.service;
 import com.aroom.domain.member.model.Member;
 import com.aroom.domain.reservation.dto.request.ReservationRequest;
 import com.aroom.domain.reservation.dto.response.ReservationResponse;
+import com.aroom.domain.reservation.exception.MaximumCapacityExceededException;
+import com.aroom.domain.reservation.exception.OutOfStockException;
+import com.aroom.domain.reservation.exception.ReservationErrorCode;
 import com.aroom.domain.reservation.model.Reservation;
 import com.aroom.domain.reservation.repository.ReservationRepository;
 import com.aroom.domain.reservationRoom.model.ReservationRoom;
@@ -14,7 +17,6 @@ import com.aroom.domain.room.model.Room;
 import com.aroom.domain.room.model.RoomImage;
 import com.aroom.domain.room.repository.RoomImageRepository;
 import com.aroom.domain.room.repository.RoomRepository;
-import com.aroom.domain.roomCart.repository.RoomCartRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +32,6 @@ public class ReservationService {
     private final ReservationRoomRepository reservationRoomRepository;
     private final ReservationRepository reservationRepository;
     private final RoomImageRepository roomImageRepository;
-    private final RoomCartRepository roomCartRepository;
 
     @Transactional
     public ReservationResponse reserveRoom(ReservationRequest request, Member member) {
@@ -41,9 +42,9 @@ public class ReservationService {
 
         List<RoomReservationResponse> responseRoomList = new ArrayList<>();
 
-        ReservationRoom reservationRoom = null;
+        ReservationRoom reservationRoom = ReservationRoom.builder().build();
         for (RoomReservationRequest roomRequest : request.getRoomList()) {
-            Room requiredRoom = roomRepository.findById(roomRequest.getRoomId())
+            Room requiredRoom = roomRepository.findByIdWithLock(roomRequest.getRoomId())
                 .orElseThrow(RuntimeException::new);
 
             checkOverlappingReservation(roomRequest, requiredRoom);
@@ -58,7 +59,6 @@ public class ReservationService {
                 .personnel(request.getPersonnel())
                 .build();
 
-            reservationRoomRepository.save(reservationRoom);
 
             RoomImage roomImage = roomImageRepository.findById(
                 requiredRoom.getAccommodation().getId()).orElseThrow(RuntimeException::new);
@@ -81,17 +81,17 @@ public class ReservationService {
             responseRoomList.add(responseRoom);
         }
 
-        reservationRepository.save(reservation);
+        Reservation savedReservation = reservationRepository.save(reservation);
+        ReservationRoom savedReservationRoom = reservationRoomRepository.save(reservationRoom);
 
         if(request.isFromCart()){
-            roomCartRepository.deleteByCart(member.getCart());
+            member.getCart().clearCart();
         }
 
-        assert reservationRoom != null;
         return ReservationResponse.builder()
             .roomList(responseRoomList)
-            .roomReservationNumber(reservationRoom.getId())
-            .reservationNumber(reservation.getId())
+            .roomReservationNumber(savedReservationRoom.getId())
+            .reservationNumber(savedReservation.getId())
             .dealDateTime(LocalDateTime.now())
             .build();
     }
@@ -103,12 +103,13 @@ public class ReservationService {
         if(reservedRoomCount < requiredRoom.getStock()){
             return;
         }
-        throw new RuntimeException("품절된 방입니다.");
+        throw new OutOfStockException("방이 품절 되었습니다.", ReservationErrorCode.OUT_OF_STOCK_ERROR);
     }
 
     private void checkCapacityOfRoom(int personnel, Room requiredRoom){
         if(requiredRoom.getMaxCapacity() < personnel){
-            throw new RuntimeException("인원을 초과합니다.");
+            throw new MaximumCapacityExceededException("예약 최대 인원을 초과합니다.",
+                ReservationErrorCode.MAXIMUM_CAPACITY_EXCEEDED);
         }
     }
 

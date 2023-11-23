@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -42,9 +43,9 @@ public class Room {
 
     private int maxCapacity;
 
-    private LocalDateTime checkIn;
+    private LocalTime checkIn;
 
-    private LocalDateTime checkOut;
+    private LocalTime checkOut;
 
     private int stock;
 
@@ -53,7 +54,7 @@ public class Room {
 
     @Builder
     public Room(Long id, Accommodation accommodation, String type, int price, int capacity, int maxCapacity,
-        LocalDateTime checkIn, LocalDateTime checkOut, int stock, List<RoomImage> roomImageList) {
+        LocalTime checkIn, LocalTime checkOut, int stock, List<RoomImage> roomImageList) {
         this.id = id;
         this.accommodation = accommodation;
         this.type = type;
@@ -68,7 +69,7 @@ public class Room {
 
     @Builder
     public Room(Accommodation accommodation, String type, int price, int capacity, int maxCapacity,
-        LocalDateTime checkIn, LocalDateTime checkOut, int stock, List<RoomImage> roomImageList) {
+        LocalTime checkIn, LocalTime checkOut, int stock, List<RoomImage> roomImageList) {
         this.accommodation = accommodation;
         this.type = type;
         this.price = price;

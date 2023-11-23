@@ -2,6 +2,7 @@ package com.aroom.domain.reservationRoom.model;
 
 import com.aroom.domain.accommodation.model.Accommodation;
 import com.aroom.domain.reservation.model.Reservation;
+import com.aroom.global.basetime.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -20,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ReservationRoom {
+public class ReservationRoom extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

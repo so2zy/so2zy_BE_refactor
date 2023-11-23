@@ -2,6 +2,7 @@ package com.aroom.domain.favorite.model;
 
 import com.aroom.domain.accommodation.model.Accommodation;
 import com.aroom.domain.member.model.Member;
+import com.aroom.global.basetime.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -18,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Favorite {
+public class Favorite extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

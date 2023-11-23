@@ -1,14 +1,14 @@
 package com.aroom.domain.accommodation.repository;
 
+import static com.aroom.domain.accommodation.controller.AccommodationRestController.NO_ORDER_CONDITION;
+
 import com.aroom.domain.accommodation.dto.SearchCondition;
 import com.aroom.domain.accommodation.model.Accommodation;
 import com.aroom.domain.accommodation.model.QAccommodation;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -31,9 +31,20 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
             .where(booleanBuilderProvider(searchCondition))
             .offset(pageable.getPageNumber())
             .limit(pageable.getPageSize())
-            .orderBy(getOrderBy(pageable))
             .fetch();
 
+    }
+
+    @Override
+    public List<Accommodation> getAccommodationBySearchConditionWithSortCondition(
+        SearchCondition searchCondition, Pageable pageable, Sort sortCondition) {
+        return jpaQueryFactory.select(accommodation)
+            .from(accommodation)
+            .where(booleanBuilderProvider(searchCondition))
+            .offset(pageable.getPageNumber())
+            .limit(pageable.getPageSize())
+            .orderBy(getOrderBy(sortCondition))
+            .fetch();
     }
 
     private BooleanBuilder booleanBuilderProvider(SearchCondition searchCondition) {
@@ -73,13 +84,15 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
     }
 
 
-    private OrderSpecifier<?> getOrderBy(Pageable pageable) {
-        if (!pageable.getSort().isEmpty()) {
+    private OrderSpecifier<?> getOrderBy(Sort sortCondition) {
+        if (!sortCondition.isEmpty()) {
             //정렬값이 들어 있으면 for 사용하여 값을 가져온다
-            for (Sort.Order order : pageable.getSort()) {
+            for (Sort.Order order : sortCondition) {
                 // 서비스에서 넣어준 DESC or ASC 를 가져온다.
                 Order direction = order.getDirection().isAscending() ? Order.ASC : Order.DESC;
                 switch (order.getProperty()) {
+                    case NO_ORDER_CONDITION:
+                        return new OrderSpecifier(direction, accommodation.id);
                     case "name":
                         return new OrderSpecifier(direction, accommodation.name);
                     case "likeCount":
@@ -94,6 +107,7 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
                 }
             }
         }
+
         return null;
     }
 }

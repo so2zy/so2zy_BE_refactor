@@ -1,5 +1,10 @@
 package com.aroom.domain.accommodation.service;
 
+import com.aroom.domain.accommodation.dto.response.AccommodationResponseDTO;
+import com.aroom.domain.accommodation.exception.AccommodationNotFoundException;
+import com.aroom.domain.accommodation.model.Accommodation;
+import com.aroom.domain.accommodation.repository.AccommodationRepository;
+import lombok.RequiredArgsConstructor;
 import static com.aroom.domain.accommodation.controller.AccommodationRestController.NO_ORDER_CONDITION;
 
 import com.aroom.domain.accommodation.dto.AccommodationListResponse;
@@ -18,12 +23,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
+@Transactional
+@RequiredArgsConstructor
 public class AccommodationService {
 
     private final AccommodationRepository accommodationRepository;
 
+    public AccommodationResponseDTO getRoom(Long accommodation_id) {
+        Accommodation accommodation = accommodationRepository.findById(accommodation_id).orElseThrow(
+            AccommodationNotFoundException::new);
+        return new AccommodationResponseDTO(accommodation);
     @Transactional(readOnly = true)
     public List<AccommodationListResponse> getAccommodationListBySearchCondition(
         SearchCondition searchCondition, Pageable pageable, Sort sortCondition) {

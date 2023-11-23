@@ -3,7 +3,11 @@ package com.aroom.domain.roomCart.dto.response;
 import com.aroom.domain.roomCart.model.RoomCart;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@NoArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class RoomCartInfoDTO {
 

@@ -21,13 +21,14 @@ public class AccommodationImage extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "accommodation_image_id")
+    @Column(name = "accommodation_image_id", updatable = false)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "accommodation_id")
+    @JoinColumn(name = "accommodation_id", nullable = false)
     private Accommodation accommodation;
 
+    @Column(nullable = false)
     private String url;
 
     @Builder

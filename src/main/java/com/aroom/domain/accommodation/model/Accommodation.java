@@ -23,19 +23,25 @@ public class Accommodation extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "accommodation_id")
+    @Column(name = "accommodation_id", updatable = false)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private float latitude;
 
+    @Column(nullable = false)
     private float longitude;
 
+    @Column(nullable = false)
     private String addressCode;
 
+    @Column(nullable = false)
     private int likeCount;
 
+    @Column(nullable = false)
     private String phoneNumber;
 
     @OneToMany(mappedBy = "accommodation", fetch = FetchType.LAZY)

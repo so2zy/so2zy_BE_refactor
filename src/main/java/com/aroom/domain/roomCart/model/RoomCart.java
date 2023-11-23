@@ -24,7 +24,7 @@ public class RoomCart extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "room_cart_id")
+    @Column(name = "room_cart_id", updatable = false)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)

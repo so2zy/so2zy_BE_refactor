@@ -31,7 +31,6 @@ public class AccommodationRestController {
 
     private final AccommodationService accommodationService;
     public static final String NO_ORDER_CONDITION = "default";
-
     @GetMapping("")
     public ResponseEntity<ApiResponse<List<AccommodationListResponse>>> findAllAccommodation(
         @Nullable @ModelAttribute @Valid SearchCondition searchCondition,

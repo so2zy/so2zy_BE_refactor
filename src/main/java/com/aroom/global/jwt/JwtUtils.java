@@ -2,6 +2,7 @@ package com.aroom.global.jwt;
 
 import com.aroom.global.jwt.exception.BadTokenException;
 import com.aroom.global.jwt.exception.TokenExpiredException;
+import com.aroom.global.jwt.model.JwtPayload;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Component;
 public class JwtUtils {
 
     private static final String USER_KEY = "user-key";
+    private static final String USER_EMAIL = "user-email";
 
     @Value("${spring.application.name}")
     private String issuer;
@@ -29,12 +31,14 @@ public class JwtUtils {
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(rawSecretKey));
     }
 
-    public String createToken(JwtPayload jwtPayload, long expiration) {
+    public String createToken(JwtPayload jwtPayload, Date issuedAt, long expiration) {
         return Jwts.builder()
-            .claim(USER_KEY, Objects.requireNonNull(jwtPayload.email()))
+            // Gson 에서 Long 을 Double 로 Parse 하는 Issue가 있어서 String으로 Wrapping함.
+            .claim(USER_KEY, Objects.requireNonNull(jwtPayload.id().toString()))
+            .claim(USER_EMAIL, Objects.requireNonNull(jwtPayload.email()))
             .issuer(issuer)
-            .issuedAt(Objects.requireNonNull(jwtPayload.issuedAt()))
-            .expiration(new Date(jwtPayload.issuedAt().getTime() + expiration))
+            .issuedAt(issuedAt)
+            .expiration(new Date(issuedAt.getTime() + expiration))
             .signWith(secretKey, Jwts.SIG.HS512)
             .compact();
     }
@@ -44,7 +48,8 @@ public class JwtUtils {
             Jws<Claims> claimsJws = Jwts.parser().verifyWith(secretKey).build()
                 .parseSignedClaims(jwtToken);
             Claims payload = claimsJws.getPayload();
-            return new JwtPayload(payload.get(USER_KEY, String.class), payload.getIssuedAt());
+            return new JwtPayload(Long.parseLong(payload.get(USER_KEY, String.class)), // Gson 에서 Long 을 Double 로 Parse 하는 Issue가 있어서 String으로 Wrapping함.8
+                payload.get(USER_EMAIL, String.class));
         } catch (ExpiredJwtException e) {
             throw new TokenExpiredException(e.getMessage());
         } catch (JwtException e) {

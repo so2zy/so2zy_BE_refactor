@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.aroom.global.jwt.JwtPayload;
 import com.aroom.global.jwt.controller.RefreshAccessTokenRequest;
+import com.aroom.global.jwt.dto.JwtCreateRequest;
 import com.aroom.global.jwt.exception.BadTokenException;
 import com.aroom.global.jwt.exception.TokenExpiredException;
 import com.aroom.global.jwt.repository.JwtRepository;
@@ -46,12 +46,11 @@ class JwtServiceTest {
         void _willSuccess() {
 
             // given
-            Date date = new Date();
-            JwtPayload jwtPayload = new JwtPayload("test@email.com", date);
-            String savedKey = "REFRESH_" + jwtPayload.email();
+            JwtCreateRequest request = successRequest(new Date());
+            String savedKey = "REFRESH_" + request.memberId();
 
             // when
-            TokenResponse tokenResponse = jwtService.createTokenPair(jwtPayload);
+            TokenResponse tokenResponse = jwtService.createTokenPair(request);
 
             // then
             JwtParser parser = Jwts.parser().verifyWith(secretKey).build();
@@ -59,7 +58,8 @@ class JwtServiceTest {
             assertDoesNotThrow(() -> parser.parseSignedClaims(tokenResponse.accessToken()));
             assertDoesNotThrow(() -> parser.parseSignedClaims(tokenResponse.refreshToken()));
 
-            String expectSavedTokenValue = tokenResponse.accessToken() + ":" + tokenResponse.refreshToken();
+            String expectSavedTokenValue =
+                tokenResponse.accessToken() + ":" + tokenResponse.refreshToken();
             String actualSavedTokenValue = jwtRepository.getValueByKey(savedKey);
 
             assertEquals(expectSavedTokenValue, actualSavedTokenValue);
@@ -70,11 +70,10 @@ class JwtServiceTest {
         void emailNull_willFail() {
 
             // given
-            Date date = new Date();
-            JwtPayload jwtPayload = new JwtPayload(null, date);
+            JwtCreateRequest request = nullEmailRequest();
 
             // when then
-            assertThrows(NullPointerException.class, () -> jwtService.createTokenPair(jwtPayload));
+            assertThrows(NullPointerException.class, () -> jwtService.createTokenPair(request));
         }
 
 
@@ -83,10 +82,10 @@ class JwtServiceTest {
         void issuedAtNull_willFail() {
 
             // given
-            JwtPayload jwtPayload = new JwtPayload("test@email.com", null);
+            JwtCreateRequest request = nullIssuedAt();
 
             // when then
-            assertThrows(NullPointerException.class, () -> jwtService.createTokenPair(jwtPayload));
+            assertThrows(NullPointerException.class, () -> jwtService.createTokenPair(request));
         }
 
     }
@@ -100,13 +99,13 @@ class JwtServiceTest {
         void memberId_accessToken_refreshToken_isEquals_willSuccess() {
 
             // given
-            Date date = new Date();
-            JwtPayload jwtPayload = new JwtPayload("test@email.com", date);
-            TokenResponse tokenResponse = jwtService.createTokenPair(jwtPayload);
+            JwtCreateRequest request = successRequest(new Date());
+            TokenResponse tokenResponse = jwtService.createTokenPair(request);
 
             // when
             TokenResponse refreshedJwtPair = jwtService.refreshAccessToken(
-                new RefreshAccessTokenRequest(tokenResponse.accessToken(), tokenResponse.refreshToken()));
+                new RefreshAccessTokenRequest(tokenResponse.accessToken(),
+                    tokenResponse.refreshToken()));
 
             // then
             assertEquals(refreshedJwtPair.refreshToken(), tokenResponse.refreshToken());
@@ -120,12 +119,13 @@ class JwtServiceTest {
         void refreshToken_isNotEquals_willThrow_TokenExpiredException() {
 
             // given
-            JwtPayload jwtPayload = new JwtPayload("test@email.com", new Date(0));
-            TokenResponse tokenResponse = jwtService.createTokenPair(jwtPayload);
+            JwtCreateRequest request = expiredRequest();
+            TokenResponse tokenResponse = jwtService.createTokenPair(request);
 
             // when then
             assertThrows(TokenExpiredException.class, () -> jwtService.refreshAccessToken(
-                new RefreshAccessTokenRequest(tokenResponse.accessToken(), tokenResponse.refreshToken())));
+                new RefreshAccessTokenRequest(tokenResponse.accessToken(),
+                    tokenResponse.refreshToken())));
         }
 
         @DisplayName("가장 최근에 발급된 accessToken이 아니면 실패한다.")
@@ -133,14 +133,31 @@ class JwtServiceTest {
         void accessToken_notEquals_willThrow_BadTokenException() {
 
             // given
-            JwtPayload jwtPayload = new JwtPayload("test@email.com", new Date(System.currentTimeMillis()));
-            JwtPayload latestJwtPayload = new JwtPayload("test@email.com", new Date(System.currentTimeMillis() + 10000));
-            TokenResponse tokenResponse = jwtService.createTokenPair(jwtPayload);
-            TokenResponse latestTokenResponse = jwtService.createTokenPair(latestJwtPayload);
+            TokenResponse tokenResponse = jwtService.createTokenPair(successRequest(new Date()));
+            TokenResponse latestTokenResponse = jwtService.createTokenPair(
+                successRequest(new Date(new Date().getTime() + 100000)));
 
             // when then
             assertThrows(BadTokenException.class, () -> jwtService.refreshAccessToken(
-                new RefreshAccessTokenRequest(tokenResponse.accessToken(), latestTokenResponse.refreshToken())));
+                new RefreshAccessTokenRequest(tokenResponse.accessToken(),
+                    latestTokenResponse.refreshToken())));
         }
+    }
+
+    public JwtCreateRequest successRequest(Date issuedAt) {
+        return new JwtCreateRequest(1L, "test@email.com", issuedAt);
+    }
+
+    public JwtCreateRequest nullEmailRequest() {
+        Date issuedAt = new Date();
+        return new JwtCreateRequest(1L, null, issuedAt);
+    }
+
+    public JwtCreateRequest nullIssuedAt() {
+        return new JwtCreateRequest(1L, "test@email.com", null);
+    }
+
+    public JwtCreateRequest expiredRequest() {
+        return new JwtCreateRequest(1L, "test@email.com", new Date(0));
     }
 }

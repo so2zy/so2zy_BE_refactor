@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.aroom.global.jwt.exception.BadTokenException;
 import com.aroom.global.jwt.exception.TokenExpiredException;
+import com.aroom.global.jwt.model.JwtPayload;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;
@@ -32,9 +33,11 @@ class JwtUtilsTest {
     private Long accessExpiration;
 
     private final SecretKey secretKey;
+    private final SecretKey badSecretKey;
 
     public JwtUtilsTest(@Value("${service.jwt.secret-key}") String secretKey) {
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(secretKey));
+        this.badSecretKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(secretKey + "aslkdjaskdlj"));
     }
 
     @DisplayName("JWT Access Token 발급은")
@@ -47,10 +50,10 @@ class JwtUtilsTest {
 
             // given
             Date issueDate = new Date(System.currentTimeMillis());
-            JwtPayload targetPayload = new JwtPayload("test@email.com", issueDate);
+            JwtPayload targetPayload = new JwtPayload(1L, "test@email.com");
 
             // when
-            String accessToken = jwtUtils.createToken(targetPayload, accessExpiration);
+            String accessToken = jwtUtils.createToken(targetPayload, issueDate, accessExpiration);
 
             // then
             assertThat(accessToken).isNotNull();
@@ -70,10 +73,10 @@ class JwtUtilsTest {
 
             // given
             Date issueDate = new Date(System.currentTimeMillis());
-            JwtPayload targetPayload = new JwtPayload(null, issueDate);
+            JwtPayload targetPayload = new JwtPayload(1L, null);
 
             // when then
-            assertThatThrownBy(() -> jwtUtils.createToken(targetPayload, accessExpiration))
+            assertThatThrownBy(() -> jwtUtils.createToken(targetPayload, issueDate, accessExpiration))
                 .isInstanceOf(NullPointerException.class);
         }
 
@@ -82,10 +85,10 @@ class JwtUtilsTest {
         void ifIssueDateNull_NPE_willThrow() {
 
             // given
-            JwtPayload targetPayload = new JwtPayload("test@email.com", null);
+            JwtPayload targetPayload = new JwtPayload(1L, "test@email.com");
 
             // when then
-            assertThatThrownBy(() -> jwtUtils.createToken(targetPayload, accessExpiration))
+            assertThatThrownBy(() -> jwtUtils.createToken(targetPayload, null, accessExpiration))
                 .isInstanceOf(NullPointerException.class);
         }
     }
@@ -100,10 +103,11 @@ class JwtUtilsTest {
 
             // given
             Date issueDate = new Date(System.currentTimeMillis());
-            JwtPayload targetPayload = new JwtPayload("test@email.com", issueDate);
+            JwtPayload targetPayload = new JwtPayload(1L, "test@email.com");
 
             String accessToken = Jwts.builder()
-                .claim("user-key", targetPayload.email())
+                .claim("user-key", targetPayload.id().toString())
+                .claim("user-email", targetPayload.email())
                 .issuer(applicationName)
                 .issuedAt(issueDate)
                 .expiration(new Date(issueDate.getTime() + accessExpiration))
@@ -123,14 +127,15 @@ class JwtUtilsTest {
 
             // given
             Date issueDate = new Date(System.currentTimeMillis());
-            JwtPayload targetPayload = new JwtPayload("test@email.com", issueDate);
+            JwtPayload targetPayload = new JwtPayload(1L, "test@email.com");
 
             String accessToken = Jwts.builder()
-                .claim("user-key", targetPayload.email())
+                .claim("user-key", targetPayload.id().toString())
+                .claim("user-email", targetPayload.email())
                 .issuer(applicationName)
                 .issuedAt(issueDate)
                 .expiration(new Date(issueDate.getTime() + accessExpiration))
-                .signWith(SIG.HS256.key().build())
+                .signWith(badSecretKey, SIG.HS512)
                 .compact();
 
             // when
@@ -144,10 +149,11 @@ class JwtUtilsTest {
 
             // given
             Date issueDate = new Date(System.currentTimeMillis());
-            JwtPayload targetPayload = new JwtPayload("test@email.com", issueDate);
+            JwtPayload targetPayload = new JwtPayload(1L, "test@email.com");
 
             String accessToken = Jwts.builder()
-                .claim("user-key", targetPayload.email())
+                .claim("user-key", targetPayload.id().toString())
+                .claim("user-email", targetPayload.email())
                 .issuer(applicationName)
                 .issuedAt(issueDate)
                 .expiration(new Date(issueDate.getTime() - 10000))

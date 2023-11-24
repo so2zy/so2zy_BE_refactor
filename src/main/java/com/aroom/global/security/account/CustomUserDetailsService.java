@@ -5,7 +5,6 @@ import com.aroom.domain.member.model.Member;
 import com.aroom.domain.member.repository.MemberRepository;
 import java.util.Set;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,7 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         Member member = memberRepository.findMemberByEmail(username)
             .orElseThrow(MemberNotFoundException::new);
 
-        return new User(member.getEmail(), member.getPassword(),
+        return new AccountContext(member.getId(), member.getEmail(), member.getPassword(),
             Set.of(new SimpleGrantedAuthority("ROLE_USER")));
     }
 }

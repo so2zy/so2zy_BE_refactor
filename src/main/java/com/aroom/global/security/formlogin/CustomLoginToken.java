@@ -18,7 +18,7 @@ public class CustomLoginToken extends AbstractAuthenticationToken {
     }
 
     public static CustomLoginToken unAuthenticate(String username, String password) {
-        return new CustomLoginToken(new AccountContext(username, password, Collections.emptySet()), Collections.emptySet());
+        return new CustomLoginToken(new AccountContext(null, username, password, Collections.emptySet()), Collections.emptySet());
     }
 
     public static CustomLoginToken authenticate(AccountContext accountContext) {

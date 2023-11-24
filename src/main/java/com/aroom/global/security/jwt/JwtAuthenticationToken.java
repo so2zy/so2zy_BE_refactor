@@ -1,70 +1,39 @@
 package com.aroom.global.security.jwt;
 
-import java.util.Objects;
-import java.util.Set;
+import com.aroom.global.security.account.AccountContext;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
-    private final String principal;
-    private String credentials;
+    private final AccountContext accountContext;
     private final boolean isAuthenticated;
 
-    private JwtAuthenticationToken(String principal, String credentials, boolean isAuthenticated) {
-        super(Set.of(new SimpleGrantedAuthority("ROLE_USER")));
-        this.principal = principal;
-        this.credentials = credentials;
+    private JwtAuthenticationToken(AccountContext accountContext, boolean isAuthenticated) {
+        super(accountContext.getAuthorities());
+        this.accountContext = accountContext;
         this.isAuthenticated = isAuthenticated;
     }
 
-    private JwtAuthenticationToken(String principal, boolean isAuthenticated) {
-        super(Set.of(new SimpleGrantedAuthority("ROLE_USER")));
-        this.principal = principal;
-        this.isAuthenticated = isAuthenticated;
+    public static JwtAuthenticationToken unAuthorize(AccountContext accountContext) {
+        return new JwtAuthenticationToken(accountContext, false);
     }
 
-    public static JwtAuthenticationToken unAuthorize(String accessToken) {
-        return new JwtAuthenticationToken(null, accessToken, false);
-    }
-
-    public static JwtAuthenticationToken authorize(String email) {
-        return new JwtAuthenticationToken(email, true);
+    public static JwtAuthenticationToken authorize(AccountContext accountContext) {
+        return new JwtAuthenticationToken(accountContext, true);
     }
 
     @Override
-    public String getPrincipal() {
-        return principal;
+    public Object getPrincipal() {
+        return accountContext;
     }
 
     @Override
-    public String getCredentials() {
-        return credentials;
+    public Object getCredentials() {
+        return accountContext.getPassword();
     }
 
     @Override
     public boolean isAuthenticated() {
         return isAuthenticated;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) {
-            return true;
-        }
-        if (object == null || getClass() != object.getClass()) {
-            return false;
-        }
-        if (!super.equals(object)) {
-            return false;
-        }
-        JwtAuthenticationToken that = (JwtAuthenticationToken) object;
-        return isAuthenticated == that.isAuthenticated && Objects.equals(principal,
-            that.principal) && Objects.equals(credentials, that.credentials);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), principal, credentials, isAuthenticated);
     }
 }

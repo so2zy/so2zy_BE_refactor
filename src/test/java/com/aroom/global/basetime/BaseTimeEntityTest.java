@@ -2,12 +2,15 @@ package com.aroom.global.basetime;
 
 import com.aroom.domain.member.model.Member;
 import com.aroom.domain.member.repository.MemberRepository;
+import com.aroom.global.config.JpaAuditingConfig;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
+@Import(JpaAuditingConfig.class)
 @DataJpaTest
 class BaseTimeEntityTest {
 

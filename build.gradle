@@ -26,6 +26,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     //implementation 'org.springframework.boot:spring-boot-starter-security'
     runtimeOnly 'com.mysql:mysql-connector-j'
+    testImplementation 'org.springframework.security:spring-security-test:6.2.0'
 
     // JWT
     implementation "io.jsonwebtoken:jjwt-api:${JJWT_VERSION}"
@@ -61,7 +62,9 @@ tasks.named('test') {
 }
 
 // Querydsl 설정부
-def generated = 'src/main/generated'
+//def generated = 'build/generated'
+def generated = 'build/generated/querydsl'
+
 
 // Querydsl Qclass 파일 생성 위치를 지정
 tasks.withType(JavaCompile){

@@ -2,9 +2,12 @@ package com.aroom.global.security.jwt;
 
 import com.aroom.global.jwt.model.JwtPayload;
 import com.aroom.global.jwt.service.JwtService;
+import com.aroom.global.security.account.AccountContext;
+import java.util.Set;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -22,7 +25,9 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         String accessToken = (String) authentication.getCredentials();
         JwtPayload jwtPayload = jwtService.verifyToken(accessToken);
 
-        return JwtAuthenticationToken.authorize(jwtPayload.email());
+        return JwtAuthenticationToken.authorize(
+            new AccountContext(jwtPayload.id(), jwtPayload.email(), null,
+                Set.of(new SimpleGrantedAuthority("ROLE_USER"))));
     }
 
     @Override

@@ -1,7 +1,8 @@
 package com.aroom.global.resolver;
 
 public record LoginInfo(
-    String username
+    Long memberId,
+    String email
 ) {
 
 }

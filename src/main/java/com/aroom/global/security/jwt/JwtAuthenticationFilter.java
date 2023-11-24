@@ -1,11 +1,13 @@
 package com.aroom.global.security.jwt;
 
 import com.aroom.global.config.CustomHttpHeaders;
+import com.aroom.global.security.account.AccountContext;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -30,7 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         SecurityContextHolder.getContext()
             .setAuthentication(authenticationManager.authenticate(
-                JwtAuthenticationToken.unAuthorize(accessToken)));
+                JwtAuthenticationToken.unAuthorize(new AccountContext(null, null, accessToken, Collections.emptySet()))));
 
         chain.doFilter(request, response);
     }

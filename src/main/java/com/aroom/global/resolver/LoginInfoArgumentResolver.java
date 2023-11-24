@@ -1,5 +1,6 @@
 package com.aroom.global.resolver;
 
+import com.aroom.global.security.account.AccountContext;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,8 +18,8 @@ public class LoginInfoArgumentResolver implements HandlerMethodArgumentResolver 
         NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = (String) authentication.getPrincipal();
-        return new LoginInfo(username);
+        AccountContext accountContext = (AccountContext) authentication.getPrincipal();
+        return new LoginInfo(accountContext.getMemberId(), accountContext.getUsername());
     }
 
     @Override

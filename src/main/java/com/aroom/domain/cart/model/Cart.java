@@ -1,6 +1,7 @@
 package com.aroom.domain.cart.model;
 
 import com.aroom.domain.member.model.Member;
+import com.aroom.global.basetime.BaseTimeEntity;
 import com.aroom.domain.roomCart.model.RoomCart;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -24,15 +25,15 @@ import lombok.extern.slf4j.Slf4j;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Cart {
+public class Cart extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cart_id")
+    @Column(name = "cart_id", updatable = false)
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     @OneToMany(mappedBy = "cart", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)

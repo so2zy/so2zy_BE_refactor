@@ -1,6 +1,7 @@
 package com.aroom.domain.member.model;
 
 
+import com.aroom.global.basetime.BaseTimeEntity;
 import com.aroom.domain.cart.model.Cart;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,18 +24,20 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member {
+public class Member extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
+    @Column(name = "member_id", updatable = false)
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
     private String name;
 
     @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)

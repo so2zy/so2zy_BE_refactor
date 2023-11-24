@@ -1,6 +1,7 @@
 package com.aroom.domain.room.model;
 
 import com.aroom.domain.accommodation.model.Accommodation;
+import com.aroom.global.basetime.BaseTimeEntity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -27,30 +28,37 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Room {
+public class Room extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "room_id")
+    @Column(name = "room_id", updatable = false)
     private Long id;
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "accommodation_id")
+    @JoinColumn(name = "accommodation_id", nullable = false)
     private Accommodation accommodation;
 
+    @Column(nullable = false)
     private String type;
 
+    @Column(nullable = false)
     private int price;
 
+    @Column(nullable = false)
     private int capacity;
 
+    @Column(nullable = false)
     private int maxCapacity;
 
+    @Column(nullable = false)
     private LocalTime checkIn;
-
+  
+    @Column(nullable = false)
     private LocalTime checkOut;
 
+    @Column(nullable = false)
     private int stock;
 
     @JsonManagedReference

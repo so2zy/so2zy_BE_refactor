@@ -1,6 +1,7 @@
 package com.aroom.domain.accommodation.model;
 
 import com.aroom.domain.room.model.Room;
+import com.aroom.global.basetime.BaseTimeEntity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,23 +20,29 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Accommodation {
+public class Accommodation extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "accommodation_id")
+    @Column(name = "accommodation_id", updatable = false)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private float latitude;
 
+    @Column(nullable = false)
     private float longitude;
 
+    @Column(nullable = false)
     private String addressCode;
 
+    @Column(nullable = false)
     private int likeCount;
 
+    @Column(nullable = false)
     private String phoneNumber;
 
 

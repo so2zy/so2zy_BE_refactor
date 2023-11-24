@@ -1,6 +1,7 @@
 package com.aroom.domain.accommodation.dto.response;
 
 import com.aroom.domain.room.model.Room;
+import com.aroom.domain.room.model.RoomImage;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import java.time.format.DateTimeFormatter;
 import lombok.Builder;
@@ -41,6 +42,9 @@ public class RoomListInfoDTO {
         this.checkIn = room.getCheckIn().format(DateTimeFormatter.ofPattern("HH:mm"));
         this.checkOut = room.getCheckOut().format(DateTimeFormatter.ofPattern("HH:mm"));
         this.stock = room.getStock();
-        this.url = room.getRoomImageList().get(0).getUrl();
+        this.url = room.getRoomImageList().stream()
+            .map(RoomImage::getUrl)
+            .findFirst()
+            .orElse(null);
     }
 }

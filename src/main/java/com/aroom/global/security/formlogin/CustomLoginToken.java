@@ -27,7 +27,7 @@ public class CustomLoginToken extends AbstractAuthenticationToken {
 
     @Override
     public Object getPrincipal() {
-        return accountContext.getUsername();
+        return accountContext;
     }
 
     @Override

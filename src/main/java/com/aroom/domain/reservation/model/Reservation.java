@@ -35,8 +35,9 @@ public class Reservation extends BaseTimeEntity {
     private boolean agreement;
 
     @Builder
-    public Reservation(Member member, boolean agreement) {
+    private Reservation(Member member, boolean agreement) {
         this.member = member;
         this.agreement = agreement;
     }
+
 }

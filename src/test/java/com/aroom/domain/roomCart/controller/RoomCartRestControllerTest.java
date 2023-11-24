@@ -22,7 +22,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(RoomCartRestController.class)
+@WebMvcTest(controllers = RoomCartRestController.class)
 public class RoomCartRestControllerTest {
 
     @Autowired

@@ -2,16 +2,16 @@ package com.aroom.domain.accommodation.controller;
 
 import com.aroom.domain.accommodation.dto.AccommodationListResponse;
 import com.aroom.domain.accommodation.dto.SearchCondition;
+import com.aroom.domain.accommodation.dto.response.AccommodationResponseDTO;
 import com.aroom.domain.accommodation.service.AccommodationService;
 import com.aroom.global.response.ApiResponse;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
-import java.util.Optional;
-import org.springframework.data.domain.PageRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
@@ -39,24 +39,43 @@ public class AccommodationRestController {
         @Nullable @RequestParam(defaultValue = "10") int size
     ) {
 
-        if (searchCondition!=null) {
+        if (validateSearchConditionIsNull(searchCondition)) {
 
             Sort sortCondition = Sort.by(
                 Direction.fromOptionalString(searchCondition.getOrderBy())
                     .orElse(Direction.ASC),
-                searchCondition.getOrderCondition()==null?NO_ORDER_CONDITION:searchCondition.getOrderCondition());
-
+                searchCondition.getOrderCondition() == null ? NO_ORDER_CONDITION
+                    : searchCondition.getOrderCondition());
 
             PageRequest pageRequest = PageRequest.of(page, size);
 
             return ResponseEntity.status(HttpStatus.OK)
                 .body(new ApiResponse<>(LocalDateTime.now(), "숙소 정보를 성공적으로 조회했습니다.",
-                    accommodationService.getAccommodationListBySearchCondition(searchCondition, pageRequest, sortCondition)));
+                    accommodationService.getAccommodationListBySearchCondition(searchCondition,
+                        pageRequest, sortCondition)));
         }
         return ResponseEntity.status(HttpStatus.OK)
             .body(new ApiResponse<>(LocalDateTime.now(), "숙소 정보를 성공적으로 조회했습니다.",
                 accommodationService.getAllAccommodation()));
+
     }
+
+    private boolean validateSearchConditionIsNull(SearchCondition searchCondition) {
+        if (searchCondition.getOrderCondition()!=null ||
+        searchCondition.getHighestPrice()!=null||
+        searchCondition.getLowestPrice()!=null||
+        searchCondition.getCheckIn()!=null||
+        searchCondition.getCheckOut()!=null||
+        searchCondition.getLikeCount()!=null||
+        searchCondition.getName()!=null||
+        searchCondition.getOrderBy()!=null||
+        searchCondition.getAddressCode()!=null||
+        searchCondition.getPhoneNumber()!=null){
+            return true;
+        }
+        return false;
+    }
+
     @GetMapping("/{accommodation_id}")
     public ResponseEntity<ApiResponse<AccommodationResponseDTO>> getSpecificAccommodation(
         @PathVariable long accommodation_id) {
@@ -64,4 +83,5 @@ public class AccommodationRestController {
             new ApiResponse<>(LocalDateTime.now(), "숙소 상세 정보를 성공적으로 조회했습니다.",
                 accommodationService.getRoom(accommodation_id)));
     }
+
 }

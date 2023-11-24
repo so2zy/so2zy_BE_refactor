@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class ReservationRoomRequest {
+public class RoomReservationRequest {
     private Long roomId;
 
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -18,10 +18,13 @@ public class ReservationRoomRequest {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate endDate;
 
+    private int price;
+
     @Builder
-    public ReservationRoomRequest(Long roomId, LocalDate startDate, LocalDate endDate) {
+    public RoomReservationRequest(Long roomId, LocalDate startDate, LocalDate endDate, int price) {
         this.roomId = roomId;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.price = price;
     }
 }

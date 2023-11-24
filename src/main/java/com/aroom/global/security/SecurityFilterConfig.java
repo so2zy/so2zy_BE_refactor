@@ -5,7 +5,6 @@ import com.aroom.global.security.jwt.JwtAuthenticationFilter;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -37,10 +36,9 @@ public class SecurityFilterConfig {
 
 		http.authorizeHttpRequests(request ->
 			request
-				.requestMatchers("/v1/members/register").permitAll()
-				.requestMatchers("/v1/login", "/v1/refresh").permitAll()
-				.requestMatchers("/v1/accommodations/**").permitAll()
-				.anyRequest().authenticated()
+				.requestMatchers("/v1/reservations/**").authenticated()
+				.requestMatchers("/v1/carts/**").authenticated()
+				.anyRequest().permitAll()
 		);
 
 		http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

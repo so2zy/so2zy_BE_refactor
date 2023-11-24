@@ -1,44 +1,28 @@
 package com.aroom.domain.accommodation.controller;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.aroom.domain.accommodation.dto.AccommodationListResponse;
+import com.aroom.domain.accommodation.dto.SearchCondition;
 import com.aroom.domain.accommodation.dto.response.AccommodationResponseDTO;
 import com.aroom.domain.accommodation.dto.response.RoomListInfoDTO;
 import com.aroom.domain.accommodation.model.AccommodationImage;
 import com.aroom.domain.accommodation.service.AccommodationService;
-import com.aroom.domain.room.model.Room;
-import com.aroom.domain.room.model.RoomImage;
-import java.time.LocalTime;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.servlet.MockMvc;
-import com.aroom.domain.accommodation.dto.AccommodationListResponse;
-import com.aroom.domain.accommodation.dto.SearchCondition;
-import com.aroom.domain.accommodation.service.AccommodationService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Collections;
-import java.util.List;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -55,10 +39,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @WebMvcTest(AccommodationRestController.class)
 class AccommodationRestControllerTest {
 
-
-@WebMvcTest(AccommodationRestController.class)
-public class AccommodationRestControllerTest {
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -67,7 +47,7 @@ public class AccommodationRestControllerTest {
 
     @Test
     void testFindAllAccommodationWithSearchCondition() throws Exception {
-        // Mock your service response
+        // given
         SearchCondition mockSearchCondition = SearchCondition.builder()
             .orderCondition(null)
             .orderBy(null)
@@ -84,19 +64,21 @@ public class AccommodationRestControllerTest {
         Sort mockSortCondition = Sort.by(Direction.ASC,
             AccommodationRestController.NO_ORDER_CONDITION);
 
-        List<AccommodationListResponse> accommodationListResponse = List.of(AccommodationListResponse.builder()
-            .id(1L)
-            .latitude(1)
-            .accommodationImageLists(null)
-            .phoneNumber("02-000-000")
-            .longitude(1)
-            .name("야놀자호텔")
-            .addressCode("서울시 강남구 청담동 1111")
-            .build());
-        when(accommodationService.getAccommodationListBySearchCondition(mockSearchCondition, mockPageRequest, mockSortCondition))
+        List<AccommodationListResponse> accommodationListResponse = List.of(
+            AccommodationListResponse.builder()
+                .id(1L)
+                .latitude(1)
+                .accommodationImageLists(null)
+                .phoneNumber("02-000-000")
+                .longitude(1)
+                .name("야놀자호텔")
+                .addressCode("서울시 강남구 청담동 1111")
+                .build());
+        when(accommodationService.getAccommodationListBySearchCondition(mockSearchCondition,
+            mockPageRequest, mockSortCondition))
             .thenReturn(accommodationListResponse);
 
-        // Call the actual method in the controller
+        // when, then
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/accommodations")
                 .param("page", "0")
                 .param("size", "10")
@@ -106,6 +88,7 @@ public class AccommodationRestControllerTest {
             .andExpect(MockMvcResultMatchers.jsonPath("$.detail").value("숙소 정보를 성공적으로 조회했습니다."))
             .andExpect(MockMvcResultMatchers.jsonPath("$.data").isArray());
 
+    }
 
     @Nested
     @DisplayName("getSpecificAccommodation()은 ")
@@ -116,7 +99,8 @@ public class AccommodationRestControllerTest {
         void _willSuccess() throws Exception {
             // given
             List<RoomListInfoDTO> roomList = Arrays.asList(
-                RoomListInfoDTO.builder().type("DELUXE").price(350000).capacity(2).maxCapacity(4).checkIn("15:00").checkOut("11:00").stock(4)
+                RoomListInfoDTO.builder().type("DELUXE").price(350000).capacity(2).maxCapacity(4)
+                    .checkIn("15:00").checkOut("11:00").stock(4)
                     .url("naver.com").build());
             List<AccommodationImage> accommodationImageList = Arrays.asList(
                 AccommodationImage.builder().url(
@@ -141,3 +125,4 @@ public class AccommodationRestControllerTest {
         }
     }
 }
+

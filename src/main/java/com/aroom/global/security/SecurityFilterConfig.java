@@ -2,6 +2,7 @@ package com.aroom.global.security;
 
 import com.aroom.global.security.formlogin.CustomFormLoginFilter;
 import com.aroom.global.security.jwt.JwtAuthenticationFilter;
+import java.util.Arrays;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +12,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
 public class SecurityFilterConfig {
@@ -30,6 +32,15 @@ public class SecurityFilterConfig {
 		http
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.formLogin(AbstractHttpConfigurer::disable)
+			.cors(cors -> cors.configurationSource(request -> {
+                CorsConfiguration configuration = new CorsConfiguration();
+                configuration.setAllowCredentials(true);
+                configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:3001"));
+                configuration.setAllowedHeaders(Arrays.asList("*"));
+                configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+                configuration.addExposedHeader("X-AUTH-TOKEN");
+				return configuration;
+            }))
 			.csrf(AbstractHttpConfigurer::disable)
 			.sessionManagement(sessionConfig ->
 				sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

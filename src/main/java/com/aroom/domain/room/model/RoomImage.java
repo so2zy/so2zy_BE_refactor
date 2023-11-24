@@ -1,6 +1,7 @@
 package com.aroom.domain.room.model;
 
 import com.aroom.global.basetime.BaseTimeEntity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,6 +25,7 @@ public class RoomImage extends BaseTimeEntity {
     @Column(name = "room_image_id", updatable = false)
     private Long id;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "room_id", nullable = false)
     private Room room;

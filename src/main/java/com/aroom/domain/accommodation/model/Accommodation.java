@@ -2,6 +2,7 @@ package com.aroom.domain.accommodation.model;
 
 import com.aroom.domain.room.model.Room;
 import com.aroom.global.basetime.BaseTimeEntity;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -44,6 +45,7 @@ public class Accommodation extends BaseTimeEntity {
     @Column(nullable = false)
     private String phoneNumber;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "accommodation", fetch = FetchType.LAZY)
     private List<Room> roomList = new ArrayList<>();
 

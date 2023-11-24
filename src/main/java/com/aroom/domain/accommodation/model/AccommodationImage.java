@@ -1,6 +1,7 @@
 package com.aroom.domain.accommodation.model;
 
 import com.aroom.global.basetime.BaseTimeEntity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -24,6 +25,7 @@ public class AccommodationImage extends BaseTimeEntity {
     @Column(name = "accommodation_image_id", updatable = false)
     private Long id;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "accommodation_id", nullable = false)
     private Accommodation accommodation;

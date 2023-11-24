@@ -1,6 +1,8 @@
 package com.aroom.domain.reservation.service;
 
+import com.aroom.domain.member.exception.MemberNotFoundException;
 import com.aroom.domain.member.model.Member;
+import com.aroom.domain.member.repository.MemberRepository;
 import com.aroom.domain.reservation.dto.request.ReservationRequest;
 import com.aroom.domain.reservation.dto.response.ReservationResponse;
 import com.aroom.domain.reservation.exception.MaximumCapacityExceededException;
@@ -32,9 +34,12 @@ public class ReservationService {
     private final ReservationRoomRepository reservationRoomRepository;
     private final ReservationRepository reservationRepository;
     private final RoomImageRepository roomImageRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
-    public ReservationResponse reserveRoom(ReservationRequest request, Member member) {
+    public ReservationResponse reserveRoom(ReservationRequest request, String username) {
+        Member member = memberRepository.findMemberByEmail(username).orElseThrow(
+            MemberNotFoundException::new);;
         Reservation reservation = Reservation.builder()
             .member(member)
             .agreement(request.getAgreement())

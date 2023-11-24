@@ -3,8 +3,11 @@ package com.aroom.domain.reservation.repository;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.aroom.domain.member.model.Member;
+import com.aroom.domain.member.repository.MemberRepository;
 import com.aroom.domain.reservation.model.Reservation;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.assertj.core.api.Assertions;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +19,9 @@ class ReservationRepositoryTest {
 
     @Autowired
     private ReservationRepository reservationRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     private Member tester;
     @BeforeEach
@@ -37,6 +43,7 @@ class ReservationRepositoryTest {
             .build();
 
         // when
+        memberRepository.save(tester);
         Reservation savedReservation = reservationRepository.save(reservation);
 
         // then

@@ -1,6 +1,7 @@
 package com.aroom.domain.accommodation.model;
 
 import com.aroom.domain.room.model.Room;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -37,9 +38,12 @@ public class Accommodation {
 
     private String phoneNumber;
 
+
+    @JsonManagedReference
     @OneToMany(mappedBy = "accommodation", fetch = FetchType.LAZY)
     private List<Room> roomList = new ArrayList<>();
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "accommodation", fetch = FetchType.LAZY)
     private List<AccommodationImage> accommodationImageList = new ArrayList<>();
 
@@ -56,4 +60,5 @@ public class Accommodation {
         this.roomList = roomList;
         this.accommodationImageList = accommodationImageList;
     }
+
 }

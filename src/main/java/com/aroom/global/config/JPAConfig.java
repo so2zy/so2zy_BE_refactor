@@ -11,14 +11,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @Configuration
 @EnableJpaAuditing
 @EnableJpaRepositories(basePackages = "com.aroom")
-public class JPAConfig {
-
+public class JpaConfig {
     @PersistenceContext
     private EntityManager entityManager;
-
     @Bean
     public JPAQueryFactory queryFactory() {
         return new JPAQueryFactory(entityManager);
     }
-
 }

@@ -30,10 +30,14 @@ public class AccommodationService {
 
     private final AccommodationRepository accommodationRepository;
 
+    @Transactional(readOnly = true)
     public AccommodationResponseDTO getRoom(Long accommodation_id) {
-        Accommodation accommodation = accommodationRepository.findById(accommodation_id).orElseThrow(
-            AccommodationNotFoundException::new);
+        Accommodation accommodation = accommodationRepository.findById(accommodation_id)
+            .orElseThrow(
+                AccommodationNotFoundException::new);
         return new AccommodationResponseDTO(accommodation);
+    }
+
     @Transactional(readOnly = true)
     public List<AccommodationListResponse> getAccommodationListBySearchCondition(
         SearchCondition searchCondition, Pageable pageable, Sort sortCondition) {

@@ -38,6 +38,23 @@ public class Cart {
     @OneToMany(mappedBy = "cart", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
     private List<RoomCart> roomCartList = new ArrayList<>();
 
+    public void postRoomCarts(RoomCart roomCart) {
+        roomCartList.add(roomCart);
+    }
+
+    @Builder
+    public Cart(Long id, Member member, List<RoomCart> roomCartList) {
+        this.id = id;
+        this.member = member;
+        this.roomCartList = roomCartList;
+    }
+
+    @Builder
+    public Cart(Member member, List<RoomCart> roomCartList) {
+        this.member = member;
+        this.roomCartList = roomCartList;
+    }
+
     @Builder
     public Cart(Member member) {
         this.member = member;

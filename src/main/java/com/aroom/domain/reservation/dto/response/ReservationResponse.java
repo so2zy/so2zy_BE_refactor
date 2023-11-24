@@ -1,35 +1,30 @@
 package com.aroom.domain.reservation.dto.response;
 
+import com.aroom.domain.room.dto.response.RoomReservationResponse;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
+@NoArgsConstructor
 public class ReservationResponse {
-    private Long roomId;
-    private String roomType;
-    private LocalTime checkIn;
-    private LocalTime checkOut;
-    private int capacity;
-    private int maxCapacity;
+
+    private List<RoomReservationResponse> roomList = new ArrayList<>();
     private Long roomReservationNumber;
     private Long reservationNumber;
     private LocalDateTime dealDateTime;
 
     @Builder
-    public ReservationResponse(Long roomId, String roomType, LocalTime checkIn,
-        LocalTime checkOut, int capacity, int maxCapacity, Long roomReservationNumber,
+    public ReservationResponse(List<RoomReservationResponse> roomList, Long roomReservationNumber,
         Long reservationNumber, LocalDateTime dealDateTime) {
-        this.roomId = roomId;
-        this.roomType = roomType;
-        this.checkIn = checkIn;
-        this.checkOut = checkOut;
-        this.capacity = capacity;
-        this.maxCapacity = maxCapacity;
+        this.roomList = roomList;
         this.roomReservationNumber = roomReservationNumber;
         this.reservationNumber = reservationNumber;
         this.dealDateTime = dealDateTime;
     }
-
 }

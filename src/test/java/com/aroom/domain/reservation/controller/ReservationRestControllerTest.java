@@ -11,7 +11,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.aroom.domain.reservation.dto.request.ReservationRequest;
 import com.aroom.domain.reservation.dto.response.ReservationResponse;
 import com.aroom.domain.reservation.service.ReservationService;
-import com.aroom.domain.room.dto.request.ReservationRoomRequest;
+import com.aroom.domain.room.dto.request.RoomReservationRequest;
+import com.aroom.domain.room.dto.response.RoomImageResponse;
+import com.aroom.domain.room.dto.response.RoomReservationResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,43 +40,55 @@ class ReservationRestControllerTest {
     private ReservationService reservationService;
 
     private ReservationResponse reservationResponse;
-    private ReservationRoomRequest roomRequest;
+    private RoomReservationRequest roomRequest;
+
 
     @BeforeEach
     private void init() {
-        reservationResponse = ReservationResponse.builder()
-            .roomId(1L)
-            .roomType("패밀리")
-            .checkIn(LocalTime.of(15, 00))
-            .checkOut(LocalTime.of(18, 00))
-            .capacity(2)
-            .maxCapacity(4)
-            .roomReservationNumber(2L)
-            .reservationNumber(3L)
-            .dealDateTime(LocalDateTime.now())
-            .build();
-
-        roomRequest = ReservationRoomRequest.builder()
+        roomRequest = RoomReservationRequest.builder()
             .roomId(1L)
             .startDate(LocalDate.of(2023, 12, 22))
             .endDate(LocalDate.of(2023, 12, 23))
             .build();
+
+        RoomImageResponse roomImageResponse = new RoomImageResponse("ww.com");
+
+        RoomReservationResponse roomResponse = RoomReservationResponse.builder()
+            .roomId(1L)
+            .type("패밀리")
+            .checkIn(LocalTime.of(19, 0))
+            .checkOut(LocalTime.of(13, 0))
+            .capacity(2)
+            .maxCapacity(4)
+            .price(100000)
+            .startDate(roomRequest.getStartDate())
+            .endDate(roomRequest.getEndDate())
+            .roomImage(roomImageResponse)
+            .build();
+
+        reservationResponse = ReservationResponse.builder()
+            .roomList(List.of(roomResponse))
+            .roomReservationNumber(2L)
+            .reservationNumber(3L)
+            .dealDateTime(LocalDateTime.now())
+            .build();
     }
 
     @Nested
-    @DisplayName("예약 저장")
+    @DisplayName("방 예약은 ")
     class SaveReservation {
 
         @Test
-        @DisplayName("하나의 숙소의 하나의 객실을 예약에 성공")
+        @DisplayName("성공시 예약을 확인할 수 있는 정보를 반환한다.")
         void reserve_one_room_of_one_accommodation_success() throws Exception {
             // given
             ReservationRequest request = ReservationRequest.builder()
                 .roomList(List.of(roomRequest))
                 .personnel(2)
                 .agreement(true)
+                .isFromCart(false)
                 .build();
-            given(reservationService.reserveRoom(any())).willReturn(reservationResponse);
+            given(reservationService.reserveRoom(any(), any())).willReturn(reservationResponse);
 
             // when
             ResultActions response = mvc.perform(post("/v1/reservations")
@@ -84,18 +98,19 @@ class ReservationRestControllerTest {
             // then
             response.andExpect(status().isCreated())
                 .andDo(print())
-                .andExpect(jsonPath("$.data.roomType", is(reservationResponse.getRoomType())));
+                .andExpect(jsonPath("$.data.roomList[0].type", is(reservationResponse.getRoomList().get(0).getType())));
         }
 
         @Test
-        @DisplayName("객실 예약 데이터 중 객실 데이터가 없는 경우")
+        @DisplayName("방에 대한 정보가 없을 때는 예약을 할 수 없다.")
         void reserve_no_room_data_fail() throws Exception {
             // given
             ReservationRequest request = ReservationRequest.builder()
                 .personnel(2)
                 .agreement(true)
+                .isFromCart(false)
                 .build();
-            given(reservationService.reserveRoom(any())).willReturn(reservationResponse);
+            given(reservationService.reserveRoom(any(), any())).willReturn(reservationResponse);
 
             // when
             ResultActions response = mvc.perform(post("/v1/reservations")

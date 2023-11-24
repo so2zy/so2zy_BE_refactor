@@ -45,10 +45,12 @@ public class Accommodation extends BaseTimeEntity {
     @Column(nullable = false)
     private String phoneNumber;
 
+
     @JsonManagedReference
     @OneToMany(mappedBy = "accommodation", fetch = FetchType.LAZY)
     private List<Room> roomList = new ArrayList<>();
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "accommodation", fetch = FetchType.LAZY)
     private List<AccommodationImage> accommodationImageList = new ArrayList<>();
 
@@ -65,4 +67,5 @@ public class Accommodation extends BaseTimeEntity {
         this.roomList = roomList;
         this.accommodationImageList = accommodationImageList;
     }
+
 }

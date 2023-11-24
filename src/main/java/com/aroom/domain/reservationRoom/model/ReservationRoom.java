@@ -1,8 +1,8 @@
 package com.aroom.domain.reservationRoom.model;
 
-import com.aroom.domain.accommodation.model.Accommodation;
 import com.aroom.domain.reservation.model.Reservation;
 import com.aroom.global.basetime.BaseTimeEntity;
+import com.aroom.domain.room.model.Room;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,11 +29,12 @@ public class ReservationRoom extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "accommodation_id", nullable = false)
-    private Accommodation accommodation;
+
+    @JoinColumn(name = "room_id", nullable = false)
+    private Room room;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false)
+    @JoinColumn(name = "reservation_id", nullable = false)
     private Reservation reservation;
 
     @Column(nullable = false)
@@ -49,10 +50,9 @@ public class ReservationRoom extends BaseTimeEntity {
     private int personnel;
 
     @Builder
-    public ReservationRoom(Accommodation accommodation, Reservation reservation, LocalDate startDate,
-        LocalDate endDate,
-        int price, int personnel) {
-        this.accommodation = accommodation;
+    public ReservationRoom(Room room, Reservation reservation, LocalDate startDate,
+        LocalDate endDate, int price, int personnel) {
+        this.room = room;
         this.reservation = reservation;
         this.startDate = startDate;
         this.endDate = endDate;

@@ -2,11 +2,14 @@ package com.aroom.domain.member.model;
 
 
 import com.aroom.global.basetime.BaseTimeEntity;
+import com.aroom.domain.cart.model.Cart;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import java.util.Objects;
@@ -36,6 +39,9 @@ public class Member extends BaseTimeEntity {
 
     @Column(nullable = false)
     private String name;
+
+    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
+    private Cart cart;
 
     @Builder
     private Member(String email, String password, String name) {

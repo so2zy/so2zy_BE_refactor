@@ -9,18 +9,21 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@RequiredArgsConstructor
 public class AccommodationRepositoryImpl implements AccommodationRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
     private final QAccommodation accommodation = QAccommodation.accommodation;
+
+    public AccommodationRepositoryImpl(EntityManager entityManager) {
+        this.jpaQueryFactory = new JPAQueryFactory(entityManager);
+    }
 
     @Override
     public List<Accommodation> getAccommodationBySearchCondition(SearchCondition searchCondition,

@@ -38,10 +38,12 @@ public class Accommodation {
 
     private String phoneNumber;
 
+
     @JsonManagedReference
     @OneToMany(mappedBy = "accommodation", fetch = FetchType.LAZY)
     private List<Room> roomList = new ArrayList<>();
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "accommodation", fetch = FetchType.LAZY)
     private List<AccommodationImage> accommodationImageList = new ArrayList<>();
 
@@ -58,4 +60,5 @@ public class Accommodation {
         this.roomList = roomList;
         this.accommodationImageList = accommodationImageList;
     }
+
 }

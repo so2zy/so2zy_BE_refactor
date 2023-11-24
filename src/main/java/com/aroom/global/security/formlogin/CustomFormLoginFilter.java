@@ -1,9 +1,10 @@
 package com.aroom.global.security.formlogin;
 
 import com.aroom.global.config.CustomHttpHeaders;
-import com.aroom.global.jwt.JwtPayload;
+import com.aroom.global.jwt.dto.JwtCreateRequest;
 import com.aroom.global.jwt.service.JwtService;
 import com.aroom.global.jwt.service.TokenResponse;
+import com.aroom.global.security.account.AccountContext;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -42,8 +43,8 @@ public class CustomFormLoginFilter extends AbstractAuthenticationProcessingFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request,
         HttpServletResponse response, FilterChain chain, Authentication authResult) {
-        String email = (String) authResult.getPrincipal();
-        TokenResponse tokenResponse = jwtService.createTokenPair(new JwtPayload(email, new Date()));
+        AccountContext context = (AccountContext) authResult.getPrincipal();
+        TokenResponse tokenResponse = jwtService.createTokenPair(new JwtCreateRequest(context.getMemberId(), context.getUsername(), new Date()));
         response.setHeader(CustomHttpHeaders.ACCESS_TOKEN, tokenResponse.accessToken());
         response.setHeader(CustomHttpHeaders.REFRESH_TOKEN, tokenResponse.refreshToken());
     }

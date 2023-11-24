@@ -1,6 +1,6 @@
 package com.aroom.global.security.jwt;
 
-import com.aroom.global.jwt.JwtPayload;
+import com.aroom.global.jwt.model.JwtPayload;
 import com.aroom.global.jwt.service.JwtService;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;

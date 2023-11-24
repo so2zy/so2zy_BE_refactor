@@ -1,12 +1,14 @@
 package com.aroom.global.jwt.service;
 
-import com.aroom.global.jwt.JwtPayload;
 import com.aroom.global.jwt.JwtUtils;
 import com.aroom.global.jwt.controller.RefreshAccessTokenRequest;
+import com.aroom.global.jwt.dto.JwtCreateRequest;
 import com.aroom.global.jwt.exception.BadTokenException;
 import com.aroom.global.jwt.model.JwtEntity;
+import com.aroom.global.jwt.model.JwtPayload;
 import com.aroom.global.jwt.model.TokenType;
 import com.aroom.global.jwt.repository.JwtRepository;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,13 +32,14 @@ public class JwtService {
         this.refreshExpiration = refreshExpiration;
     }
 
-    public TokenResponse createTokenPair(JwtPayload jwtPayload) {
-        String accessToken = jwtUtils.createToken(jwtPayload, accessExpiration);
-        String refreshToken = jwtUtils.createToken(jwtPayload, refreshExpiration);
+    public TokenResponse createTokenPair(JwtCreateRequest request) {
+        JwtPayload jwtPayload = new JwtPayload(request.memberId(), request.email());
+        String accessToken = jwtUtils.createToken(jwtPayload, request.issuedAt(), accessExpiration);
+        String refreshToken = jwtUtils.createToken(jwtPayload, request.issuedAt(), refreshExpiration);
 
         jwtRepository.save(
             new JwtEntity(
-                createSaveKey(TokenType.REFRESH, jwtPayload.email()),
+                createSaveKey(TokenType.REFRESH, jwtPayload.id()),
                 createSaveValue(accessToken, refreshToken),
                 refreshExpiration));
 
@@ -51,18 +54,18 @@ public class JwtService {
         JwtPayload jwtPayload = verifyToken(request.refreshToken());
 
         String savedTokenInfo = jwtRepository
-            .getValueByKey(createSaveKey(TokenType.REFRESH, jwtPayload.email()));
+            .getValueByKey(createSaveKey(TokenType.REFRESH, jwtPayload.id()));
 
         if (!isAcceptable(savedTokenInfo,
             createSaveValue(request.accessToken(), request.refreshToken()))) {
             throw new BadTokenException("적절치 않은 RefreshToken 입니다.");
         }
 
-        String refreshedAccessToken = jwtUtils.createToken(jwtPayload, accessExpiration);
+        String refreshedAccessToken = jwtUtils.createToken(jwtPayload, new Date(), accessExpiration);
 
         jwtRepository.save(
             new JwtEntity(
-                createSaveKey(TokenType.REFRESH, jwtPayload.email()),
+                createSaveKey(TokenType.REFRESH, jwtPayload.id()),
                 createSaveValue(refreshedAccessToken, request.refreshToken()),
                 refreshExpiration));
 
@@ -73,7 +76,7 @@ public class JwtService {
         return one.equals(other);
     }
 
-    private String createSaveKey(TokenType tokenType, String memberId) {
+    private String createSaveKey(TokenType tokenType, Long memberId) {
         return "%s_%s".formatted(tokenType.name(), memberId);
     }
 

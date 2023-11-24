@@ -15,35 +15,20 @@ import com.aroom.domain.accommodation.dto.SearchCondition;
 import com.aroom.domain.accommodation.dto.response.AccommodationResponseDTO;
 import com.aroom.domain.accommodation.dto.response.RoomListInfoDTO;
 import com.aroom.domain.accommodation.model.AccommodationImage;
-import com.aroom.domain.accommodation.service.AccommodationService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.aroom.util.ControllerTestWithoutSecurityHelper;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-@ExtendWith(MockitoExtension.class)
-@WebMvcTest(AccommodationRestController.class)
-class AccommodationRestControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
-    private AccommodationService accommodationService;
+class AccommodationRestControllerTest extends ControllerTestWithoutSecurityHelper {
 
     @Test
     void testFindAllAccommodationWithSearchCondition() throws Exception {
@@ -83,7 +68,7 @@ class AccommodationRestControllerTest {
                 .param("page", "0")
                 .param("size", "10")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(mockSearchCondition)))
+                .content(objectMapper.writeValueAsString(mockSearchCondition)))
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.jsonPath("$.detail").value("숙소 정보를 성공적으로 조회했습니다."))
             .andExpect(MockMvcResultMatchers.jsonPath("$.data").isArray());

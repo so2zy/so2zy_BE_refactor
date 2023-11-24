@@ -5,6 +5,7 @@ import static org.mockito.BDDMockito.given;
 
 import com.aroom.domain.accommodation.model.Accommodation;
 import com.aroom.domain.member.model.Member;
+import com.aroom.domain.member.repository.MemberRepository;
 import com.aroom.domain.reservation.dto.request.ReservationRequest;
 import com.aroom.domain.reservation.dto.response.ReservationResponse;
 import com.aroom.domain.reservation.model.Reservation;
@@ -40,6 +41,10 @@ class ReservationServiceTest {
     private ReservationRoomRepository reservationRoomRepository;
     @Mock
     private RoomImageRepository roomImageRepository;
+
+    @Mock
+    private MemberRepository memberRepository;
+
     @InjectMocks
     private ReservationService reservationService;
 
@@ -122,13 +127,14 @@ class ReservationServiceTest {
                 .personnel(request.getPersonnel())
                 .build();
 
-            given(roomRepository.findById(any())).willReturn(Optional.of(testRoom));
+            given(memberRepository.findMemberByEmail(any())).willReturn(Optional.of(tester));
+            given(roomRepository.findByIdWithLock(any())).willReturn(Optional.of(testRoom));
             given(reservationRoomRepository.save(any())).willReturn(reservationRoom);
             given(reservationRepository.save(any())).willReturn(reservation);
             given(roomImageRepository.findById(any())).willReturn(Optional.of(roomImage));
 
             // when
-            ReservationResponse response = reservationService.reserveRoom(request, tester);
+            ReservationResponse response = reservationService.reserveRoom(request, tester.getEmail());
 
             // then
             Assertions.assertThat(response).isNotNull();
@@ -153,14 +159,15 @@ class ReservationServiceTest {
                 .isFromCart(false)
                 .build();
 
-            given(roomRepository.findById(any())).willReturn(Optional.of(testRoom));
+            given(memberRepository.findMemberByEmail(any())).willReturn(Optional.of(tester));
+            given(roomRepository.findByIdWithLock(any())).willReturn(Optional.of(testRoom));
             given(reservationRoomRepository.getOverlappingReservationByDateRange(any(), any(), any())).willReturn(2);
 
             // when then
             Assertions.assertThatThrownBy(() -> {
-                    reservationService.reserveRoom(request, tester);
+                    reservationService.reserveRoom(request, tester.getName());
                 }).isInstanceOf(RuntimeException.class)
-                .hasMessage("품절된 방입니다.");
+                .hasMessage("방이 품절 되었습니다.");
         }
     }
 

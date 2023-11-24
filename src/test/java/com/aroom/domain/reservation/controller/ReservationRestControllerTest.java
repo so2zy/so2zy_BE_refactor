@@ -3,6 +3,7 @@ package com.aroom.domain.reservation.controller;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -27,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -80,6 +82,7 @@ class ReservationRestControllerTest {
 
         @Test
         @DisplayName("성공시 예약을 확인할 수 있는 정보를 반환한다.")
+        @WithMockUser("test@naver.com")
         void reserve_one_room_of_one_accommodation_success() throws Exception {
             // given
             ReservationRequest request = ReservationRequest.builder()
@@ -92,6 +95,7 @@ class ReservationRestControllerTest {
 
             // when
             ResultActions response = mvc.perform(post("/v1/reservations")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsBytes(request)));
 
@@ -103,6 +107,7 @@ class ReservationRestControllerTest {
 
         @Test
         @DisplayName("방에 대한 정보가 없을 때는 예약을 할 수 없다.")
+        @WithMockUser("test@naver.com")
         void reserve_no_room_data_fail() throws Exception {
             // given
             ReservationRequest request = ReservationRequest.builder()
@@ -114,6 +119,7 @@ class ReservationRestControllerTest {
 
             // when
             ResultActions response = mvc.perform(post("/v1/reservations")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsBytes(request)));
 

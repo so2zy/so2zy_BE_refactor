@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -49,7 +50,7 @@ public class RoomCartRestControllerTest {
                 roomCartResponseDTO);
 
             // when, then
-            mockMvc.perform(post("/v1/carts/{member_id}/{room_id}", 1L, 1L))
+            mockMvc.perform(post("/v1/carts/{member_id}/{room_id}", 1L, 1L).with(csrf()))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.data.roomCartList").exists()).andDo(print());
             verify(roomCartService, times(1)).postRoomCart(any(Long.TYPE), any(Long.TYPE));

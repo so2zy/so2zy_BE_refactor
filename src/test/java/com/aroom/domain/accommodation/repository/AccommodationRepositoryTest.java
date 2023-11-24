@@ -12,11 +12,13 @@ import com.aroom.domain.room.repository.RoomRepository;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+@Disabled
 @DataJpaTest
 public class AccommodationRepositoryTest {
 

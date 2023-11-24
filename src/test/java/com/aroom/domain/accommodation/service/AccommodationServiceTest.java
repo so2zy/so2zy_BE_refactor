@@ -48,14 +48,11 @@ public class AccommodationServiceTest {
             RoomImage roomImage1 = RoomImage.builder().url(
                     "https://www.lottehotel.com/content/dam/lotte-hotel/signiel/seoul/accommodation/premier/180708-30-2000-acc-seoul-signiel.jpg")
                 .build();
-            RoomImage roomImage2 = RoomImage.builder().url(
-                    "https://www.lottehotel.com/content/dam/lotte-hotel/signiel/seoul/accommodation/premier/2849-1-2000-roo-LTSG.jpg")
-                .build();
 
             Room room = Room.builder().type("DELUXE").price(350000).capacity(2).maxCapacity(4)
                 .checkIn(
                     LocalTime.of(15, 0)).checkOut(LocalTime.of(11, 0)).stock(4)
-                .roomImageList(Arrays.asList(roomImage1, roomImage2)).build();
+                .roomImageList(Arrays.asList(roomImage1)).build();
 
             AccommodationImage accommodationImage = AccommodationImage.builder().url(
                     "https://www.lottehotel.com/content/dam/lotte-hotel/lotte/seoul/dining/restaurant/pierre-gagnaire/180711-33-2000-din-seoul-hotel.jpg.thumb.768.768.jpg")

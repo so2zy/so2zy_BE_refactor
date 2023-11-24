@@ -21,13 +21,12 @@ public class CustomFormLoginProvider implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication)
         throws AuthenticationException {
-        String username = (String) authentication.getPrincipal();
-        String password = (String) authentication.getCredentials();
+        AccountContext requestContext = (AccountContext) authentication.getPrincipal();
 
         AccountContext accountContext = (AccountContext) userDetailsService
-            .loadUserByUsername(username);
+            .loadUserByUsername(requestContext.getUsername());
 
-        if (!passwordEncoder.matches(password, accountContext.getPassword())) {
+        if (!passwordEncoder.matches(requestContext.getPassword(), accountContext.getPassword())) {
             throw new BadCredentialsException("Login Fail");
         }
 

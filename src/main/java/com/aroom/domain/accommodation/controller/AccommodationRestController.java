@@ -38,7 +38,7 @@ public class AccommodationRestController {
         @Nullable @RequestParam(defaultValue = "10") int size
     ) {
 
-        if (validateSearchConditionIsNull(searchCondition)) {
+        if (validateQueryParamIsNull(searchCondition, page, size)) {
 
             Sort sortCondition = Sort.by(
                 Direction.fromOptionalString(searchCondition.getOrderBy())
@@ -59,7 +59,7 @@ public class AccommodationRestController {
 
     }
 
-    private boolean validateSearchConditionIsNull(SearchCondition searchCondition) {
+    private boolean validateQueryParamIsNull(SearchCondition searchCondition, int page, int size) {
         if (searchCondition.getOrderCondition()!=null ||
         searchCondition.getHighestPrice()!=null||
         searchCondition.getLowestPrice()!=null||
@@ -69,7 +69,9 @@ public class AccommodationRestController {
         searchCondition.getName()!=null||
         searchCondition.getOrderBy()!=null||
         searchCondition.getAddressCode()!=null||
-        searchCondition.getPhoneNumber()!=null){
+        searchCondition.getPhoneNumber()!=null||
+        page!=0||
+        size!=0){
             return true;
         }
         return false;

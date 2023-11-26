@@ -34,11 +34,11 @@ public class AccommodationRestController {
     @GetMapping("")
     public ResponseEntity<ApiResponse<List<AccommodationListResponse>>> findAllAccommodation(
         @Nullable @ModelAttribute @Valid SearchCondition searchCondition,
-        @Nullable @RequestParam(defaultValue = "0") int page,
-        @Nullable @RequestParam(defaultValue = "10") int size
+        @Nullable @RequestParam(defaultValue = "0") Integer page,
+        @Nullable @RequestParam(defaultValue = "10") Integer size
     ) {
 
-        if (validateSearchConditionIsNull(searchCondition)) {
+        if (validateQueryParamIsNull(searchCondition, page, size)) {
 
             Sort sortCondition = Sort.by(
                 Direction.fromOptionalString(searchCondition.getOrderBy())
@@ -59,7 +59,7 @@ public class AccommodationRestController {
 
     }
 
-    private boolean validateSearchConditionIsNull(SearchCondition searchCondition) {
+    private boolean validateQueryParamIsNull(SearchCondition searchCondition, Integer page, Integer size) {
         if (searchCondition.getOrderCondition()!=null ||
         searchCondition.getHighestPrice()!=null||
         searchCondition.getLowestPrice()!=null||
@@ -69,7 +69,9 @@ public class AccommodationRestController {
         searchCondition.getName()!=null||
         searchCondition.getOrderBy()!=null||
         searchCondition.getAddressCode()!=null||
-        searchCondition.getPhoneNumber()!=null){
+        searchCondition.getPhoneNumber()!=null||
+        page!= null||
+        size!= null){
             return true;
         }
         return false;

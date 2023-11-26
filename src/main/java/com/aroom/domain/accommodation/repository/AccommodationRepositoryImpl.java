@@ -66,13 +66,29 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
         if (searchCondition.getPhoneNumber() != null) {
             booleanBuilder.and(accommodation.phoneNumber.eq(searchCondition.getPhoneNumber()));
         }
-        if (searchCondition.getLowestPrice() != null) {
-            booleanBuilder.and(accommodation.roomList.any().price.goe(
-                Integer.parseInt(searchCondition.getLowestPrice())));
-        }
-        if (searchCondition.getHighestPrice() != null) {
-            booleanBuilder.and(accommodation.roomList.any().price.goe(
-                Integer.parseInt(searchCondition.getHighestPrice())));
+
+        //lowestPrice와 higestPrice가 둘 다 NULL이 아닌 경우
+        if (searchCondition.getLowestPrice() != null &&
+            searchCondition.getHighestPrice() != null) {
+            booleanBuilder.and(accommodation.roomList.any().price.between(
+                Integer.parseInt(searchCondition.getLowestPrice())
+                , Integer.parseInt(searchCondition.getHighestPrice()))
+            );
+        }else {
+            // lowestPrice는 존재하고, highestPrice만 NULL인 경우
+            if (searchCondition.getLowestPrice() != null &&
+                searchCondition.getHighestPrice() == null) {
+                System.out.println("1");
+                booleanBuilder.and(accommodation.roomList.any().price.goe(
+                    Integer.parseInt(searchCondition.getLowestPrice())));
+            }
+            // lowestPrice는 NULL이고 , highestPrice만 존재하는 경우
+            if (searchCondition.getLowestPrice()==null&&
+                searchCondition.getHighestPrice() != null) {
+                System.out.println("2");
+                booleanBuilder.and(accommodation.roomList.any().price.loe(
+                    Integer.parseInt(searchCondition.getHighestPrice())));
+            }
         }
         if (searchCondition.getCheckIn() != null) {
             booleanBuilder.and(

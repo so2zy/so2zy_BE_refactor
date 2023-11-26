@@ -30,6 +30,6 @@ public class ReservationRestController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(LocalDateTime.now(),
             "객실 예약에 성공했습니다.",
-            reservationService.reserveRoom(request, loginInfo.email())));
+            reservationService.reserveRoom(request, loginInfo.memberId())));
     }
 }

@@ -37,9 +37,9 @@ public class ReservationService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public ReservationResponse reserveRoom(ReservationRequest request, String username) {
-        Member member = memberRepository.findMemberByEmail(username).orElseThrow(
-            MemberNotFoundException::new);;
+    public ReservationResponse reserveRoom(ReservationRequest request, Long id) {
+        Member member = memberRepository.findById(id).orElseThrow(
+            MemberNotFoundException::new);
         Reservation reservation = Reservation.builder()
             .member(member)
             .agreement(request.getAgreement())

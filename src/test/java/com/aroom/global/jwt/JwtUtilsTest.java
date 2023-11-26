@@ -32,6 +32,8 @@ class JwtUtilsTest {
     @Value("${service.jwt.access-expiration}")
     private Long accessExpiration;
 
+    private static final String USER_ID_KEY = "user-key";
+    private static final String USER_NAME_KEY = "user-name";
     private final SecretKey secretKey;
     private final SecretKey badSecretKey;
 
@@ -106,8 +108,8 @@ class JwtUtilsTest {
             JwtPayload targetPayload = new JwtPayload(1L, "test@email.com");
 
             String accessToken = Jwts.builder()
-                .claim("user-key", targetPayload.id().toString())
-                .claim("user-email", targetPayload.email())
+                .claim(USER_ID_KEY, targetPayload.id().toString())
+                .claim(USER_NAME_KEY, targetPayload.name())
                 .issuer(applicationName)
                 .issuedAt(issueDate)
                 .expiration(new Date(issueDate.getTime() + accessExpiration))
@@ -118,7 +120,7 @@ class JwtUtilsTest {
             JwtPayload jwtPayload = jwtUtils.verifyToken(accessToken);
 
             // then
-            assertThat(jwtPayload.email()).isEqualTo(targetPayload.email());
+            assertThat(jwtPayload.name()).isEqualTo(targetPayload.name());
         }
 
         @DisplayName("SecretKey가 일치하지 않으면 BadTokenException가 발생한다.")
@@ -127,11 +129,11 @@ class JwtUtilsTest {
 
             // given
             Date issueDate = new Date(System.currentTimeMillis());
-            JwtPayload targetPayload = new JwtPayload(1L, "test@email.com");
+            JwtPayload targetPayload = new JwtPayload(1L, "test@name.com");
 
             String accessToken = Jwts.builder()
-                .claim("user-key", targetPayload.id().toString())
-                .claim("user-email", targetPayload.email())
+                .claim(USER_ID_KEY, targetPayload.id().toString())
+                .claim(USER_NAME_KEY, targetPayload.name())
                 .issuer(applicationName)
                 .issuedAt(issueDate)
                 .expiration(new Date(issueDate.getTime() + accessExpiration))
@@ -149,11 +151,11 @@ class JwtUtilsTest {
 
             // given
             Date issueDate = new Date(System.currentTimeMillis());
-            JwtPayload targetPayload = new JwtPayload(1L, "test@email.com");
+            JwtPayload targetPayload = new JwtPayload(1L, "test@name.com");
 
             String accessToken = Jwts.builder()
-                .claim("user-key", targetPayload.id().toString())
-                .claim("user-email", targetPayload.email())
+                .claim(USER_ID_KEY, targetPayload.id().toString())
+                .claim(USER_NAME_KEY, targetPayload.name())
                 .issuer(applicationName)
                 .issuedAt(issueDate)
                 .expiration(new Date(issueDate.getTime() - 10000))

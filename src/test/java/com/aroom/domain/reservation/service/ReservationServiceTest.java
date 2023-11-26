@@ -85,6 +85,7 @@ class ReservationServiceTest {
             .build();
 
         tester = Member.builder()
+            .id(1L)
             .name("김패캠")
             .email("qwgwf@naver.com")
             .password("56124WDA2@")
@@ -127,14 +128,14 @@ class ReservationServiceTest {
                 .personnel(request.getPersonnel())
                 .build();
 
-            given(memberRepository.findMemberByEmail(any())).willReturn(Optional.of(tester));
+            given(memberRepository.findById(any())).willReturn(Optional.of(tester));
             given(roomRepository.findByIdWithLock(any())).willReturn(Optional.of(testRoom));
             given(reservationRoomRepository.save(any())).willReturn(reservationRoom);
             given(reservationRepository.save(any())).willReturn(reservation);
             given(roomImageRepository.findById(any())).willReturn(Optional.of(roomImage));
 
             // when
-            ReservationResponse response = reservationService.reserveRoom(request, tester.getEmail());
+            ReservationResponse response = reservationService.reserveRoom(request, tester.getId());
 
             // then
             Assertions.assertThat(response).isNotNull();
@@ -159,13 +160,13 @@ class ReservationServiceTest {
                 .isFromCart(false)
                 .build();
 
-            given(memberRepository.findMemberByEmail(any())).willReturn(Optional.of(tester));
+            given(memberRepository.findById(any())).willReturn(Optional.of(tester));
             given(roomRepository.findByIdWithLock(any())).willReturn(Optional.of(testRoom));
             given(reservationRoomRepository.getOverlappingReservationByDateRange(any(), any(), any())).willReturn(2);
 
             // when then
             Assertions.assertThatThrownBy(() -> {
-                    reservationService.reserveRoom(request, tester.getName());
+                    reservationService.reserveRoom(request, tester.getId());
                 }).isInstanceOf(RuntimeException.class)
                 .hasMessage("방이 품절 되었습니다.");
         }

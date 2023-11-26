@@ -1,28 +1,24 @@
 package com.aroom.global.security.formlogin;
 
 import com.aroom.global.security.account.AccountContext;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Objects;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 
 public class CustomLoginToken extends AbstractAuthenticationToken {
 
     private final AccountContext accountContext;
 
-    private CustomLoginToken(AccountContext accountContext,
-        Collection<? extends GrantedAuthority> authorities) {
-        super(authorities);
+    private CustomLoginToken(AccountContext accountContext) {
+        super(accountContext.getAuthorities());
         this.accountContext = accountContext;
     }
 
     public static CustomLoginToken unAuthenticate(String username, String password) {
-        return new CustomLoginToken(new AccountContext(null, username, password, Collections.emptySet()), Collections.emptySet());
+        return new CustomLoginToken(AccountContext.beforeLoginContext(username, password));
     }
 
     public static CustomLoginToken authenticate(AccountContext accountContext) {
-        return new CustomLoginToken(accountContext, accountContext.getAuthorities());
+        return new CustomLoginToken(accountContext);
     }
 
     @Override

@@ -33,7 +33,7 @@ public class JwtService {
     }
 
     public TokenResponse createTokenPair(JwtCreateRequest request) {
-        JwtPayload jwtPayload = new JwtPayload(request.memberId(), request.email());
+        JwtPayload jwtPayload = new JwtPayload(request.memberId(), request.name());
         String accessToken = jwtUtils.createToken(jwtPayload, request.issuedAt(), accessExpiration);
         String refreshToken = jwtUtils.createToken(jwtPayload, request.issuedAt(), refreshExpiration);
 

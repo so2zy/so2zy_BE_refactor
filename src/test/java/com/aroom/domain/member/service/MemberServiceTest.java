@@ -1,5 +1,6 @@
 package com.aroom.domain.member.service;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -7,6 +8,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.aroom.domain.member.exception.MemberEmailDuplicateException;
+import com.aroom.domain.member.model.Member;
 import com.aroom.domain.member.repository.MemberRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -41,7 +43,7 @@ class MemberServiceTest {
             given(memberRepository.findMemberByEmail(anyString())).willReturn(Optional.empty());
 
             // when then
-            assertThatThrownBy(() -> memberService.validateEmailDuplicatation(targetEmail))
+            assertThatCode(() -> memberService.validateEmailDuplicatation(targetEmail))
                 .doesNotThrowAnyException();
             verify(memberRepository, times(1)).findMemberByEmail(anyString());
         }
@@ -52,7 +54,8 @@ class MemberServiceTest {
 
             // given
             String targetEmail = "test@email.com";
-            given(memberRepository.findMemberByEmail(anyString())).willReturn(Optional.empty());
+            given(memberRepository.findMemberByEmail(anyString()))
+                .willReturn(Optional.of(Member.builder().build()));
 
             // when then
             assertThatThrownBy(() -> memberService.validateEmailDuplicatation(targetEmail))

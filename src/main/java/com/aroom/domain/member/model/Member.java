@@ -1,8 +1,8 @@
 package com.aroom.domain.member.model;
 
 
-import com.aroom.global.basetime.BaseTimeEntity;
 import com.aroom.domain.cart.model.Cart;
+import com.aroom.global.basetime.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,17 +10,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Table(indexes = {
-    @Index(name = "idx_email", columnList = "email", unique = true)
-})
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -44,7 +39,8 @@ public class Member extends BaseTimeEntity {
     private Cart cart;
 
     @Builder
-    private Member(String email, String password, String name) {
+    private Member(Long id, String email, String password, String name) {
+        this.id = id;
         this.email = email;
         this.password = password;
         this.name = name;

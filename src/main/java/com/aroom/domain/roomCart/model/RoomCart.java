@@ -2,6 +2,7 @@ package com.aroom.domain.roomCart.model;
 
 import com.aroom.domain.cart.model.Cart;
 import com.aroom.domain.room.model.Room;
+import com.aroom.domain.roomProduct.model.RoomProduct;
 import com.aroom.global.basetime.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,12 +33,13 @@ public class RoomCart extends BaseTimeEntity {
     private Cart cart;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id")
-    private Room room;
+    @JoinColumn(name = "room_product_id")
+    private RoomProduct roomProduct;
 
     @Builder
-    public RoomCart(Cart cart, Room room) {
+    public RoomCart(Long id, Cart cart, RoomProduct roomProduct) {
+        this.id = id;
         this.cart = cart;
-        this.room = room;
+        this.roomProduct = roomProduct;
     }
 }

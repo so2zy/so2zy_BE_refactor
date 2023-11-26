@@ -1,13 +1,14 @@
 package com.aroom.global.security.formlogin;
 
-import com.aroom.global.config.CustomHttpHeaders;
 import com.aroom.global.jwt.dto.JwtCreateRequest;
 import com.aroom.global.jwt.service.JwtService;
 import com.aroom.global.jwt.service.TokenResponse;
 import com.aroom.global.security.account.AccountContext;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Date;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -21,11 +22,13 @@ public class CustomFormLoginFilter extends AbstractAuthenticationProcessingFilte
     private static final String DEFAULT_LOGIN_URL = "/v1/login";
 
     private final JwtService jwtService;
+    private final ObjectMapper objectMapper;
 
     public CustomFormLoginFilter(AuthenticationManager authenticationManager, JwtService jwtService) {
         super(DEFAULT_LOGIN_URL);
-        setAuthenticationManager(authenticationManager);
         this.jwtService = jwtService;
+        setAuthenticationManager(authenticationManager);
+        objectMapper = new ObjectMapper();
     }
 
     @Override
@@ -42,10 +45,10 @@ public class CustomFormLoginFilter extends AbstractAuthenticationProcessingFilte
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request,
-        HttpServletResponse response, FilterChain chain, Authentication authResult) {
+        HttpServletResponse response, FilterChain chain, Authentication authResult)
+        throws IOException {
         AccountContext context = (AccountContext) authResult.getPrincipal();
-        TokenResponse tokenResponse = jwtService.createTokenPair(new JwtCreateRequest(context.getMemberId(), context.getUsername(), new Date()));
-        response.setHeader(CustomHttpHeaders.ACCESS_TOKEN, tokenResponse.accessToken());
-        response.setHeader(CustomHttpHeaders.REFRESH_TOKEN, tokenResponse.refreshToken());
+        TokenResponse tokenResponse = jwtService.createTokenPair(new JwtCreateRequest(context.getMemberId(), context.getName(), new Date()));
+        response.getWriter().write(objectMapper.writeValueAsString(tokenResponse));
     }
 }

@@ -21,10 +21,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
         Member member = memberRepository.findMemberByEmail(username)
             .orElseThrow(MemberNotFoundException::new);
 
-        return new AccountContext(member.getId(), member.getEmail(), member.getPassword(),
-            Set.of(new SimpleGrantedAuthority("ROLE_USER")));
+        return AccountContext.fullContext(member.getId(), member.getName(), member.getEmail(),
+            member.getPassword(), Set.of(new SimpleGrantedAuthority("ROLE_USER")));
     }
 }

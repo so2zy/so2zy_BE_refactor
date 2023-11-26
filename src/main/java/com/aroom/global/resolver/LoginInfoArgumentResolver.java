@@ -19,7 +19,7 @@ public class LoginInfoArgumentResolver implements HandlerMethodArgumentResolver 
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         AccountContext accountContext = (AccountContext) authentication.getPrincipal();
-        return new LoginInfo(accountContext.getMemberId(), accountContext.getUsername());
+        return new LoginInfo(accountContext.getMemberId(), accountContext.getName());
     }
 
     @Override

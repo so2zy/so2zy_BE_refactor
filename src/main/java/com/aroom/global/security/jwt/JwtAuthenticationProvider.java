@@ -26,7 +26,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         JwtPayload jwtPayload = jwtService.verifyToken(accessToken);
 
         return JwtAuthenticationToken.authorize(
-            new AccountContext(jwtPayload.id(), jwtPayload.email(), null,
+            AccountContext.loginedContext(jwtPayload.id(), jwtPayload.name(),
                 Set.of(new SimpleGrantedAuthority("ROLE_USER"))));
     }
 

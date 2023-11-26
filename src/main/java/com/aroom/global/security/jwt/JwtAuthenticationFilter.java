@@ -7,7 +7,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collections;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -32,7 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         SecurityContextHolder.getContext()
             .setAuthentication(authenticationManager.authenticate(
-                JwtAuthenticationToken.unAuthorize(new AccountContext(null, null, accessToken, Collections.emptySet()))));
+                JwtAuthenticationToken.unAuthorize(AccountContext.withToken(accessToken))));
 
         chain.doFilter(request, response);
     }

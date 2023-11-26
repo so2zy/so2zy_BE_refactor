@@ -4,7 +4,7 @@ import java.util.Date;
 
 public record JwtCreateRequest(
     Long memberId,
-    String email,
+    String name,
     Date issuedAt
 ) {
 }

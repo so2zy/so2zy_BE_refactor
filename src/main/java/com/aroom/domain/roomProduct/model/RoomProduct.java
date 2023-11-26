@@ -11,6 +11,7 @@ import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -32,4 +33,11 @@ public class RoomProduct {
     @Column(nullable = false)
     private LocalDate startDate;
 
+    @Builder
+    public RoomProduct(Long id, List<Room> roomList, Integer stock, LocalDate startDate) {
+        this.id = id;
+        this.roomList = roomList;
+        this.stock = stock;
+        this.startDate = startDate;
+    }
 }

@@ -1,31 +1,36 @@
 package com.aroom.domain.roomProduct.model;
 
 import com.aroom.domain.room.model.Room;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.aroom.global.basetime.BaseTimeEntity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@NoArgsConstructor
-public class RoomProduct {
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class RoomProduct extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "room_product_id")
     private Long id;
 
-    @OneToMany(mappedBy = "room")
-    @JsonManagedReference
-    @Column(nullable = false)
-    private List<Room> roomList = new ArrayList<>();
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id", nullable = false)
+    private Room room;
 
     @Column(nullable = false)
     private Integer stock;
@@ -34,9 +39,9 @@ public class RoomProduct {
     private LocalDate startDate;
 
     @Builder
-    public RoomProduct(Long id, List<Room> roomList, Integer stock, LocalDate startDate) {
+    public RoomProduct(Long id, Room room, Integer stock, LocalDate startDate) {
         this.id = id;
-        this.roomList = roomList;
+        this.room = room;
         this.stock = stock;
         this.startDate = startDate;
     }

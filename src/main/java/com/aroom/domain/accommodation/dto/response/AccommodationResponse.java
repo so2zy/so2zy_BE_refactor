@@ -38,7 +38,7 @@ public class AccommodationResponse {
         this.roomInfoList = roomInfoList;
     }
 
-    public AccommodationResponse(Accommodation accommodation) {
+    public AccommodationResponse(Accommodation accommodation, String startDate, Integer personnel, Long memberId) {
         this.id = accommodation.getId();
         this.accommodationName = accommodation.getName();
         this.latitude = accommodation.getLatitude();
@@ -51,7 +51,7 @@ public class AccommodationResponse {
             .orElse(null);
         List<RoomListInfoResponse> roomInfoList = new ArrayList<>();
         for (Room room : accommodation.getRoomList()) {
-            RoomListInfoResponse roomListInfoResponse = new RoomListInfoResponse(room);
+            RoomListInfoResponse roomListInfoResponse = new RoomListInfoResponse(room, startDate, personnel);
             roomInfoList.add(roomListInfoResponse);
         }
         this.roomInfoList = roomInfoList;

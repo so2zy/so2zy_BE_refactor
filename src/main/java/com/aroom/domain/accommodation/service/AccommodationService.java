@@ -25,11 +25,11 @@ public class AccommodationService {
     private final AccommodationRepository accommodationRepository;
 
     @Transactional(readOnly = true)
-    public AccommodationResponse getRoom(Long accommodation_id) {
+    public AccommodationResponse getRoom(Long accommodation_id, String startDate, String endDate, Integer personnel, Long member_id) {
         Accommodation accommodation = accommodationRepository.findById(accommodation_id)
             .orElseThrow(
                 AccommodationNotFoundException::new);
-        return new AccommodationResponse(accommodation);
+        return new AccommodationResponse(accommodation,startDate,personnel, member_id);
     }
 
     @Transactional(readOnly = true)

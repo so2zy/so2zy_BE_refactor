@@ -2,12 +2,11 @@ package com.aroom.domain.roomCart.service;
 
 import com.aroom.domain.cart.model.Cart;
 import com.aroom.domain.cart.repository.CartRepository;
-import com.aroom.domain.room.model.Room;
-import com.aroom.domain.room.repository.RoomRepository;
-import com.aroom.domain.roomCart.dto.response.RoomCartResponseDTO;
-import com.aroom.domain.roomCart.exception.OutOfStockException;
+import com.aroom.domain.roomCart.dto.response.RoomCartResponse;
 import com.aroom.domain.roomCart.model.RoomCart;
 import com.aroom.domain.roomCart.repository.RoomCartRepository;
+import com.aroom.domain.roomProduct.model.RoomProduct;
+import com.aroom.domain.roomProduct.repository.RoomProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,20 +16,16 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RoomCartService {
 
-    private final RoomRepository roomRepository;
+    private final RoomProductRepository roomProductRepository;
     private final CartRepository cartRepository;
     private final RoomCartRepository roomCartRepository;
 
-    public RoomCartResponseDTO postRoomCart(Long member_id, Long room_id) {
-        Room room = roomRepository.findById(room_id).get();
+    public RoomCartResponse postRoomCart(Long member_id, Long room_id) {
+        RoomProduct roomProduct = roomProductRepository.findByRoomId(room_id).get();
         Cart cart = cartRepository.findByMemberId(member_id).get();
-        if (room.getStock() > 0) {
-            room.updateRoomStock(room.getStock() - 1);
-            RoomCart roomCart = roomCartRepository.save(new RoomCart(cart, room));
-            cart.postRoomCarts(roomCart);
-            return new RoomCartResponseDTO(cart);
-        } else {
-            throw new OutOfStockException();
-        }
+        RoomCart roomCart = RoomCart.builder().cart(cart).roomProduct(roomProduct).build();
+        roomCartRepository.save(roomCart);
+        cart.postRoomCarts(roomCart);
+        return new RoomCartResponse(cart);
     }
 }

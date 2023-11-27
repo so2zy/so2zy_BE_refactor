@@ -13,4 +13,7 @@ public interface AccommodationRepositoryCustom {
     List<Accommodation> getAccommodationBySearchCondition(SearchCondition searchCondition, Pageable pageable);
 
     List<Accommodation> getAccommodationBySearchConditionWithSortCondition(SearchCondition searchCondition, Pageable pageable, Sort sortCondition);
+
+    List<Accommodation> getAccommodationByDateSearchCondition(SearchCondition searchCondition, Pageable pageable);
+    List<Accommodation> getAccommodationByDateSearchConditionWithSortCondition(SearchCondition searchCondition, Pageable pageable, Sort sortCondition);
 }

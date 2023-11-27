@@ -37,9 +37,9 @@ public class AccommodationRestController {
         @Nullable @RequestParam(defaultValue = "0") Integer page,
         @Nullable @RequestParam(defaultValue = "10") Integer size
     ) {
-
+        //쿼리스트링 유무 검증
         if (validateQueryParamIsNull(searchCondition, page, size)) {
-
+            //Default 정렬조건 세팅
             Sort sortCondition = Sort.by(
                 Direction.fromOptionalString(searchCondition.getOrderBy())
                     .orElse(Direction.ASC),
@@ -47,6 +47,14 @@ public class AccommodationRestController {
                     : searchCondition.getOrderCondition());
 
             PageRequest pageRequest = PageRequest.of(page, size);
+
+            if (searchCondition.getStartDate() !=null && searchCondition.getEndDate() != null){
+                return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ApiResponse<>(LocalDateTime.now(), "숙소 정보를 성공적으로 조회했습니다",
+                        accommodationService.getAccommodationListByDateSearchCondition(
+                            searchCondition,pageRequest,sortCondition
+                        )));
+            }
 
             return ResponseEntity.status(HttpStatus.OK)
                 .body(new ApiResponse<>(LocalDateTime.now(), "숙소 정보를 성공적으로 조회했습니다.",

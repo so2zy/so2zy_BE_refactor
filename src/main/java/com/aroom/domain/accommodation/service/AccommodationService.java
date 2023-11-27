@@ -56,6 +56,29 @@ public class AccommodationService {
             .map(entity -> AccommodationListResponse.fromEntity(entity, page, size))
             .toList();
     }
+    @Transactional(readOnly = true)
+    public List<AccommodationListResponse> getAccommodationListByDateSearchCondition(
+        SearchCondition searchCondition,
+        Pageable pageable,
+        Sort sortCondition
+    ){
+        if (sortCondition.toString().contains(NO_ORDER_CONDITION)) {
+            Integer page = pageable.getPageNumber();
+            Integer size = pageable.getPageSize();
+            return accommodationRepository.getAccommodationByDateSearchCondition(searchCondition,
+                    pageable)
+                .stream()
+                .map(entity -> AccommodationListResponse.fromEntity(entity, page, size))
+                .toList();
+        }
+        Integer page = pageable.getPageNumber();
+        Integer size = pageable.getPageSize();
+        return accommodationRepository.getAccommodationByDateSearchConditionWithSortCondition(searchCondition,
+                pageable, sortCondition)
+            .stream()
+            .map(entity -> AccommodationListResponse.fromEntity(entity, page, size))
+            .toList();
+    }
 
     @Transactional(readOnly = true)
     public List<AccommodationListResponse> getAllAccommodation() {

@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter;
 import lombok.Builder;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class RoomListInfoDTO {
+public class RoomListInfoResponse {
 
     private Long id;
     private String type;
@@ -16,12 +16,12 @@ public class RoomListInfoDTO {
     private int maxCapacity;
     private String checkIn;
     private String checkOut;
-    private int stock;
+    private int soldCount;
     private String url;
 
     @Builder
-    public RoomListInfoDTO(Long id, String type, int price, int capacity, int maxCapacity,
-        String checkIn, String checkOut, int stock, String url) {
+    public RoomListInfoResponse(Long id, String type, int price, int capacity, int maxCapacity,
+        String checkIn, String checkOut, int soldCount, String url) {
         this.id = id;
         this.type = type;
         this.price = price;
@@ -29,11 +29,11 @@ public class RoomListInfoDTO {
         this.maxCapacity = maxCapacity;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
-        this.stock = stock;
+        this.soldCount = soldCount;
         this.url = url;
     }
 
-    public RoomListInfoDTO(Room room) {
+    public RoomListInfoResponse(Room room) {
         this.id = room.getId();
         this.type = room.getType();
         this.price = room.getPrice();
@@ -41,7 +41,7 @@ public class RoomListInfoDTO {
         this.maxCapacity = room.getMaxCapacity();
         this.checkIn = room.getCheckIn().format(DateTimeFormatter.ofPattern("HH:mm"));
         this.checkOut = room.getCheckOut().format(DateTimeFormatter.ofPattern("HH:mm"));
-        this.stock = room.getStock();
+        this.soldCount = room.getSoldCount();
         this.url = room.getRoomImageList().stream()
             .map(RoomImage::getUrl)
             .findFirst()

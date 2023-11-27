@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class AccommodationResponseDTO {
+public class AccommodationResponse {
 
     private Long id;
     private String accommodationName;
@@ -21,36 +21,38 @@ public class AccommodationResponseDTO {
     private Float longitude;
     private String addressCode;
     private String phoneNumber;
-    private List<AccommodationImage> accommodationImageList;
-    private List<RoomListInfoDTO> roomInfoList;
+    private String accommodationUrl;
+    private List<RoomListInfoResponse> roomInfoList;
 
     @Builder
-    public AccommodationResponseDTO(long id, String accommodationName, Float latitude,
-        Float longitude, String addressCode, String phoneNumber,
-        List<AccommodationImage> accommodationImageList,
-        List<RoomListInfoDTO> roomInfoList) {
+    public AccommodationResponse(Long id, String accommodationName, Float latitude,
+        Float longitude, String addressCode, String phoneNumber, String accommodationUrl,
+        List<RoomListInfoResponse> roomInfoList) {
         this.id = id;
         this.accommodationName = accommodationName;
         this.latitude = latitude;
         this.longitude = longitude;
         this.addressCode = addressCode;
         this.phoneNumber = phoneNumber;
-        this.accommodationImageList = accommodationImageList;
+        this.accommodationUrl = accommodationUrl;
         this.roomInfoList = roomInfoList;
     }
 
-    public AccommodationResponseDTO(Accommodation accommodation) {
+    public AccommodationResponse(Accommodation accommodation) {
         this.id = accommodation.getId();
         this.accommodationName = accommodation.getName();
         this.latitude = accommodation.getLatitude();
         this.longitude = accommodation.getLongitude();
         this.addressCode = accommodation.getAddressCode();
         this.phoneNumber = accommodation.getPhoneNumber();
-        this.accommodationImageList = accommodation.getAccommodationImageList();
-        List<RoomListInfoDTO> roomInfoList = new ArrayList<>();
+        this.accommodationUrl = accommodation.getAccommodationImageList().stream()
+            .map(AccommodationImage::getUrl)
+            .findFirst()
+            .orElse(null);
+        List<RoomListInfoResponse> roomInfoList = new ArrayList<>();
         for (Room room : accommodation.getRoomList()) {
-            RoomListInfoDTO roomListInfoDTO = new RoomListInfoDTO(room);
-            roomInfoList.add(roomListInfoDTO);
+            RoomListInfoResponse roomListInfoResponse = new RoomListInfoResponse(room);
+            roomInfoList.add(roomListInfoResponse);
         }
         this.roomInfoList = roomInfoList;
     }

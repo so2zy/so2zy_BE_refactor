@@ -12,8 +12,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.aroom.domain.accommodation.dto.AccommodationListResponse;
 import com.aroom.domain.accommodation.dto.SearchCondition;
-import com.aroom.domain.accommodation.dto.response.AccommodationResponseDTO;
-import com.aroom.domain.accommodation.dto.response.RoomListInfoDTO;
+import com.aroom.domain.accommodation.dto.response.AccommodationResponse;
+import com.aroom.domain.accommodation.dto.response.RoomListInfoResponse;
 import com.aroom.domain.accommodation.model.AccommodationImage;
 import com.aroom.util.ControllerTestWithoutSecurityHelper;
 import java.util.Arrays;
@@ -83,29 +83,24 @@ class AccommodationRestControllerTest extends ControllerTestWithoutSecurityHelpe
         @DisplayName("숙소 상세 정보를 조회할 수 있다.")
         void _willSuccess() throws Exception {
             // given
-            List<RoomListInfoDTO> roomList = Arrays.asList(
-                RoomListInfoDTO.builder().type("DELUXE").price(350000).capacity(2).maxCapacity(4)
-                    .checkIn("15:00").checkOut("11:00").stock(4)
+            List<RoomListInfoResponse> roomList = Arrays.asList(
+                RoomListInfoResponse.builder().type("DELUXE").price(350000).capacity(2).maxCapacity(4)
+                    .checkIn("15:00").checkOut("11:00")
                     .url("naver.com").build());
-            List<AccommodationImage> accommodationImageList = Arrays.asList(
-                AccommodationImage.builder().url(
-                        "https://www.lottehotel.com/content/dam/lotte-hotel/lotte/seoul/dining/restaurant/pierre-gagnaire/180711-33-2000-din-seoul-hotel.jpg.thumb.768.768.jpg")
-                    .build()
-            );
-            AccommodationResponseDTO accommodationResponseDTO = AccommodationResponseDTO.builder()
+
+            AccommodationResponse accommodationResponse = AccommodationResponse.builder()
                 .accommodationName("롯데호텔").latitude(
                     (float) 150.54).longitude((float) 100.5).addressCode("서울특별시 중구 을지로 30")
                 .phoneNumber("02-771-1000").roomInfoList(roomList)
-                .accommodationImageList(accommodationImageList).build();
+                .accommodationUrl("https://www.lottehotel.com/content/dam/lotte-hotel/lotte/seoul/dining/restaurant/pierre-gagnaire/180711-33-2000-din-seoul-hotel.jpg.thumb.768.768.jpg").build();
             given(accommodationService.getRoom(any(Long.TYPE))).willReturn(
-                accommodationResponseDTO);
+                accommodationResponse);
 
             // when, then
             mockMvc.perform(get("/v1/accommodations/{accommodation_id}", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.accommodationName").isString())
-                .andExpect(jsonPath("$.data.roomInfoList").isArray())
-                .andExpect(jsonPath("$.data.accommodationImageList").isArray()).andDo(print());
+                .andExpect(jsonPath("$.data.roomInfoList").isArray()).andDo(print());
             verify(accommodationService, times(1)).getRoom(any(Long.TYPE));
         }
     }

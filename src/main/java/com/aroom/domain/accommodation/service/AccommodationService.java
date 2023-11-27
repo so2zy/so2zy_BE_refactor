@@ -1,6 +1,6 @@
 package com.aroom.domain.accommodation.service;
 
-import com.aroom.domain.accommodation.dto.response.AccommodationResponseDTO;
+import com.aroom.domain.accommodation.dto.response.AccommodationResponse;
 import com.aroom.domain.accommodation.exception.AccommodationNotFoundException;
 import com.aroom.domain.accommodation.model.Accommodation;
 import com.aroom.domain.accommodation.repository.AccommodationRepository;
@@ -9,16 +9,10 @@ import static com.aroom.domain.accommodation.controller.AccommodationRestControl
 
 import com.aroom.domain.accommodation.dto.AccommodationListResponse;
 import com.aroom.domain.accommodation.dto.SearchCondition;
-import com.aroom.domain.accommodation.model.Accommodation;
-import com.aroom.domain.accommodation.repository.AccommodationRepository;
 import java.util.List;
-import java.util.Objects;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,11 +25,11 @@ public class AccommodationService {
     private final AccommodationRepository accommodationRepository;
 
     @Transactional(readOnly = true)
-    public AccommodationResponseDTO getRoom(Long accommodation_id) {
+    public AccommodationResponse getRoom(Long accommodation_id) {
         Accommodation accommodation = accommodationRepository.findById(accommodation_id)
             .orElseThrow(
                 AccommodationNotFoundException::new);
-        return new AccommodationResponseDTO(accommodation);
+        return new AccommodationResponse(accommodation);
     }
 
     @Transactional(readOnly = true)

@@ -15,15 +15,13 @@ import lombok.Setter;
 public class ReservationResponse {
 
     private List<RoomReservationResponse> roomList = new ArrayList<>();
-    private Long roomReservationNumber;
     private Long reservationNumber;
     private LocalDateTime dealDateTime;
 
     @Builder
-    public ReservationResponse(List<RoomReservationResponse> roomList, Long roomReservationNumber,
-        Long reservationNumber, LocalDateTime dealDateTime) {
+    public ReservationResponse(List<RoomReservationResponse> roomList, Long reservationNumber,
+        LocalDateTime dealDateTime) {
         this.roomList = roomList;
-        this.roomReservationNumber = roomReservationNumber;
         this.reservationNumber = reservationNumber;
         this.dealDateTime = dealDateTime;
     }

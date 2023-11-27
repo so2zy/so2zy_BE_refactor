@@ -16,12 +16,13 @@ public class RoomReservationResponse {
     private int price;
     private LocalDate startDate;
     private LocalDate endDate;
-    private RoomImageResponse roomImage;
+    private String roomImageUrl;
+    private Long roomReservationNumber;
 
     @Builder
     public RoomReservationResponse(Long roomId, String type, LocalTime checkIn, LocalTime checkOut,
         int capacity, int maxCapacity, int price, LocalDate startDate, LocalDate endDate,
-        RoomImageResponse roomImage) {
+        String roomImageUrl, Long roomReservationNumber) {
         this.roomId = roomId;
         this.type = type;
         this.checkIn = checkIn;
@@ -31,6 +32,7 @@ public class RoomReservationResponse {
         this.price = price;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.roomImage = roomImage;
+        this.roomImageUrl = roomImageUrl;
+        this.roomReservationNumber = roomReservationNumber;
     }
 }

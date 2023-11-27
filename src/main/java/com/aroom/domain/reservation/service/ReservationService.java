@@ -13,12 +13,13 @@ import com.aroom.domain.reservation.repository.ReservationRepository;
 import com.aroom.domain.reservationRoom.model.ReservationRoom;
 import com.aroom.domain.reservationRoom.repository.ReservationRoomRepository;
 import com.aroom.domain.room.dto.request.RoomReservationRequest;
-import com.aroom.domain.room.dto.response.RoomImageResponse;
 import com.aroom.domain.room.dto.response.RoomReservationResponse;
 import com.aroom.domain.room.model.Room;
 import com.aroom.domain.room.model.RoomImage;
 import com.aroom.domain.room.repository.RoomImageRepository;
 import com.aroom.domain.room.repository.RoomRepository;
+import com.aroom.domain.roomProduct.model.RoomProduct;
+import com.aroom.domain.roomProduct.repository.RoomProductRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,40 +36,51 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final RoomImageRepository roomImageRepository;
     private final MemberRepository memberRepository;
+    private final RoomProductRepository roomProductRepository;
 
     @Transactional
     public ReservationResponse reserveRoom(ReservationRequest request, Long id) {
         Member member = memberRepository.findById(id).orElseThrow(
             MemberNotFoundException::new);
+
         Reservation reservation = Reservation.builder()
             .member(member)
             .agreement(request.getAgreement())
             .build();
 
+        Reservation savedReservation = reservationRepository.save(reservation);
+
         List<RoomReservationResponse> responseRoomList = new ArrayList<>();
 
-        ReservationRoom reservationRoom = ReservationRoom.builder().build();
         for (RoomReservationRequest roomRequest : request.getRoomList()) {
             Room requiredRoom = roomRepository.findByIdWithLock(roomRequest.getRoomId())
                 .orElseThrow(RuntimeException::new);
 
-            checkOverlappingReservation(roomRequest, requiredRoom);
             checkCapacityOfRoom(request.getPersonnel(), requiredRoom);
 
-            reservationRoom = ReservationRoom.builder()
-                .room(requiredRoom)
-                .reservation(reservation)
-                .startDate(roomRequest.getStartDate())
-                .endDate(roomRequest.getEndDate())
-                .price(roomRequest.getPrice())
-                .personnel(request.getPersonnel())
-                .build();
+            List<RoomProduct> roomProductList = roomProductRepository.findByRoomAndBetweenStartDateAndEndDate(
+                requiredRoom, roomRequest.getStartDate(), roomRequest.getEndDate());
 
+            checkOverlappingReservation(roomProductList);
+
+            Long reservationRoomId = 0L;
+            for (RoomProduct roomProduct : roomProductList) {
+                ReservationRoom reservationRoom = ReservationRoom.builder()
+                    .roomProduct(roomProduct)
+                    .reservation(reservation)
+                    .startDate(roomRequest.getStartDate())
+                    .endDate(roomRequest.getEndDate())
+                    .price(roomRequest.getPrice())
+                    .personnel(request.getPersonnel())
+                    .build();
+
+                ReservationRoom savedReservationRoom = reservationRoomRepository.save(
+                    reservationRoom);
+                reservationRoomId = savedReservationRoom.getId();
+            }
 
             RoomImage roomImage = roomImageRepository.findById(
                 requiredRoom.getAccommodation().getId()).orElseThrow(RuntimeException::new);
-
-            RoomImageResponse imageResponse = new RoomImageResponse(roomImage.getUrl());
 
             RoomReservationResponse responseRoom = RoomReservationResponse.builder()
                 .roomId(requiredRoom.getId())
@@ -80,39 +92,35 @@ public class ReservationService {
                 .price(requiredRoom.getPrice())
                 .startDate(roomRequest.getStartDate())
                 .endDate(roomRequest.getEndDate())
-                .roomImage(imageResponse)
+                .roomImageUrl(roomImage.getUrl())
+                .roomReservationNumber(reservationRoomId)
                 .build();
 
             responseRoomList.add(responseRoom);
         }
 
-        Reservation savedReservation = reservationRepository.save(reservation);
-        ReservationRoom savedReservationRoom = reservationRoomRepository.save(reservationRoom);
-
-        if(request.isFromCart()){
+        if (request.isFromCart()) {
             member.getCart().clearCart();
         }
 
         return ReservationResponse.builder()
             .roomList(responseRoomList)
-            .roomReservationNumber(savedReservationRoom.getId())
             .reservationNumber(savedReservation.getId())
             .dealDateTime(LocalDateTime.now())
             .build();
     }
 
-    private void checkOverlappingReservation(RoomReservationRequest requestRoom, Room requiredRoom) {
-        int reservedRoomCount = reservationRoomRepository.getOverlappingReservationByDateRange(
-            requiredRoom, requestRoom.getStartDate().plusDays(1), requestRoom.getEndDate().plusDays(1));
-
-        if(reservedRoomCount < requiredRoom.getStock()){
-            return;
+    private void checkOverlappingReservation(List<RoomProduct> roomProductList) {
+        for (RoomProduct roomProduct : roomProductList) {
+            if (roomProduct.getStock() < 1) {
+                throw new OutOfStockException("방이 품절 되었습니다.",
+                    ReservationErrorCode.OUT_OF_STOCK_ERROR);
+            }
         }
-        throw new OutOfStockException("방이 품절 되었습니다.", ReservationErrorCode.OUT_OF_STOCK_ERROR);
     }
 
-    private void checkCapacityOfRoom(int personnel, Room requiredRoom){
-        if(requiredRoom.getMaxCapacity() < personnel){
+    private void checkCapacityOfRoom(int personnel, Room requiredRoom) {
+        if (requiredRoom.getMaxCapacity() < personnel) {
             throw new MaximumCapacityExceededException("예약 최대 인원을 초과합니다.",
                 ReservationErrorCode.MAXIMUM_CAPACITY_EXCEEDED);
         }

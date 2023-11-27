@@ -10,8 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.aroom.domain.roomCart.dto.response.RoomCartInfoDTO;
-import com.aroom.domain.roomCart.dto.response.RoomCartResponseDTO;
+import com.aroom.domain.roomCart.dto.response.RoomCartInfoResponse;
+import com.aroom.domain.roomCart.dto.response.RoomCartResponse;
 import com.aroom.domain.roomCart.service.RoomCartService;
 import java.util.Arrays;
 import java.util.List;
@@ -40,14 +40,14 @@ public class RoomCartRestControllerTest {
         @DisplayName("성공적으로 장바구니에 등록했습니다.")
         void _willSuccess() throws Exception {
             // given
-            List<RoomCartInfoDTO> roomCartInfoDTOList = Arrays.asList(
-                RoomCartInfoDTO.builder().room_id(1L).cart_id(1L).build(),
-                RoomCartInfoDTO.builder().room_id(1L).cart_id(1L).build()
+            List<RoomCartInfoResponse> roomCartInfoResponseList = Arrays.asList(
+                RoomCartInfoResponse.builder().room_id(1L).cart_id(1L).build(),
+                RoomCartInfoResponse.builder().room_id(1L).cart_id(1L).build()
             );
-            RoomCartResponseDTO roomCartResponseDTO = RoomCartResponseDTO.builder()
-                .roomCartList(roomCartInfoDTOList).build();
+            RoomCartResponse roomCartResponse = RoomCartResponse.builder()
+                .roomCartList(roomCartInfoResponseList).build();
             given(roomCartService.postRoomCart(any(Long.TYPE), any(Long.TYPE))).willReturn(
-                roomCartResponseDTO);
+                roomCartResponse);
 
             // when, then
             mockMvc.perform(post("/v1/carts/{member_id}/{room_id}", 1L, 1L).with(csrf()))

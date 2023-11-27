@@ -24,6 +24,7 @@ public class SearchCondition {
     private String phoneNumber;
     private String lowestPrice;
     private String highestPrice;
+    private Integer capacity;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalTime checkIn;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

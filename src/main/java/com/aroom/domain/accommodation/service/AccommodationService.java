@@ -56,18 +56,23 @@ public class AccommodationService {
     @Transactional(readOnly = true)
     public List<AccommodationListResponse> getAccommodationListBySearchCondition(
         SearchCondition searchCondition, Pageable pageable, Sort sortCondition) {
-        if (sortCondition.toString().contains(NO_ORDER_CONDITION)) {
+        if (sortCondition.toString().contains(NO_ORDER_CONDITION)){
             List<Accommodation> accommodation = accommodationRepository.getAccommodationBySearchCondition(
                 searchCondition, pageable);
+            Integer page = pageable.getPageNumber();
+            Integer size = pageable.getPageSize();
+
             return accommodation.stream()
-                .map(AccommodationListResponse::fromEntity)
+                .map(entity -> AccommodationListResponse.fromEntity(entity, page, size))
                 .toList();
         }
 
         List<Accommodation> accommodation = accommodationRepository.getAccommodationBySearchConditionWithSortCondition(
             searchCondition, pageable, sortCondition);
+        Integer page = pageable.getPageNumber();
+        Integer size = pageable.getPageSize();
         return accommodation.stream()
-            .map(AccommodationListResponse::fromEntity)
+            .map(entity -> AccommodationListResponse.fromEntity(entity, page, size))
             .toList();
     }
 
@@ -76,7 +81,7 @@ public class AccommodationService {
         List<Accommodation> accommodation = accommodationRepository.findAll();
 
         return accommodation.stream()
-            .map(AccommodationListResponse::fromEntity)
+            .map(entity -> AccommodationListResponse.fromEntity(entity, null, null))
             .toList();
     }
 }

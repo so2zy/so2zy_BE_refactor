@@ -81,15 +81,15 @@ public class AccommodationRestController {
         return false;
     }
 
-    @GetMapping("/{accommodation_id}/{startDate}/{endDate}/{personnel}")
-    public ResponseEntity<ApiResponse<AccommodationResponse>> getSpecificAccommodation(
-        @Login LoginInfo loginInfo,
+    @GetMapping("/{member_id}/{accommodation_id}/{startDate}/{endDate}/{personnel}")
+    public ResponseEntity<ApiResponse<Object>> getSpecificAccommodation(
+        @PathVariable long member_id,
         @PathVariable long accommodation_id, @PathVariable String startDate,
         @PathVariable String endDate, @PathVariable int personnel) {
         return ResponseEntity.status(HttpStatus.OK).body(
             new ApiResponse<>(LocalDateTime.now(), "숙소 상세 정보를 성공적으로 조회했습니다.",
                 accommodationService.getRoom(accommodation_id, startDate, endDate, personnel,
-                    loginInfo.memberId())));
+                    member_id)));
     }
 
 }

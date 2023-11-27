@@ -57,7 +57,7 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
         }
         if (searchCondition.getAddressCode() != null) {
             booleanBuilder.and(
-                accommodation.addressCode.contains(searchCondition.getAddressCode()));
+                accommodation.addressCode.eq(searchCondition.getAddressCode()));
         }
         if (searchCondition.getLikeCount() != null) {
             booleanBuilder.and(

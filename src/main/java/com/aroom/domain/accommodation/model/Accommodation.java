@@ -40,6 +40,9 @@ public class Accommodation extends BaseTimeEntity {
     private String addressCode;
 
     @Column(nullable = false)
+    private String address;
+
+    @Column(nullable = false)
     private int likeCount;
 
     @Column(nullable = false)
@@ -56,12 +59,13 @@ public class Accommodation extends BaseTimeEntity {
 
     @Builder
     public Accommodation(String name, float latitude, float longitude, String addressCode,
-        int likeCount, String phoneNumber, List<Room> roomList,
+        String address, int likeCount, String phoneNumber, List<Room> roomList,
         List<AccommodationImage> accommodationImageList) {
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
         this.addressCode = addressCode;
+        this.address = address;
         this.likeCount = likeCount;
         this.phoneNumber = phoneNumber;
         this.roomList = roomList;

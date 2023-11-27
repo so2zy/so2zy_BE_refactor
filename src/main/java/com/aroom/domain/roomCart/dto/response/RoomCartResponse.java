@@ -12,22 +12,22 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class RoomCartResponseDTO {
+public class RoomCartResponse {
 
-    private List<RoomCartInfoDTO> roomCartList;
+    private List<RoomCartInfoResponse> roomCartList;
 
     @Builder
-    public RoomCartResponseDTO(List<RoomCartInfoDTO> roomCartList) {
+    public RoomCartResponse(List<RoomCartInfoResponse> roomCartList) {
         this.roomCartList = roomCartList;
     }
 
 
-    public RoomCartResponseDTO(Cart cart) {
-        List<RoomCartInfoDTO> roomCartInfoDTOList = new ArrayList<>();
+    public RoomCartResponse(Cart cart) {
+        List<RoomCartInfoResponse> roomCartInfoResponseList = new ArrayList<>();
         for (RoomCart roomCart : cart.getRoomCartList()) {
-            RoomCartInfoDTO roomCartInfoDTO = new RoomCartInfoDTO(roomCart);
-            roomCartInfoDTOList.add(roomCartInfoDTO);
+            RoomCartInfoResponse roomCartInfoResponse = new RoomCartInfoResponse(roomCart);
+            roomCartInfoResponseList.add(roomCartInfoResponse);
         }
-        this.roomCartList = roomCartInfoDTOList;
+        this.roomCartList = roomCartInfoResponseList;
     }
 }

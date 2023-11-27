@@ -4,12 +4,12 @@ import com.aroom.domain.room.model.Room;
 import com.aroom.domain.room.model.RoomImage;
 import com.aroom.domain.roomProduct.model.RoomProduct;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import jakarta.persistence.criteria.CriteriaBuilder.In;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Builder;
+import lombok.Getter;
 
+@Getter
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class RoomListInfoResponse {
 
@@ -38,20 +38,21 @@ public class RoomListInfoResponse {
         this.stock = stock;
     }
 
-    public RoomListInfoResponse(Room room, String startDate, Integer personnel) {
-        this.id = room.getId();
-        this.type = room.getType();
-        this.price = room.getPrice();
-        this.capacity = room.getCapacity();
-        this.maxCapacity = room.getMaxCapacity();
-        this.checkIn = room.getCheckIn().format(DateTimeFormatter.ofPattern("HH:mm"));
-        this.checkOut = room.getCheckOut().format(DateTimeFormatter.ofPattern("HH:mm"));
-        this.url = room.getRoomImageList().stream()
-            .map(RoomImage::getUrl)
-            .findFirst()
-            .orElse(null);
-        for(RoomProduct roomProduct : room.getRoomProductList()) {
-            if(roomProduct.getStartDate().equals(startDate)) {
+
+    public RoomListInfoResponse(Room room, Long betweenDays, LocalDate startDate) {
+        for(RoomProduct roomProduct : room.getRoomProductList()){
+            if(roomProduct.getStartDate().equals(startDate)){
+                this.id = room.getId();
+                this.type = room.getType();
+                this.price = (int) (room.getPrice() * betweenDays);
+                this.capacity = room.getCapacity();
+                this.maxCapacity = room.getMaxCapacity();
+                this.checkIn = room.getCheckIn().format(DateTimeFormatter.ofPattern("HH:mm"));
+                this.checkOut = room.getCheckOut().format(DateTimeFormatter.ofPattern("HH:mm"));
+                this.url = room.getRoomImageList().stream()
+                    .map(RoomImage::getUrl)
+                    .findFirst()
+                    .orElse(null);
                 this.stock = roomProduct.getStock();
             }
         }

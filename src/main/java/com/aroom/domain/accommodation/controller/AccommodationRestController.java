@@ -2,7 +2,7 @@ package com.aroom.domain.accommodation.controller;
 
 import com.aroom.domain.accommodation.dto.AccommodationListResponse;
 import com.aroom.domain.accommodation.dto.SearchCondition;
-import com.aroom.domain.accommodation.dto.response.AccommodationResponseDTO;
+import com.aroom.domain.accommodation.dto.response.AccommodationResponse;
 import com.aroom.domain.accommodation.service.AccommodationService;
 import com.aroom.global.response.ApiResponse;
 import jakarta.annotation.Nullable;
@@ -78,7 +78,7 @@ public class AccommodationRestController {
     }
 
     @GetMapping("/{accommodation_id}")
-    public ResponseEntity<ApiResponse<AccommodationResponseDTO>> getSpecificAccommodation(
+    public ResponseEntity<ApiResponse<AccommodationResponse>> getSpecificAccommodation(
         @PathVariable long accommodation_id) {
         return ResponseEntity.status(HttpStatus.OK).body(
             new ApiResponse<>(LocalDateTime.now(), "숙소 상세 정보를 성공적으로 조회했습니다.",

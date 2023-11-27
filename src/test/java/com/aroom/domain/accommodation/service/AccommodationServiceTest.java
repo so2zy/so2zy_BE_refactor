@@ -8,7 +8,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.aroom.domain.accommodation.dto.response.AccommodationResponseDTO;
+import com.aroom.domain.accommodation.dto.response.AccommodationResponse;
 import com.aroom.domain.accommodation.exception.AccommodationNotFoundException;
 import com.aroom.domain.accommodation.model.Accommodation;
 import com.aroom.domain.accommodation.model.AccommodationImage;
@@ -51,7 +51,7 @@ public class AccommodationServiceTest {
 
             Room room = Room.builder().type("DELUXE").price(350000).capacity(2).maxCapacity(4)
                 .checkIn(
-                    LocalTime.of(15, 0)).checkOut(LocalTime.of(11, 0)).stock(4)
+                    LocalTime.of(15, 0)).checkOut(LocalTime.of(11, 0))
                 .roomImageList(Arrays.asList(roomImage1)).build();
 
             AccommodationImage accommodationImage = AccommodationImage.builder().url(
@@ -68,7 +68,7 @@ public class AccommodationServiceTest {
                 Optional.ofNullable(accommodation));
 
             // when
-            AccommodationResponseDTO result = accommodationService.getRoom(1L);
+            AccommodationResponse result = accommodationService.getRoom(1L);
 
             // then
             assertThat(result).extracting("accommodationName", "latitude", "longitude",

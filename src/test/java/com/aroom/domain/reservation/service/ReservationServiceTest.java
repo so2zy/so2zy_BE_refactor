@@ -66,7 +66,7 @@ class ReservationServiceTest {
             .name("신라 호텔")
             .latitude(36.88475f)
             .longitude(127.150084f)
-            .addressCode("15123")
+            .address("15123")
             .likeCount(0)
             .phoneNumber("010-1234-1234")
             .roomList(null)

@@ -2,7 +2,7 @@ package com.aroom.domain.roomCart.service;
 
 import com.aroom.domain.accommodation.dto.response.CartAccommodationResponse;
 import com.aroom.domain.accommodation.model.Accommodation;
-import com.aroom.domain.cart.dto.response.FindCartResponse;
+import com.aroom.domain.roomCart.dto.response.FindCartResponse;
 import com.aroom.domain.cart.model.Cart;
 import com.aroom.domain.cart.repository.CartRepository;
 import com.aroom.domain.member.exception.MemberNotFoundException;
@@ -124,7 +124,6 @@ public class RoomCartService {
 
             if (preDate.plusDays(1).isEqual(roomProduct.getStartDate())
                 && i < roomProductList.size() - 1) {
-                // 연속 되고 마지막 아닐 때.
                 preDate = roomProduct.getStartDate();
             } else {
                 cartRoomList.add(CartRoomResponse.builder()

@@ -19,7 +19,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class SearchCondition {
 
     private String name;
-    private String addressCode;
+    private String areaName;
+    private String sigunguName;
     private String likeCount;
     private String phoneNumber;
     private String lowestPrice;
@@ -32,6 +33,9 @@ public class SearchCondition {
 
     private LocalDate startDate;
     private LocalDate endDate;
+
+    private Integer areaCode;
+    private Integer sigunguCode;
 
     private String orderBy;
     private String orderCondition;

@@ -3,7 +3,8 @@ package com.aroom.util;
 import com.aroom.domain.accommodation.controller.AccommodationRestController;
 import com.aroom.domain.accommodation.service.AccommodationService;
 import com.aroom.domain.member.controller.MemberController;
-import com.aroom.domain.member.service.MemberService;
+import com.aroom.domain.member.service.MemberQueryService;
+import com.aroom.domain.member.service.MemberRegisterService;
 import com.aroom.domain.reservation.service.ReservationService;
 import com.aroom.global.jwt.controller.JwtRefreshRestController;
 import com.aroom.global.jwt.service.JwtService;
@@ -32,7 +33,10 @@ public class ControllerTestWithoutSecurityHelper {
     protected ObjectMapper objectMapper;
 
     @MockBean
-    protected MemberService memberService;
+    protected MemberRegisterService memberRegisterService;
+
+    @MockBean
+    protected MemberQueryService memberQueryService;
 
     @MockBean
     protected JwtService jwtService;

@@ -1,0 +1,35 @@
+= 회원 API 문서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+[[Member-Register]]
+== 회원가입
+회원가입을 하는 API 입니다.
+
+
+=== HttpRequest
+
+include::{snippets}/member-register/http-request.adoc[]
+include::{snippets}/member-register/request-fields.adoc[]
+
+=== HttpResponse
+
+include::{snippets}/member-register/http-response.adoc[]
+include::{snippets}/member-register/response-fields.adoc[]
+
+[[Posts-Search]]
+== 이메일 중복 조회
+회원가입을 하기 전 이메일 중복 확인을 하는 API 입니다.
+
+=== HttpRequest
+
+include::{snippets}/member-email-verify/http-request.adoc[]
+include::{snippets}/member-email-verify/query-parameters.adoc[]
+
+=== HttpResponse
+
+include::{snippets}/member-email-verify/http-response.adoc[]
+include::{snippets}/member-email-verify/response-fields.adoc[]

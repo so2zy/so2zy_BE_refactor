@@ -1,4 +1,4 @@
-package com.aroom.docs;
+package com.aroom.util.docs;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 
@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 @ExtendWith(RestDocumentationExtension.class)
-public abstract class RestDocsSupport {
+public abstract class RestDocsHelper {
 
     protected MockMvc mockMvc;
     protected ObjectMapper objectMapper = new ObjectMapper();

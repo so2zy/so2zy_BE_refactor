@@ -22,10 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @ExtendWith(MockitoExtension.class)
-class MemberServiceTest {
+class MemberRegisterServiceTest {
 
     @InjectMocks
-    private MemberService memberService;
+    private MemberRegisterService memberRegisterService;
 
     @Mock
     private MemberRepository memberRepository;
@@ -43,7 +43,7 @@ class MemberServiceTest {
             given(memberRepository.findMemberByEmail(anyString())).willReturn(Optional.empty());
 
             // when then
-            assertThatCode(() -> memberService.validateEmailDuplicatation(targetEmail))
+            assertThatCode(() -> memberRegisterService.validateEmailDuplicatation(targetEmail))
                 .doesNotThrowAnyException();
             verify(memberRepository, times(1)).findMemberByEmail(anyString());
         }
@@ -58,7 +58,7 @@ class MemberServiceTest {
                 .willReturn(Optional.of(Member.builder().build()));
 
             // when then
-            assertThatThrownBy(() -> memberService.validateEmailDuplicatation(targetEmail))
+            assertThatThrownBy(() -> memberRegisterService.validateEmailDuplicatation(targetEmail))
                 .isInstanceOf(MemberEmailDuplicateException.class);
             verify(memberRepository, times(1)).findMemberByEmail(anyString());
         }

@@ -1,4 +1,4 @@
-package com.aroom.docs;
+package com.aroom.util.docs;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -8,11 +8,11 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.aroom.docs.CommonDocsController.SampleRequest;
+import com.aroom.util.docs.CommonDocsController.SampleRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
-class CommonDocsTest extends RestDocsSupport {
+class CommonDocsTest extends RestDocsHelper {
 
     @Override
     public Object initController() {

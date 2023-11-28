@@ -1,4 +1,4 @@
-package com.aroom.docs;
+package com.aroom.util.docs;
 
 import com.aroom.global.response.ApiResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;

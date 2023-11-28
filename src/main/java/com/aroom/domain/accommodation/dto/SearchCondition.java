@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 @Getter
 @Setter
@@ -19,19 +20,25 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class SearchCondition {
 
     private String name;
-    private String addressCode;
+    private String areaName;
+    private String sigunguName;
     private String likeCount;
     private String phoneNumber;
     private String lowestPrice;
     private String highestPrice;
     private Integer capacity;
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @DateTimeFormat(pattern = "HH:mm")
     private LocalTime checkIn;
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @DateTimeFormat(pattern = "HH:mm")
     private LocalTime checkOut;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
+
+    private Integer areaCode;
+    private Integer sigunguCode;
 
     private String orderBy;
     private String orderCondition;

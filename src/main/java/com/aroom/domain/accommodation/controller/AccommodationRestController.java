@@ -2,7 +2,6 @@ package com.aroom.domain.accommodation.controller;
 
 import com.aroom.domain.accommodation.dto.AccommodationListResponse;
 import com.aroom.domain.accommodation.dto.SearchCondition;
-import com.aroom.domain.accommodation.dto.response.AccommodationResponse;
 import com.aroom.domain.accommodation.service.AccommodationService;
 import com.aroom.global.resolver.Login;
 import com.aroom.global.resolver.LoginInfo;
@@ -10,7 +9,6 @@ import com.aroom.global.response.ApiResponse;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -27,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
-@RequestMapping("/v1/accommodations")
+@RequestMapping("/v2/accommodations")
 @RequiredArgsConstructor
 public class AccommodationRestController {
 
@@ -51,11 +49,11 @@ public class AccommodationRestController {
 
             PageRequest pageRequest = PageRequest.of(page, size);
 
-            if (searchCondition.getStartDate() !=null && searchCondition.getEndDate() != null){
+            if (searchCondition.getStartDate() != null && searchCondition.getEndDate() != null) {
                 return ResponseEntity.status(HttpStatus.OK)
                     .body(new ApiResponse<>(LocalDateTime.now(), "숙소 정보를 성공적으로 조회했습니다",
                         accommodationService.getAccommodationListByDateSearchCondition(
-                            searchCondition,pageRequest,sortCondition
+                            searchCondition, pageRequest, sortCondition
                         )));
             }
 
@@ -72,34 +70,37 @@ public class AccommodationRestController {
     }
 
 
-
-    private boolean validateQueryParamIsNull(SearchCondition searchCondition, Integer page, Integer size) {
-        if (searchCondition.getOrderCondition()!=null ||
-        searchCondition.getHighestPrice()!=null||
-        searchCondition.getLowestPrice()!=null||
-        searchCondition.getCheckIn()!=null||
-        searchCondition.getCheckOut()!=null||
-        searchCondition.getLikeCount()!=null||
-        searchCondition.getName()!=null||
-        searchCondition.getOrderBy()!=null||
-        searchCondition.getAddressCode()!=null||
-        searchCondition.getPhoneNumber()!=null||
-        page!= null||
-        size!= null){
+    private boolean validateQueryParamIsNull(SearchCondition searchCondition, Integer page,
+        Integer size) {
+        if (searchCondition.getOrderCondition() != null ||
+            searchCondition.getHighestPrice() != null ||
+            searchCondition.getLowestPrice() != null ||
+            searchCondition.getCheckIn() != null ||
+            searchCondition.getCheckOut() != null ||
+            searchCondition.getLikeCount() != null ||
+            searchCondition.getName() != null ||
+            searchCondition.getOrderBy() != null ||
+            searchCondition.getPhoneNumber() != null ||
+            searchCondition.getAreaCode() != null ||
+            searchCondition.getAreaName() != null ||
+            searchCondition.getSigunguCode() != null ||
+            searchCondition.getSigunguName() != null ||
+            page != null ||
+            size != null) {
             return true;
         }
         return false;
     }
 
-    @GetMapping("/{member_id}/{accommodation_id}/{startDate}/{endDate}/{personnel}")
+    @GetMapping("/{accommodation_id}")
     public ResponseEntity<ApiResponse<Object>> getSpecificAccommodation(
-        @PathVariable long member_id,
-        @PathVariable long accommodation_id, @PathVariable String startDate,
-        @PathVariable String endDate, @PathVariable int personnel) {
+        @Login LoginInfo loginInfo,
+        @PathVariable long accommodation_id, @RequestParam("startDate") String startDate,
+        @RequestParam("endDate") String endDate, @RequestParam("personnel") int personnel) {
         return ResponseEntity.status(HttpStatus.OK).body(
             new ApiResponse<>(LocalDateTime.now(), "숙소 상세 정보를 성공적으로 조회했습니다.",
                 accommodationService.getRoom(accommodation_id, startDate, endDate, personnel,
-                    member_id)));
+                    loginInfo.memberId())));
     }
 
 }

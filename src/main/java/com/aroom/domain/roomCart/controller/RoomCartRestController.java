@@ -31,7 +31,7 @@ public class RoomCartRestController {
         @Login LoginInfo loginInfo,
         @PathVariable long room_id, @RequestBody @Valid RoomCartRequest roomCartRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
-            new ApiResponse(LocalDateTime.now(), "성공적으로 장바구니에 등록했습니다.",
+            new ApiResponse<>(LocalDateTime.now(), "성공적으로 장바구니에 등록했습니다.",
                 roomCartService.postRoomCart(loginInfo.memberId(), room_id, roomCartRequest)));
     }
 

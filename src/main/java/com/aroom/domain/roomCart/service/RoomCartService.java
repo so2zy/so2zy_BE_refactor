@@ -45,10 +45,10 @@ public class RoomCartService {
     }
 
     public FindCartResponse getCartList(Long memberId) {
-        Member member = memberRepository.findById(memberId)
+        Cart cart = cartRepository.findByMemberId(memberId)
             .orElseThrow(MemberNotFoundException::new);
 
-        List<RoomCart> roomCartList = member.getCart().getRoomCartList();
+        List<RoomCart> roomCartList = cart.getRoomCartList();
         return createResponse(roomCartList);
     }
 

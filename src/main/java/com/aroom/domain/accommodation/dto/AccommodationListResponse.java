@@ -76,7 +76,6 @@ public class AccommodationListResponse {
                 .latitude(accommodation.getLatitude())
                 .longitude(accommodation.getLongitude())
                 .likeCount(accommodation.getLikeCount())
-                .addressCode(accommodation.getAddressCode())
                 .phoneNumber(accommodation.getPhoneNumber())
                 .price(minimumPrice)
                 .accommodationImageUrl(imageUrl)

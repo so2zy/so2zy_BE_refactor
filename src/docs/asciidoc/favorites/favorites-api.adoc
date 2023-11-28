@@ -1,0 +1,36 @@
+= 찜하기 v1 API 문서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+[[Favorite-Add]]
+== 찜하기 추가
+숙소를 찜하는 API 입니다.
+
+
+=== HttpRequest
+
+include::{snippets}/favorite-create/http-request.adoc[]
+include::{snippets}/favorite-create/path-parameters.adoc[]
+
+=== HttpResponse
+
+include::{snippets}/favorite-delete/http-response.adoc[]
+data는 없습니다.
+
+
+[[Favorite-Delete]]
+== 찜하기 취소
+찜했던 숙소를 취소하는 API 입니다.
+
+=== HttpRequest
+
+include::{snippets}/favorite-delete/http-request.adoc[]
+include::{snippets}/favorite-delete/path-parameters.adoc[]
+
+=== HttpResponse
+
+include::{snippets}/favorite-delete/http-response.adoc[]
+data는 없습니다.

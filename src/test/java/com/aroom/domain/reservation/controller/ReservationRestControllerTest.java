@@ -13,7 +13,6 @@ import com.aroom.domain.reservation.dto.request.ReservationRequest;
 import com.aroom.domain.reservation.dto.response.ReservationResponse;
 import com.aroom.domain.reservation.service.ReservationService;
 import com.aroom.domain.room.dto.request.RoomReservationRequest;
-import com.aroom.domain.room.dto.response.RoomImageResponse;
 import com.aroom.domain.room.dto.response.RoomReservationResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
@@ -53,8 +52,6 @@ class ReservationRestControllerTest {
             .endDate(LocalDate.of(2023, 12, 23))
             .build();
 
-        RoomImageResponse roomImageResponse = new RoomImageResponse("ww.com");
-
         RoomReservationResponse roomResponse = RoomReservationResponse.builder()
             .roomId(1L)
             .type("패밀리")
@@ -65,12 +62,12 @@ class ReservationRestControllerTest {
             .price(100000)
             .startDate(roomRequest.getStartDate())
             .endDate(roomRequest.getEndDate())
-            .roomImage(roomImageResponse)
+            .roomImageUrl("testimage.com")
+            .roomReservationNumber(1L)
             .build();
 
         reservationResponse = ReservationResponse.builder()
             .roomList(List.of(roomResponse))
-            .roomReservationNumber(2L)
             .reservationNumber(3L)
             .dealDateTime(LocalDateTime.now())
             .build();

@@ -1,6 +1,6 @@
 package com.aroom.domain.accommodation.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,6 +29,9 @@ public class SearchCondition {
     private LocalTime checkIn;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalTime checkOut;
+
+    private LocalDate startDate;
+    private LocalDate endDate;
 
     private String orderBy;
     private String orderCondition;

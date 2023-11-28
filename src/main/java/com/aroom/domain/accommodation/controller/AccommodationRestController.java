@@ -35,14 +35,14 @@ public class AccommodationRestController {
     public static final String NO_ORDER_CONDITION = "default";
 
     @GetMapping("")
-    public ResponseEntity<ApiResponse<List<AccommodationListResponse>>> findAllAccommodation(
+    public ResponseEntity<ApiResponse<AccommodationListResponse>> findAllAccommodation(
         @Nullable @ModelAttribute @Valid SearchCondition searchCondition,
         @Nullable @RequestParam(defaultValue = "0") Integer page,
         @Nullable @RequestParam(defaultValue = "10") Integer size
     ) {
-
+        //쿼리스트링 유무 검증
         if (validateQueryParamIsNull(searchCondition, page, size)) {
-
+            //Default 정렬조건 세팅
             Sort sortCondition = Sort.by(
                 Direction.fromOptionalString(searchCondition.getOrderBy())
                     .orElse(Direction.ASC),
@@ -51,31 +51,41 @@ public class AccommodationRestController {
 
             PageRequest pageRequest = PageRequest.of(page, size);
 
+            if (searchCondition.getStartDate() !=null && searchCondition.getEndDate() != null){
+                return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ApiResponse<>(LocalDateTime.now(), "숙소 정보를 성공적으로 조회했습니다",
+                        accommodationService.getAccommodationListByDateSearchCondition(
+                            searchCondition,pageRequest,sortCondition
+                        )));
+            }
+
             return ResponseEntity.status(HttpStatus.OK)
                 .body(new ApiResponse<>(LocalDateTime.now(), "숙소 정보를 성공적으로 조회했습니다.",
                     accommodationService.getAccommodationListBySearchCondition(searchCondition,
                         pageRequest, sortCondition)));
         }
+        PageRequest pageRequest = PageRequest.of(page, size);
         return ResponseEntity.status(HttpStatus.OK)
             .body(new ApiResponse<>(LocalDateTime.now(), "숙소 정보를 성공적으로 조회했습니다.",
-                accommodationService.getAllAccommodation()));
+                accommodationService.getAllAccommodation(pageRequest)));
 
     }
 
-    private boolean validateQueryParamIsNull(SearchCondition searchCondition, Integer page,
-        Integer size) {
-        if (searchCondition.getOrderCondition() != null ||
-            searchCondition.getHighestPrice() != null ||
-            searchCondition.getLowestPrice() != null ||
-            searchCondition.getCheckIn() != null ||
-            searchCondition.getCheckOut() != null ||
-            searchCondition.getLikeCount() != null ||
-            searchCondition.getName() != null ||
-            searchCondition.getOrderBy() != null ||
-            searchCondition.getAddressCode() != null ||
-            searchCondition.getPhoneNumber() != null ||
-            page != null ||
-            size != null) {
+
+
+    private boolean validateQueryParamIsNull(SearchCondition searchCondition, Integer page, Integer size) {
+        if (searchCondition.getOrderCondition()!=null ||
+        searchCondition.getHighestPrice()!=null||
+        searchCondition.getLowestPrice()!=null||
+        searchCondition.getCheckIn()!=null||
+        searchCondition.getCheckOut()!=null||
+        searchCondition.getLikeCount()!=null||
+        searchCondition.getName()!=null||
+        searchCondition.getOrderBy()!=null||
+        searchCondition.getAddressCode()!=null||
+        searchCondition.getPhoneNumber()!=null||
+        page!= null||
+        size!= null){
             return true;
         }
         return false;

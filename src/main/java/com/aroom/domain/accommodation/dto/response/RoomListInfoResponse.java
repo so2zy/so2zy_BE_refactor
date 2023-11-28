@@ -40,21 +40,21 @@ public class RoomListInfoResponse {
 
 
     public RoomListInfoResponse(Room room, Long betweenDays, LocalDate startDate) {
+        int minStock = Integer.MAX_VALUE;
         for(RoomProduct roomProduct : room.getRoomProductList()){
-            if(roomProduct.getStartDate().equals(startDate)){
-                this.id = room.getId();
-                this.type = room.getType();
-                this.price = (int) (room.getPrice() * betweenDays);
-                this.capacity = room.getCapacity();
-                this.maxCapacity = room.getMaxCapacity();
-                this.checkIn = room.getCheckIn().format(DateTimeFormatter.ofPattern("HH:mm"));
-                this.checkOut = room.getCheckOut().format(DateTimeFormatter.ofPattern("HH:mm"));
-                this.url = room.getRoomImageList().stream()
-                    .map(RoomImage::getUrl)
-                    .findFirst()
-                    .orElse(null);
-                this.stock = roomProduct.getStock();
-            }
+            minStock = Math.min(roomProduct.getStock(),minStock);
         }
+        this.id = room.getId();
+        this.type = room.getType();
+        this.price = (int) (room.getPrice() * betweenDays);
+        this.capacity = room.getCapacity();
+        this.maxCapacity = room.getMaxCapacity();
+        this.checkIn = room.getCheckIn().format(DateTimeFormatter.ofPattern("HH:mm"));
+        this.checkOut = room.getCheckOut().format(DateTimeFormatter.ofPattern("HH:mm"));
+        this.url = room.getRoomImageList().stream()
+            .map(RoomImage::getUrl)
+            .findFirst()
+            .orElse(null);
+        this.stock = minStock;
     }
 }

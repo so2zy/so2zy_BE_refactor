@@ -1,5 +1,6 @@
 package com.aroom.domain.accommodation.model;
 
+import com.aroom.domain.address.model.Address;
 import com.aroom.domain.room.model.Room;
 import com.aroom.global.basetime.BaseTimeEntity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -9,7 +10,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -37,9 +40,6 @@ public class Accommodation extends BaseTimeEntity {
     private float longitude;
 
     @Column(nullable = false)
-    private String addressCode;
-
-    @Column(nullable = false)
     private String address;
 
     @Column(nullable = false)
@@ -47,7 +47,6 @@ public class Accommodation extends BaseTimeEntity {
 
     @Column(nullable = false)
     private String phoneNumber;
-
 
     @JsonManagedReference
     @OneToMany(mappedBy = "accommodation", fetch = FetchType.LAZY)
@@ -57,19 +56,23 @@ public class Accommodation extends BaseTimeEntity {
     @OneToMany(mappedBy = "accommodation", fetch = FetchType.LAZY)
     private List<AccommodationImage> accommodationImageList = new ArrayList<>();
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "address_id", nullable = false)
+    private Address addressEntity;
+
     @Builder
-    public Accommodation(String name, float latitude, float longitude, String addressCode,
+    public Accommodation(Long id, String name, float latitude, float longitude,
         String address, int likeCount, String phoneNumber, List<Room> roomList,
-        List<AccommodationImage> accommodationImageList) {
+        List<AccommodationImage> accommodationImageList, Address addressEntity) {
+        this.id = id;
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.addressCode = addressCode;
         this.address = address;
         this.likeCount = likeCount;
         this.phoneNumber = phoneNumber;
         this.roomList = roomList;
         this.accommodationImageList = accommodationImageList;
+        this.addressEntity = addressEntity;
     }
-
 }

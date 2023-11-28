@@ -93,12 +93,20 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
 
     private BooleanBuilder booleanBuilderProvider(SearchCondition searchCondition) {
         BooleanBuilder booleanBuilder = new BooleanBuilder();
+        if (searchCondition.getAreaCode()!=null){
+            booleanBuilder.and(accommodation.addressEntity.areaCode.eq(searchCondition.getAreaCode()));
+        }
+        if (searchCondition.getAreaName()!=null){
+            booleanBuilder.and(accommodation.addressEntity.areaName.contains(searchCondition.getAreaName()));
+        }
+        if (searchCondition.getSigunguCode()!=null){
+            booleanBuilder.and(accommodation.addressEntity.sigunguCode.eq(searchCondition.getSigunguCode()));
+        }
+        if (searchCondition.getSigunguName()!=null){
+            booleanBuilder.and(accommodation.addressEntity.sigunguName.contains(searchCondition.getSigunguName()));
+        }
         if (searchCondition.getName() != null) {
             booleanBuilder.and(accommodation.name.contains(searchCondition.getName()));
-        }
-        if (searchCondition.getAddressCode() != null) {
-            booleanBuilder.and(
-                accommodation.addressCode.eq(searchCondition.getAddressCode()));
         }
         if (searchCondition.getLikeCount() != null) {
             booleanBuilder.and(
@@ -112,7 +120,6 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
                 //숙소의 최대수용인원이 사용자가 입력한 인원수보다 무조건 커야함
                 accommodation.roomList.any().maxCapacity.goe(searchCondition.getCapacity()));
         }
-
         //lowestPrice와 higestPrice가 둘 다 NULL이 아닌 경우
         if (searchCondition.getLowestPrice() != null &&
             searchCondition.getHighestPrice() != null) {

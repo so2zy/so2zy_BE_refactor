@@ -32,7 +32,7 @@ public class AccommodationRestController {
     private final AccommodationService accommodationService;
     public static final String NO_ORDER_CONDITION = "default";
     @GetMapping("")
-    public ResponseEntity<ApiResponse<List<AccommodationListResponse>>> findAllAccommodation(
+    public ResponseEntity<ApiResponse<AccommodationListResponse>> findAllAccommodation(
         @Nullable @ModelAttribute @Valid SearchCondition searchCondition,
         @Nullable @RequestParam(defaultValue = "0") Integer page,
         @Nullable @RequestParam(defaultValue = "10") Integer size
@@ -61,11 +61,13 @@ public class AccommodationRestController {
                     accommodationService.getAccommodationListBySearchCondition(searchCondition,
                         pageRequest, sortCondition)));
         }
+        PageRequest pageRequest = PageRequest.of(page, size);
         return ResponseEntity.status(HttpStatus.OK)
             .body(new ApiResponse<>(LocalDateTime.now(), "숙소 정보를 성공적으로 조회했습니다.",
-                accommodationService.getAllAccommodation()));
+                accommodationService.getAllAccommodation(pageRequest)));
 
     }
+
 
     private boolean validateQueryParamIsNull(SearchCondition searchCondition, Integer page, Integer size) {
         if (searchCondition.getOrderCondition()!=null ||

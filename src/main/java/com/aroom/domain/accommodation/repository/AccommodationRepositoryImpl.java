@@ -5,9 +5,12 @@ import static com.aroom.domain.accommodation.controller.AccommodationRestControl
 import com.aroom.domain.accommodation.dto.SearchCondition;
 import com.aroom.domain.accommodation.model.Accommodation;
 import com.aroom.domain.accommodation.model.QAccommodation;
+import com.aroom.domain.room.model.QRoom;
+import com.aroom.domain.roomProduct.model.QRoomProduct;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.util.List;
@@ -20,13 +23,16 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
 
     private final JPAQueryFactory jpaQueryFactory;
     private final QAccommodation accommodation = QAccommodation.accommodation;
+    private final QRoom room = QRoom.room;
+    private final QRoomProduct roomProduct = QRoomProduct.roomProduct;
 
     public AccommodationRepositoryImpl(EntityManager entityManager) {
         this.jpaQueryFactory = new JPAQueryFactory(entityManager);
     }
 
     @Override
-    public List<Accommodation> getAccommodationBySearchCondition(SearchCondition searchCondition,
+    public List<Accommodation> getAccommodationBySearchCondition(
+        SearchCondition searchCondition,
         Pageable pageable) {
 
         return jpaQueryFactory.select(accommodation)
@@ -36,6 +42,41 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
             .limit(pageable.getPageSize())
             .fetch();
 
+    }
+
+    //날짜 필터링은 JOIN을 해야하기 때문에 메서드 분리
+    @Override
+    public List<Accommodation> getAccommodationByDateSearchCondition(
+        SearchCondition searchCondition,
+        Pageable pageable) {
+
+        return jpaQueryFactory
+            .select(accommodation)
+            .from(accommodation)
+            .join(accommodation.roomList, room)
+            .join(room.roomProductList, roomProduct)
+            .where(betweenDate(searchCondition),
+                greaterThanStock(0))
+            .offset(pageable.getPageNumber())
+            .limit(pageable.getPageSize())
+            .fetch();
+
+    }
+
+    @Override
+    public List<Accommodation> getAccommodationByDateSearchConditionWithSortCondition(
+        SearchCondition searchCondition,
+        Pageable pageable,
+        Sort sortCondition) {
+        return jpaQueryFactory
+            .select(accommodation)
+            .from(accommodation)
+            .join(accommodation.roomList, room)
+            .where(booleanBuilderForDate(searchCondition))
+            .offset(pageable.getPageNumber())
+            .limit(pageable.getPageSize())
+            .orderBy(getOrderBy(sortCondition))
+            .fetch();
     }
 
     @Override
@@ -57,7 +98,7 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
         }
         if (searchCondition.getAddressCode() != null) {
             booleanBuilder.and(
-                accommodation.addressCode.contains(searchCondition.getAddressCode()));
+                accommodation.addressCode.eq(searchCondition.getAddressCode()));
         }
         if (searchCondition.getLikeCount() != null) {
             booleanBuilder.and(
@@ -83,14 +124,12 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
             // lowestPrice는 존재하고, highestPrice만 NULL인 경우
             if (searchCondition.getLowestPrice() != null &&
                 searchCondition.getHighestPrice() == null) {
-                System.out.println("1");
                 booleanBuilder.and(accommodation.roomList.any().price.goe(
                     Integer.parseInt(searchCondition.getLowestPrice())));
             }
             // lowestPrice는 NULL이고 , highestPrice만 존재하는 경우
             if (searchCondition.getLowestPrice() == null &&
                 searchCondition.getHighestPrice() != null) {
-                System.out.println("2");
                 booleanBuilder.and(accommodation.roomList.any().price.loe(
                     Integer.parseInt(searchCondition.getHighestPrice())));
             }
@@ -105,6 +144,34 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
         }
 
         return booleanBuilder;
+    }
+
+    private BooleanBuilder booleanBuilderForDate(SearchCondition searchCondition) {
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        //        날짜 필터링
+        if (searchCondition.getStartDate() != null && searchCondition.getEndDate() != null) {
+            booleanBuilder.and(
+                    room.roomProductList.any().startDate.between(searchCondition.getStartDate(),
+                        searchCondition.getEndDate()))
+                .and(room.roomProductList.any().stock.gt(0));
+        }
+
+        return booleanBuilder;
+    }
+
+    private BooleanExpression betweenDate(SearchCondition searchCondition) {
+        if (searchCondition.getStartDate() == null || searchCondition.getEndDate() == null) {
+            return null;
+        }
+        return roomProduct.startDate.between(searchCondition.getStartDate(),
+            searchCondition.getEndDate());
+    }
+
+    private BooleanExpression greaterThanStock(Integer stock) {
+        if (stock == null) {
+            return null;
+        }
+        return roomProduct.stock.gt(stock);
     }
 
 
@@ -128,6 +195,9 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
                     case "capacity":
                         return new OrderSpecifier(direction,
                             accommodation.roomList.any().maxCapacity);
+                    case "soldCount":
+                        return new OrderSpecifier(direction,
+                            accommodation.roomList.any().soldCount);
                 }
             }
         }

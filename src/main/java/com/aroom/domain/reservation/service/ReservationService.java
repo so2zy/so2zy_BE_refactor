@@ -67,7 +67,7 @@ public class ReservationService {
 
             Long reservationRoomId = 0L;
             for (RoomProduct roomProduct : roomProductList) {
-                roomProduct.sellProduct();
+                roomProduct.sellRoomProduct();
 
                 ReservationRoom reservationRoom = ReservationRoom.builder()
                     .roomProduct(roomProduct)

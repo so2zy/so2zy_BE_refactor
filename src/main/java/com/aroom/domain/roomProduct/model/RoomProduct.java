@@ -39,9 +39,6 @@ public class RoomProduct extends BaseTimeEntity {
     @Column(nullable = false)
     private LocalDate startDate;
 
-    @Version
-    private Long version;
-
     @Builder
     public RoomProduct(Long id, Room room, Integer stock, LocalDate startDate) {
         this.id = id;

@@ -4,6 +4,8 @@ import com.aroom.domain.accommodation.dto.AccommodationListResponse;
 import com.aroom.domain.accommodation.dto.SearchCondition;
 import com.aroom.domain.accommodation.dto.response.AccommodationResponse;
 import com.aroom.domain.accommodation.service.AccommodationService;
+import com.aroom.global.resolver.Login;
+import com.aroom.global.resolver.LoginInfo;
 import com.aroom.global.response.ApiResponse;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
@@ -31,6 +33,7 @@ public class AccommodationRestController {
 
     private final AccommodationService accommodationService;
     public static final String NO_ORDER_CONDITION = "default";
+
     @GetMapping("")
     public ResponseEntity<ApiResponse<AccommodationListResponse>> findAllAccommodation(
         @Nullable @ModelAttribute @Valid SearchCondition searchCondition,
@@ -69,6 +72,7 @@ public class AccommodationRestController {
     }
 
 
+
     private boolean validateQueryParamIsNull(SearchCondition searchCondition, Integer page, Integer size) {
         if (searchCondition.getOrderCondition()!=null ||
         searchCondition.getHighestPrice()!=null||
@@ -87,12 +91,15 @@ public class AccommodationRestController {
         return false;
     }
 
-    @GetMapping("/{accommodation_id}")
-    public ResponseEntity<ApiResponse<AccommodationResponse>> getSpecificAccommodation(
-        @PathVariable long accommodation_id) {
+    @GetMapping("/{member_id}/{accommodation_id}/{startDate}/{endDate}/{personnel}")
+    public ResponseEntity<ApiResponse<Object>> getSpecificAccommodation(
+        @PathVariable long member_id,
+        @PathVariable long accommodation_id, @PathVariable String startDate,
+        @PathVariable String endDate, @PathVariable int personnel) {
         return ResponseEntity.status(HttpStatus.OK).body(
             new ApiResponse<>(LocalDateTime.now(), "숙소 상세 정보를 성공적으로 조회했습니다.",
-                accommodationService.getRoom(accommodation_id)));
+                accommodationService.getRoom(accommodation_id, startDate, endDate, personnel,
+                    member_id)));
     }
 
 }

@@ -2,14 +2,7 @@ package com.aroom.domain.accommodation.dto.response;
 
 import com.aroom.domain.accommodation.model.Accommodation;
 import com.aroom.domain.accommodation.model.AccommodationImage;
-import com.aroom.domain.room.model.Room;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class AccommodationResponse {
+public class AccommodationOnlyResponse {
 
     private Long id;
     private String accommodationName;
@@ -28,24 +21,23 @@ public class AccommodationResponse {
     private String phoneNumber;
     private String accommodationUrl;
     private Boolean favorite;
-    private List<RoomListInfoResponse> roomInfoList;
 
     @Builder
-    public AccommodationResponse(Long id, String accommodationName, Float latitude,
-        Float longitude, String addressCode, String phoneNumber, String accommodationUrl,Boolean favorite,
-        List<RoomListInfoResponse> roomInfoList) {
+    public AccommodationOnlyResponse(Long id, String accommodationName, Float latitude,
+        Float longitude, String addressCode, String address, String phoneNumber,
+        String accommodationUrl, Boolean favorite) {
         this.id = id;
         this.accommodationName = accommodationName;
         this.latitude = latitude;
         this.longitude = longitude;
         this.addressCode = addressCode;
+        this.address = address;
         this.phoneNumber = phoneNumber;
         this.accommodationUrl = accommodationUrl;
         this.favorite = favorite;
-        this.roomInfoList = roomInfoList;
     }
 
-    public AccommodationResponse(Accommodation accommodation, Integer personnel, Boolean isFavorite, Long betweenDays, LocalDate startDate) {
+    public AccommodationOnlyResponse(Accommodation accommodation, Boolean isFavorite){
         this.id = accommodation.getId();
         this.accommodationName = accommodation.getName();
         this.latitude = accommodation.getLatitude();
@@ -57,11 +49,5 @@ public class AccommodationResponse {
             .findFirst()
             .orElse(null);
         this.favorite = isFavorite;
-        this.roomInfoList = accommodation.getRoomList().stream()
-            .filter(room -> room.getMaxCapacity() >= personnel)
-            .filter(room -> room.getRoomProductList().stream()
-                .allMatch(rp -> rp.getStock() > 0))
-            .map(room -> new RoomListInfoResponse(room,betweenDays,startDate))
-            .collect(Collectors.toList());
     }
 }

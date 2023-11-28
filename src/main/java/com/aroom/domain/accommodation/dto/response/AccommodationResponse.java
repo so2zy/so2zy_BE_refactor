@@ -23,7 +23,6 @@ public class AccommodationResponse {
     private String accommodationName;
     private Float latitude;
     private Float longitude;
-    private String addressCode;
     private String address;
     private String phoneNumber;
     private String accommodationUrl;
@@ -32,13 +31,12 @@ public class AccommodationResponse {
 
     @Builder
     public AccommodationResponse(Long id, String accommodationName, Float latitude,
-        Float longitude, String addressCode, String phoneNumber, String accommodationUrl,Boolean favorite,
+        Float longitude, String phoneNumber, String accommodationUrl,Boolean favorite,
         List<RoomListInfoResponse> roomInfoList) {
         this.id = id;
         this.accommodationName = accommodationName;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.addressCode = addressCode;
         this.phoneNumber = phoneNumber;
         this.accommodationUrl = accommodationUrl;
         this.favorite = favorite;

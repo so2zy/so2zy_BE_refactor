@@ -16,7 +16,6 @@ public class AccommodationOnlyResponse {
     private String accommodationName;
     private Float latitude;
     private Float longitude;
-    private String addressCode;
     private String address;
     private String phoneNumber;
     private String accommodationUrl;
@@ -30,7 +29,6 @@ public class AccommodationOnlyResponse {
         this.accommodationName = accommodationName;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.addressCode = addressCode;
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.accommodationUrl = accommodationUrl;

@@ -3,7 +3,7 @@ package com.aroom.domain.member.controller;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.aroom.domain.member.dto.request.SignUpRequest;
+import com.aroom.domain.member.dto.request.MemberRegisterRequest;
 import com.aroom.util.ControllerTestWithoutSecurityHelper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -23,12 +23,12 @@ public class MemberControllerTest extends ControllerTestWithoutSecurityHelper {
         void willSuccess() throws Exception {
 
             // given
-            SignUpRequest signUpRequest = new SignUpRequest("test@email.com", "password1", "nickname");
+            MemberRegisterRequest memberRegisterRequest = new MemberRegisterRequest("test@email.com", "password1", "nickname");
 
             // when then
             mockMvc.perform(post("/v1/members/register")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(signUpRequest)))
+                    .content(objectMapper.writeValueAsString(memberRegisterRequest)))
                 .andExpect(status().isOk());
         }
 
@@ -37,12 +37,12 @@ public class MemberControllerTest extends ControllerTestWithoutSecurityHelper {
         void email_isNotAcceptableFormat_400_willReturn() throws Exception {
 
             // given
-            SignUpRequest signUpRequest = new SignUpRequest("notEmail", "password1", "nickname");
+            MemberRegisterRequest memberRegisterRequest = new MemberRegisterRequest("notEmail", "password1", "nickname");
 
             // when then
             mockMvc.perform(post("/v1/members/register")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(signUpRequest)))
+                    .content(objectMapper.writeValueAsString(memberRegisterRequest)))
                 .andExpect(status().isBadRequest());
         }
 
@@ -55,12 +55,12 @@ public class MemberControllerTest extends ControllerTestWithoutSecurityHelper {
         void eachParameter_isBlankOrNull_400_willReturn(String email, String password, String nickname) throws Exception {
 
             // given
-            SignUpRequest signUpRequest = new SignUpRequest(email, password, nickname);
+            MemberRegisterRequest memberRegisterRequest = new MemberRegisterRequest(email, password, nickname);
 
             // when then
             mockMvc.perform(post("/v1/members/register")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(signUpRequest)))
+                    .content(objectMapper.writeValueAsString(memberRegisterRequest)))
                 .andExpect(status().isBadRequest());
         }
     }

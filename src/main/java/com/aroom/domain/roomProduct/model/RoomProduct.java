@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Version;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -38,11 +39,18 @@ public class RoomProduct extends BaseTimeEntity {
     @Column(nullable = false)
     private LocalDate startDate;
 
+    @Version
+    private Long version;
+
     @Builder
     public RoomProduct(Long id, Room room, Integer stock, LocalDate startDate) {
         this.id = id;
         this.room = room;
         this.stock = stock;
         this.startDate = startDate;
+    }
+
+    public void sellRoomProduct(){
+        this.stock--;
     }
 }

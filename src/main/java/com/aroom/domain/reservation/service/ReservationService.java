@@ -53,10 +53,12 @@ public class ReservationService {
         List<RoomReservationResponse> responseRoomList = new ArrayList<>();
 
         for (RoomReservationRequest roomRequest : request.getRoomList()) {
-            Room requiredRoom = roomRepository.findByIdWithLock(roomRequest.getRoomId())
+            Room requiredRoom = roomRepository.findById(roomRequest.getRoomId())
                 .orElseThrow(RuntimeException::new);
 
             checkCapacityOfRoom(request.getPersonnel(), requiredRoom);
+
+            requiredRoom.addSoldCount();
 
             List<RoomProduct> roomProductList = roomProductRepository.findByRoomAndBetweenStartDateAndEndDate(
                 requiredRoom, roomRequest.getStartDate(), roomRequest.getEndDate());
@@ -65,6 +67,8 @@ public class ReservationService {
 
             Long reservationRoomId = 0L;
             for (RoomProduct roomProduct : roomProductList) {
+                roomProduct.sellProduct();
+
                 ReservationRoom reservationRoom = ReservationRoom.builder()
                     .roomProduct(roomProduct)
                     .reservation(reservation)

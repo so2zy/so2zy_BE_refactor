@@ -86,10 +86,6 @@ class AccommodationRestControllerTest extends ControllerTestWithoutSecurityHelpe
         @WithMockAccountContext
         void _willSuccess() throws Exception {
             // given
-            MultiValueMap<String, String> param = new LinkedMultiValueMap<>();
-            param.add("startDate", "2023-11-28");
-            param.add("endDate", "2023-11-29");
-
             List<RoomListInfoResponse> roomList = Arrays.asList(
                 RoomListInfoResponse.builder().type("DELUXE").price(350000).capacity(2)
                     .maxCapacity(4)

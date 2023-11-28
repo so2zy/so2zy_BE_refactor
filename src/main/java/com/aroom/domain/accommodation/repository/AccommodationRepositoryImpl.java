@@ -10,7 +10,7 @@ import com.aroom.domain.roomProduct.model.QRoomProduct;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.util.List;
@@ -24,6 +24,7 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
     private final JPAQueryFactory jpaQueryFactory;
     private final QAccommodation accommodation = QAccommodation.accommodation;
     private final QRoom room = QRoom.room;
+    private final QRoomProduct roomProduct = QRoomProduct.roomProduct;
 
     public AccommodationRepositoryImpl(EntityManager entityManager) {
         this.jpaQueryFactory = new JPAQueryFactory(entityManager);
@@ -53,10 +54,13 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
             .select(accommodation)
             .from(accommodation)
             .join(accommodation.roomList, room)
-            .where(booleanBuilderForDate(searchCondition))
+            .join(room.roomProductList, roomProduct)
+            .where(betweenDate(searchCondition),
+                greaterThanStock(0))
             .offset(pageable.getPageNumber())
             .limit(pageable.getPageSize())
             .fetch();
+
     }
 
     @Override
@@ -120,14 +124,12 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
             // lowestPrice는 존재하고, highestPrice만 NULL인 경우
             if (searchCondition.getLowestPrice() != null &&
                 searchCondition.getHighestPrice() == null) {
-                System.out.println("1");
                 booleanBuilder.and(accommodation.roomList.any().price.goe(
                     Integer.parseInt(searchCondition.getLowestPrice())));
             }
             // lowestPrice는 NULL이고 , highestPrice만 존재하는 경우
             if (searchCondition.getLowestPrice() == null &&
                 searchCondition.getHighestPrice() != null) {
-                System.out.println("2");
                 booleanBuilder.and(accommodation.roomList.any().price.loe(
                     Integer.parseInt(searchCondition.getHighestPrice())));
             }
@@ -143,13 +145,33 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
 
         return booleanBuilder;
     }
+
     private BooleanBuilder booleanBuilderForDate(SearchCondition searchCondition) {
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         //        날짜 필터링
-        if (searchCondition.getStartDate() != null && searchCondition.getEndDate() != null){
-            booleanBuilder.and(room.roomProductList.any().startDate.between(searchCondition.getStartDate(), searchCondition.getEndDate()));
+        if (searchCondition.getStartDate() != null && searchCondition.getEndDate() != null) {
+            booleanBuilder.and(
+                    room.roomProductList.any().startDate.between(searchCondition.getStartDate(),
+                        searchCondition.getEndDate()))
+                .and(room.roomProductList.any().stock.gt(0));
         }
+
         return booleanBuilder;
+    }
+
+    private BooleanExpression betweenDate(SearchCondition searchCondition) {
+        if (searchCondition.getStartDate() == null || searchCondition.getEndDate() == null) {
+            return null;
+        }
+        return roomProduct.startDate.between(searchCondition.getStartDate(),
+            searchCondition.getEndDate());
+    }
+
+    private BooleanExpression greaterThanStock(Integer stock) {
+        if (stock == null) {
+            return null;
+        }
+        return roomProduct.stock.gt(stock);
     }
 
 
@@ -173,6 +195,9 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
                     case "capacity":
                         return new OrderSpecifier(direction,
                             accommodation.roomList.any().maxCapacity);
+                    case "soldCount":
+                        return new OrderSpecifier(direction,
+                            accommodation.roomList.any().soldCount);
                 }
             }
         }

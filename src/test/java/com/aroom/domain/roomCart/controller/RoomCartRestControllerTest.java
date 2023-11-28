@@ -18,6 +18,7 @@ import com.aroom.domain.room.dto.response.CartRoomResponse;
 import com.aroom.domain.roomCart.dto.response.RoomCartInfoResponse;
 import com.aroom.domain.roomCart.dto.response.RoomCartResponse;
 import com.aroom.domain.roomCart.service.RoomCartService;
+import com.aroom.util.security.WithMockAccountContext;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
@@ -71,6 +72,7 @@ public class RoomCartRestControllerTest {
     class FindCart{
         @Test
         @DisplayName("성공시 장바구니에 담겨있는 숙소 정보를 반환한다.")
+        @WithMockAccountContext
         void find_tester_cart_info_success() throws Exception{
             // given
             CartRoomResponse cartRoomResponse = CartRoomResponse.builder()

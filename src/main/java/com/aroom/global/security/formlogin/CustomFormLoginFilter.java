@@ -10,6 +10,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -49,6 +51,7 @@ public class CustomFormLoginFilter extends AbstractAuthenticationProcessingFilte
         throws IOException {
         AccountContext context = (AccountContext) authResult.getPrincipal();
         TokenResponse tokenResponse = jwtService.createTokenPair(new JwtCreateRequest(context.getMemberId(), context.getName(), new Date()));
+        response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().write(objectMapper.writeValueAsString(tokenResponse));
     }
 }

@@ -17,6 +17,8 @@ import com.aroom.domain.room.model.Room;
 import com.aroom.domain.room.model.RoomImage;
 import com.aroom.domain.room.repository.RoomImageRepository;
 import com.aroom.domain.room.repository.RoomRepository;
+import com.aroom.domain.roomProduct.model.RoomProduct;
+import com.aroom.domain.roomProduct.repository.RoomProductRepository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -44,6 +46,8 @@ class ReservationServiceTest {
 
     @Mock
     private MemberRepository memberRepository;
+    @Mock
+    private RoomProductRepository roomProductRepository;
 
     @InjectMocks
     private ReservationService reservationService;
@@ -53,6 +57,8 @@ class ReservationServiceTest {
     private RoomImage roomImage;
     private Room testRoom;
     private Member tester;
+    private RoomProduct roomProduct;
+    private Reservation reservation;
 
     @BeforeEach
     private void init(){
@@ -80,7 +86,6 @@ class ReservationServiceTest {
             .maxCapacity(4)
             .checkIn(LocalTime.of(19, 0))
             .checkOut(LocalTime.of(13, 0))
-            .stock(1)
             .roomImageList(null)
             .build();
 
@@ -91,6 +96,16 @@ class ReservationServiceTest {
             .password("56124WDA2@")
             .build();
 
+        roomProduct = RoomProduct.builder()
+            .room(testRoom)
+            .stock(5)
+            .startDate(LocalDate.now())
+            .build();
+
+        reservation = Reservation.builder()
+            .member(Member.builder().build())
+            .agreement(true)
+            .build();
     }
 
     @Nested
@@ -114,13 +129,8 @@ class ReservationServiceTest {
                 .agreement(true)
                 .build();
 
-            Reservation reservation = Reservation.builder()
-                .member(Member.builder().build())
-                .agreement(true)
-                .build();
-
             ReservationRoom reservationRoom = ReservationRoom.builder()
-                .room(testRoom)
+                .roomProduct(roomProduct)
                 .reservation(reservation)
                 .startDate(request.getRoomList().get(0).getStartDate())
                 .endDate(request.getRoomList().get(0).getEndDate())
@@ -133,6 +143,8 @@ class ReservationServiceTest {
             given(reservationRoomRepository.save(any())).willReturn(reservationRoom);
             given(reservationRepository.save(any())).willReturn(reservation);
             given(roomImageRepository.findById(any())).willReturn(Optional.of(roomImage));
+            given(roomProductRepository.findByRoomAndBetweenStartDateAndEndDate(any(), any(),
+                any())).willReturn(List.of(roomProduct));
 
             // when
             ReservationResponse response = reservationService.reserveRoom(request, tester.getId());
@@ -162,7 +174,9 @@ class ReservationServiceTest {
 
             given(memberRepository.findById(any())).willReturn(Optional.of(tester));
             given(roomRepository.findByIdWithLock(any())).willReturn(Optional.of(testRoom));
-            given(reservationRoomRepository.getOverlappingReservationByDateRange(any(), any(), any())).willReturn(2);
+            given(reservationRepository.save(any())).willReturn(reservation);
+            given(roomProductRepository.findByRoomAndBetweenStartDateAndEndDate(any(), any(),
+                any())).willReturn(List.of(roomProduct));
 
             // when then
             Assertions.assertThatThrownBy(() -> {

@@ -11,12 +11,12 @@
 
 === HttpRequest
 
-include::{snippets}/get-specific-accommodation/http-request.adoc[]
-include::{snippets}/get-specific-accommodation/http-path-parameters.adoc[]
-include::{snippets}/get-specific-accommodation/http-query-parameters.adoc[]
+include::{snippets}/accommodation-specific-get/http-request.adoc[]
+include::{snippets}/accommodation-specific-get/path-parameters.adoc[]
+include::{snippets}/accommodation-specific-get/query-parameters.adoc[]
 
 
 === HttpResponse
 
-include::{snippets}/get-specific-accommodation/http-response.adoc[]
-include::{snippets}/get-specific-accommodation/http-response-fields.adoc[]
+include::{snippets}/accommodation-specific-get/http-response.adoc[]
+include::{snippets}/accommodation-specific-get/response-fields.adoc[]

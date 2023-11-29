@@ -77,7 +77,7 @@ public class RoomCartService {
         return new RoomCartResponse(cart);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public FindCartResponse getCartList(Long memberId) {
         Optional<Cart> cartOptional = cartRepository.findByMemberId(memberId);
         Cart cart = null;
@@ -87,6 +87,8 @@ public class RoomCartService {
                     memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new))
                 .roomCartList(new ArrayList<>())
                 .build();
+
+            cart = cartRepository.save(cart);
         }else{
             cart = cartOptional.get();
         }

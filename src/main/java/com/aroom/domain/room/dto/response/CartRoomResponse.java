@@ -1,11 +1,15 @@
 package com.aroom.domain.room.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 
+@NoArgsConstructor
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class CartRoomResponse {
     private Long roomId;
     private String type;

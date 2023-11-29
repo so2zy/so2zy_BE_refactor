@@ -1,12 +1,14 @@
 package com.aroom.domain.accommodation.dto.response;
 
 import com.aroom.domain.room.dto.response.CartRoomResponse;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class CartAccommodationResponse {
     private Long accommodationId;
     private String accommodationName;

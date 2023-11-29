@@ -20,3 +20,15 @@ include::{snippets}/roomCart-post/http-reqeust-fields.adoc[]
 
 include::{snippets}/roomCart-post/http-response.adoc[]
 include::{snippets}/roomCart-post/http-response-fields.adoc[]
+
+
+[[roomCart-get]]
+== 장바구니 조회
+장바구니를 조회하는 API 입니다.
+
+=== HttpRequest
+
+=== HttpResponse
+
+include::{snippets}/roomCart-get/http-response.adoc[]
+include::{snippets}/roomCart-get/http-response-fields.adoc[]

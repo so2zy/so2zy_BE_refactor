@@ -13,6 +13,7 @@ import com.aroom.domain.room.model.Room;
 import com.aroom.domain.roomCart.dto.request.RoomCartRequest;
 import com.aroom.domain.roomCart.dto.response.RoomCartResponse;
 import com.aroom.domain.roomCart.exception.OutOfStockException;
+import com.aroom.domain.roomCart.exception.WrongDateException;
 import com.aroom.domain.roomCart.model.RoomCart;
 import com.aroom.domain.roomCart.repository.RoomCartRepository;
 import com.aroom.domain.roomProduct.exception.RoomProductNotFoundException;
@@ -25,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -43,6 +43,8 @@ public class RoomCartService {
     @Transactional
     public RoomCartResponse postRoomCart(Long member_id, Long room_id,
         RoomCartRequest roomCartRequest) {
+
+        checkStartDateEndDate(roomCartRequest);
 
         Optional<Cart> optionalCart = cartRepository.findByMemberId(member_id);
         Cart cart = optionalCart.orElseGet(() -> {
@@ -191,5 +193,13 @@ public class RoomCartService {
         }
         RoomProduct minStockRoomProduct = roomProductRepository.findByStock(minStock).get();
         return minStockRoomProduct;
+    }
+
+    private void checkStartDateEndDate(RoomCartRequest roomCartRequest) {
+        LocalDate startDate = roomCartRequest.getStartDate();
+        LocalDate endDate = roomCartRequest.getEndDate();
+        if(startDate.isAfter(endDate)){
+            throw new WrongDateException();
+        }
     }
 }

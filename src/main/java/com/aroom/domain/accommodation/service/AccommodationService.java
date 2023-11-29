@@ -103,12 +103,13 @@ public class AccommodationService {
             pageable.getPageSize());
 
         log.info("page is {}, size is {}", pageable.getPageNumber(),pageable.getPageSize());
+        log.info("AccommodationListResponse Size is {}", accommodationListResponse.getBody().size());
         return accommodationListResponse;
     }
 
     @Transactional(readOnly = true)
     public AccommodationListResponse getAllAccommodation(Pageable pageable) {
-        List<Accommodation> accommodation = accommodationRepository.findAll();
+        List<Accommodation> accommodation = accommodationRepository.getAll(pageable);
 
         AccommodationListResponse accommodationListResponse = convertAccommodationListToAccommodationListResponse(
             pageable, accommodation);

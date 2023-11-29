@@ -31,6 +31,15 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
     }
 
     @Override
+    public List<Accommodation> getAll(Pageable pageable) {
+        return jpaQueryFactory.selectFrom(accommodation)
+            .from(accommodation)
+            .offset((long)pageable.getPageNumber() * pageable.getPageSize()+1)
+            .limit(pageable.getPageSize())
+            .fetch();
+    }
+
+    @Override
     public List<Accommodation> getAccommodationBySearchCondition(
         SearchCondition searchCondition,
         Pageable pageable) {

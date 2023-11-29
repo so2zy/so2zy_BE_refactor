@@ -77,7 +77,7 @@ public class RoomCartService {
         return new RoomCartResponse(cart);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public FindCartResponse getCartList(Long memberId) {
         Optional<Cart> cartOptional = cartRepository.findByMemberId(memberId);
         Cart cart = null;

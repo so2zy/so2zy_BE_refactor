@@ -149,7 +149,7 @@ public class RoomCartService {
         LocalDate preDate = roomProductList.get(0).getStartDate();
         LocalDate startDate = roomProductList.get(0).getStartDate();
 
-        for (int i = 1; i < roomProductList.size();i++) {
+        for (int i = 0; i < roomProductList.size();i++) {
             RoomProduct roomProduct = roomProductList.get(i);
 
             if (preDate.plusDays(1).isEqual(roomProduct.getStartDate())

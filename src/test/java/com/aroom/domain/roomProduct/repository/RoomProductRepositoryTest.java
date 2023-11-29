@@ -1,4 +1,4 @@
-package com.aroom.domain.roomCart.repository;
+package com.aroom.domain.roomProduct.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,11 +13,12 @@ import com.aroom.domain.member.repository.MemberRepository;
 import com.aroom.domain.room.model.Room;
 import com.aroom.domain.room.repository.RoomRepository;
 import com.aroom.domain.roomCart.model.RoomCart;
+import com.aroom.domain.roomCart.repository.RoomCartRepository;
 import com.aroom.domain.roomProduct.model.RoomProduct;
-import com.aroom.domain.roomProduct.repository.RoomProductRepository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 @DataJpaTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class RoomCartRepositoryTest {
+public class RoomProductRepositoryTest {
 
     @Autowired
     private MemberRepository memberRepository;
@@ -94,18 +95,34 @@ public class RoomCartRepositoryTest {
     }
 
     @Test
-    @DisplayName("roomProductId로 roomCart가 조회됐습니다.")
-    void findByRoomProductId() {
+    @DisplayName("roomId, startDate, endDate를 토대로 stock >0 인 RoomProduct가 조회됐습니다..")
+    void findByRoomIdAndStartDateAndEndDate() {
         // given
-        long roomProductId = 1L;
+        Long roomId = 1L;
+        LocalDate startDate = LocalDate.of(2023, 11, 27);
+        LocalDate endDate = LocalDate.of(2023, 11, 28);
+
 
         // when
-        List<RoomCart> result = roomCartRepository.findByRoomProductId(roomProductId);
+        List<RoomProduct> result = roomProductRepository.findByRoomIdAndStartDateAndEndDate(roomId,startDate,endDate);
 
         // then
-        assertThat(result.get(0).getId()).isEqualTo(1L);
-        assertThat(result.get(0).getCart().getId()).isEqualTo(1L);
-        assertThat(result.get(0).getRoomProduct().getId()).isEqualTo(1L);
+        assertThat(result.get(0).getRoom().getId()).isEqualTo(roomId);
+        assertThat(result.get(0).getStartDate()).isEqualTo(startDate);
+    }
+
+    @Test
+    @DisplayName("stock을 토대로 RoomProduct가 조회됐습니다.")
+    void findByStock() {
+        // given
+        int stock = 4;
+
+        // when
+        Optional<RoomProduct> result = roomProductRepository.findByStock(stock);
+
+        // then
+        assertThat(result.isPresent());
+        assertThat(result.get().getStock()).isEqualTo(stock);
     }
 }
 

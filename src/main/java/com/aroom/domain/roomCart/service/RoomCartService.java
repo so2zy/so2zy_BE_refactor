@@ -29,6 +29,7 @@ import java.util.Map;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,8 +79,17 @@ public class RoomCartService {
 
     @Transactional
     public FindCartResponse getCartList(Long memberId) {
-        Cart cart = cartRepository.findByMemberId(memberId)
-            .orElseThrow(CartNotFoundException::new);
+        Optional<Cart> cartOptional = cartRepository.findByMemberId(memberId);
+        Cart cart = null;
+        if(cartOptional.isEmpty()){
+            cart = Cart.builder()
+                .member(
+                    memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new))
+                .roomCartList(new ArrayList<>())
+                .build();
+        }else{
+            cart = cartOptional.get();
+        }
 
         List<RoomCart> roomCartList = cart.getRoomCartList();
         return createResponse(roomCartList);

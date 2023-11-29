@@ -31,4 +31,4 @@ include::{snippets}/roomCart-post/http-response-fields.adoc[]
 === HttpResponse
 
 include::{snippets}/roomCart-get/http-response.adoc[]
-include::{snippets}/roomCart-get/http-response-fields.adoc[]
+include::{snippets}/roomCart-get/response-fields.adoc[]

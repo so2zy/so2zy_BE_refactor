@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Getter
 @AllArgsConstructor
@@ -36,7 +35,6 @@ public class AccommodationListResponse {
     @AllArgsConstructor
     @Builder
     @Getter
-    @ToString
     public static class InnerClass {
 
         private Long id;
@@ -47,7 +45,7 @@ public class AccommodationListResponse {
 
         private float longitude;
 
-        private String addressCode;
+        private String address;
 
         private int likeCount;
 
@@ -79,6 +77,7 @@ public class AccommodationListResponse {
                 .phoneNumber(accommodation.getPhoneNumber())
                 .price(minimumPrice)
                 .accommodationImageUrl(imageUrl)
+                .address(accommodation.getAddress())
                 .build();
         }
     }

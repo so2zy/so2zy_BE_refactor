@@ -2,79 +2,125 @@ package com.aroom.domain.accommodation.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.aroom.domain.accommodation.dto.AccommodationImageList;
 import com.aroom.domain.accommodation.dto.AccommodationListResponse;
-import com.aroom.domain.accommodation.dto.SearchCondition;
+import com.aroom.domain.accommodation.dto.AccommodationListResponse.InnerClass;
 import com.aroom.domain.accommodation.dto.response.AccommodationResponse;
 import com.aroom.domain.accommodation.dto.response.RoomListInfoResponse;
+import com.aroom.domain.accommodation.model.Accommodation;
+import com.aroom.domain.address.model.Address;
+import com.aroom.domain.room.model.Room;
 import com.aroom.util.ControllerTestWithoutSecurityHelper;
 import com.aroom.util.security.WithMockAccountContext;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 class AccommodationRestControllerTest extends ControllerTestWithoutSecurityHelper {
 
+    protected MediaType contentType =
+        new MediaType(MediaType.APPLICATION_JSON.getType(),
+            MediaType.APPLICATION_JSON.getSubtype(),
+            StandardCharsets.UTF_8);
+    private AccommodationListResponse accommodationListResponse;
+    private AccommodationListResponse.InnerClass innerClass;
+    private Accommodation accommodation;
+    private Room room;
+    private AccommodationImageList accommodationImageList;
+    private Address addressEntity;
 
-    @Test
-    void testFindAllAccommodationWithSearchCondition() throws Exception {
-        // given
-        SearchCondition mockSearchCondition = SearchCondition.builder()
-            .orderCondition(null)
-            .orderBy(null)
-            .checkOut(null)
-            .name(null)
-            .checkIn(null)
-            .lowestPrice(null)
-            .highestPrice(null)
-            .addressCode(null)
-            .likeCount(null)
-            .phoneNumber(null)
+    @BeforeEach
+    private void init() {
+        addressEntity = Address.builder()
+            .id(1L)
+            .areaCode(1)
+            .areaName("서울시")
+            .sigunguCode(18)
+            .sigunguName("송파구")
             .build();
-        PageRequest mockPageRequest = PageRequest.of(0, 10);
-        Sort mockSortCondition = Sort.by(Direction.ASC,
-            AccommodationRestController.NO_ORDER_CONDITION);
+        accommodationImageList = AccommodationImageList.builder()
+            .id(1L)
+            .url("image.com")
+            .build();
+        room = Room.builder()
+            .id(1L)
+            .type("DELUXE")
+            .checkIn(LocalTime.of(20, 00))
+            .checkOut(LocalTime.of(13, 00))
+            .price(110000)
+            .capacity(4)
+            .maxCapacity(6)
+            .soldCount(10)
+            .build();
+        accommodation = Accommodation.builder()
+            .id(1L)
+            .name("롯데호텔")
+            .likeCount(11)
+            .phoneNumber("02-111-111")
+            .longitude(30)
+            .latitude(30)
+            .roomList(List.of(room))
+            .addressEntity(addressEntity)
+            .accommodationImageList(null)
+            .build();
+        innerClass = InnerClass.builder()
+            .id(1L)
+            .name("롯데호텔")
+            .likeCount(11)
+            .phoneNumber("02-111-111")
+            .longitude(30)
+            .latitude(30)
+            .accommodationImageUrl("www.com")
+            .price(110000)
+            .build();
+        accommodationListResponse = AccommodationListResponse.builder()
+            .page(0)
+            .size(10)
+            .body(List.of(innerClass))
+            .build();
+    }
 
-        List<AccommodationListResponse> accommodationListResponse = List.of(
-            AccommodationListResponse.builder()
-                .id(1L)
-                .latitude(1)
-                .accommodationImageLists(null)
-                .phoneNumber("02-000-000")
-                .longitude(1)
-                .name("야놀자호텔")
-                .addressCode("서울시 강남구 청담동 1111")
-                .build());
-        when(accommodationService.getAccommodationListBySearchCondition(mockSearchCondition,
-            mockPageRequest, mockSortCondition))
-            .thenReturn(accommodationListResponse);
+    @Nested
+    @DisplayName("숙소 검색은")
+    class getAccommodation {
 
-        // when, then
-        mockMvc.perform(MockMvcRequestBuilders.get("/v1/accommodations")
-                .param("page", "0")
-                .param("size", "10")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(mockSearchCondition)))
-            .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.jsonPath("$.detail").value("숙소 정보를 성공적으로 조회했습니다."))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.data").isArray());
+        @Test
+        @DisplayName("검색조건이 없는 경우 전체를 반환한다")
+        void get_accommodation_with_no_search_condition() throws Exception {
+            PageRequest pageable = PageRequest.of(0, 10);
+            //given
+            given(accommodationService.getAllAccommodation(any()))
+                .willReturn(accommodationListResponse);
 
+            //when
+            AccommodationListResponse testResponse = accommodationService.getAllAccommodation(
+                pageable);
+
+
+            System.out.println(testResponse.getBody().get(0).getName());
+
+            //then
+            mockMvc.perform(get("/v2/accommodations")
+                    .contentType(contentType))
+                .andExpect(status().isOk())
+                .andDo(print());
+            Mockito.verify(accommodationService, times(1)).getAllAccommodation(pageable);
+        }
     }
 
     @Nested

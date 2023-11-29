@@ -65,7 +65,7 @@ public class RoomCartServiceTest {
     class Context_postRoomCart {
 
         @Test
-        @DisplayName("장바구니에 객실을 등록할 수 있다.")
+        @DisplayName("1박투숙도 장바구니에 객실을 등록할 수 있다.")
         void CartSave_willSuccess() {
             // given
             long memberId = 1L;
@@ -90,9 +90,8 @@ public class RoomCartServiceTest {
             given(roomProductRepository.findByStock(anyInt())).willReturn(
                 Optional.ofNullable(roomProduct));
             List<RoomProduct> roomProductList = List.of(roomProduct);
-            given(roomProductRepository.findByRoomIdAndStartDateAndEndDate(any(Long.TYPE),
-                eq(roomCartRequest.getStartDate()), eq(roomCartRequest.getEndDate().minusDays(1)))).willReturn(
-                roomProductList);
+            given(roomProductRepository.findByRoomIdAndStartDate(any(Long.TYPE),eq(roomCartRequest.getStartDate()))).willReturn(roomProductList);
+
 
             RoomCart roomCart = RoomCart.builder().id(1L).roomProduct(roomProduct).cart(cart)
                 .build();
@@ -100,6 +99,65 @@ public class RoomCartServiceTest {
             cart.postRoomCarts(roomCart);
             given(roomCartRepository.findByRoomProductId(roomProductId)).willReturn(roomCartList);
             given(roomCartRepository.save(any(RoomCart.class))).willReturn(roomCart);
+
+            // when
+            RoomCartResponse roomCartResponse = roomCartService.postRoomCart(memberId, roomId,
+                roomCartRequest);
+
+            // then
+            assertThat(roomCartResponse.getRoomCartList().get(0).getRoom_id()).isEqualTo(roomId);
+        }
+
+        @Test
+        @DisplayName("장기투숙도 장바구니에 객실을 등록할 수 있다.")
+        void CartLongSave_willSuccess() {
+            // given
+            long memberId = 1L;
+            long roomId = 1L;
+            RoomCartRequest roomCartRequest = RoomCartRequest.builder()
+                .startDate(LocalDate.of(2023, 11, 27)).endDate(LocalDate.of(2023, 11, 30)).build();
+
+            Member member = Member.builder().id(1L).email("yang980329@naver.com").name("양유림")
+                .password("123!!!").build();
+            Cart cart = Cart.builder().id(1L).member(member).roomCartList(new ArrayList<>())
+                .build();
+            given(cartRepository.findByMemberId(any(Long.TYPE))).willReturn(Optional.of(cart));
+
+            Room room = Room.builder().id(1L).type("DELUXE").price(350000).capacity(2)
+                .maxCapacity(4)
+                .checkIn(
+                    LocalTime.of(15, 0)).checkOut(LocalTime.of(11, 0))
+                .build();
+            RoomProduct roomProduct1 = RoomProduct.builder().id(1L).room(room)
+                .startDate(roomCartRequest.getStartDate()).stock(4).build();
+            RoomProduct roomProduct2 = RoomProduct.builder().id(2L).room(room)
+                .startDate(roomCartRequest.getStartDate()).stock(2).build();
+            RoomProduct roomProduct3 = RoomProduct.builder().id(3L).room(room)
+                .startDate(roomCartRequest.getStartDate()).stock(3).build();
+            given(roomProductRepository.findByStock(anyInt())).willReturn(
+                Optional.ofNullable(roomProduct2));
+            List<RoomProduct> roomProductList = List.of(roomProduct1,roomProduct2,roomProduct3);
+            given(roomProductRepository.findByRoomIdAndStartDateAndEndDate(any(Long.TYPE),
+                eq(roomCartRequest.getStartDate()), eq(roomCartRequest.getEndDate().minusDays(1)))).willReturn(
+                roomProductList);
+
+            RoomCart roomCart1 = RoomCart.builder().id(1L).roomProduct(roomProduct1).cart(cart)
+                .build();
+            RoomCart roomCart2 = RoomCart.builder().id(2L).roomProduct(roomProduct2).cart(cart)
+                .build();
+            RoomCart roomCart3 = RoomCart.builder().id(3L).roomProduct(roomProduct3).cart(cart)
+                .build();
+            roomCartRepository.save(roomCart1);
+            roomCartRepository.save(roomCart2);
+            roomCartRepository.save(roomCart3);
+
+            List<RoomCart> roomCartList = List.of(roomCart1,roomCart2,roomCart3);
+            List<RoomCart> roomCartMinList = List.of(roomCart2);
+            cart.postRoomCarts(roomCart1);
+            cart.postRoomCarts(roomCart2);
+            cart.postRoomCarts(roomCart3);
+            given(roomCartRepository.findByRoomProductId(roomProduct2.getId())).willReturn(roomCartMinList);
+            given(roomCartRepository.save(any(RoomCart.class))).willReturn(roomCart1);
 
             // when
             RoomCartResponse roomCartResponse = roomCartService.postRoomCart(memberId, roomId,
@@ -136,8 +194,8 @@ public class RoomCartServiceTest {
             given(roomProductRepository.findByStock(anyInt())).willReturn(
                 Optional.ofNullable(roomProduct));
             List<RoomProduct> roomProductList = List.of(roomProduct);
-            given(roomProductRepository.findByRoomIdAndStartDateAndEndDate(any(Long.TYPE),
-                eq(roomCartRequest.getStartDate()), eq(roomCartRequest.getEndDate().minusDays(1)))).willReturn(
+            given(roomProductRepository.findByRoomIdAndStartDate(any(Long.TYPE),
+                eq(roomCartRequest.getStartDate()))).willReturn(
                 roomProductList);
 
             RoomCart roomCart = RoomCart.builder().id(1L).roomProduct(roomProduct).cart(cart)

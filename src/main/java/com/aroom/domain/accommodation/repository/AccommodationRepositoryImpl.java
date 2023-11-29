@@ -38,7 +38,7 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
         return jpaQueryFactory.select(accommodation)
             .from(accommodation)
             .where(booleanBuilderProvider(searchCondition),greaterOrEqualsCapacity(searchCondition))
-            .offset((long)pageable.getPageNumber() * pageable.getPageSize())
+            .offset((long)pageable.getPageNumber() * pageable.getPageSize()+1)
             .limit(pageable.getPageSize())
             .fetch();
 

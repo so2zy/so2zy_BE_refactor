@@ -57,7 +57,7 @@ public class RoomCartService {
 
         List<RoomProduct> roomProductList = roomProductRepository.findByRoomIdAndStartDateAndEndDate(
             room_id,
-            roomCartRequest.getStartDate(), roomCartRequest.getEndDate());
+            roomCartRequest.getStartDate(), roomCartRequest.getEndDate().minusDays(1));
 
         checkContinualDate(roomProductList, roomCartRequest);
 

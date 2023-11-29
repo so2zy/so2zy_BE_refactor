@@ -91,7 +91,7 @@ public class RoomCartServiceTest {
                 Optional.ofNullable(roomProduct));
             List<RoomProduct> roomProductList = List.of(roomProduct);
             given(roomProductRepository.findByRoomIdAndStartDateAndEndDate(any(Long.TYPE),
-                eq(roomCartRequest.getStartDate()), eq(roomCartRequest.getEndDate()))).willReturn(
+                eq(roomCartRequest.getStartDate()), eq(roomCartRequest.getEndDate().minusDays(1)))).willReturn(
                 roomProductList);
 
             RoomCart roomCart = RoomCart.builder().id(1L).roomProduct(roomProduct).cart(cart)
@@ -137,7 +137,7 @@ public class RoomCartServiceTest {
                 Optional.ofNullable(roomProduct));
             List<RoomProduct> roomProductList = List.of(roomProduct);
             given(roomProductRepository.findByRoomIdAndStartDateAndEndDate(any(Long.TYPE),
-                eq(roomCartRequest.getStartDate()), eq(roomCartRequest.getEndDate()))).willReturn(
+                eq(roomCartRequest.getStartDate()), eq(roomCartRequest.getEndDate().minusDays(1)))).willReturn(
                 roomProductList);
 
             RoomCart roomCart = RoomCart.builder().id(1L).roomProduct(roomProduct).cart(cart)

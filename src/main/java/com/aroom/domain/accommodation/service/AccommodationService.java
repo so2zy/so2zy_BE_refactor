@@ -10,6 +10,8 @@ import com.aroom.domain.accommodation.dto.response.AccommodationResponse;
 import com.aroom.domain.accommodation.exception.AccommodationNotFoundException;
 import com.aroom.domain.accommodation.model.Accommodation;
 import com.aroom.domain.accommodation.repository.AccommodationRepository;
+import com.aroom.domain.roomCart.dto.request.RoomCartRequest;
+import com.aroom.domain.roomCart.exception.WrongDateException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -35,6 +37,7 @@ public class AccommodationService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate startDateTypeChanged = LocalDate.parse(startDate, formatter);
         LocalDate endDateTypeChanged = LocalDate.parse(endDate, formatter);
+        checkStartDateEndDate(startDateTypeChanged,endDateTypeChanged);
         long betweenDays = ChronoUnit.DAYS.between(startDateTypeChanged, endDateTypeChanged);
 
         try {
@@ -115,6 +118,12 @@ public class AccommodationService {
             pageable, accommodation);
 
         return accommodationListResponse;
+    }
+
+    private void checkStartDateEndDate(LocalDate startDate, LocalDate endDate) {
+        if(startDate.isAfter(endDate)){
+            throw new WrongDateException();
+        }
     }
 }
 

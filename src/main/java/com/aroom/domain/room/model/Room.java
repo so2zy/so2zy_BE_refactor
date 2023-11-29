@@ -85,4 +85,8 @@ public class Room extends BaseTimeEntity {
         this.soldCount = soldCount;
         this.roomImageList = roomImageList;
     }
+
+    public void addSoldCount(){
+        soldCount++;
+    }
 }

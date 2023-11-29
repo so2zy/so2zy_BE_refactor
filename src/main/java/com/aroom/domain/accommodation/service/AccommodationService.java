@@ -102,6 +102,8 @@ public class AccommodationService {
 
         accommodationListResponse.setPaginationInfo(pageable.getPageNumber(),
             pageable.getPageSize());
+
+        log.info("page is {}, size is {}", pageable.getPageNumber(),pageable.getPageSize());
         return accommodationListResponse;
     }
 

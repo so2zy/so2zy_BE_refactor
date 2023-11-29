@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Getter
 @AllArgsConstructor
@@ -36,7 +35,6 @@ public class AccommodationListResponse {
     @AllArgsConstructor
     @Builder
     @Getter
-    @ToString
     public static class InnerClass {
 
         private Long id;
@@ -47,13 +45,15 @@ public class AccommodationListResponse {
 
         private float longitude;
 
-        private String addressCode;
+        private String address;
 
         private int likeCount;
 
         private String phoneNumber;
 
         private String accommodationImageUrl;
+
+        private Boolean isAvailable;
 
         //객실의 최저가를 숙소 조회할때 대표 가격으로 출력합니다.
         private Integer price;
@@ -65,10 +65,10 @@ public class AccommodationListResponse {
                 .map(AccommodationImageList::getUrl)
                 .findFirst()
                 .orElse(null);
-            int minimumPrice = accommodation.getRoomList().stream()
+            Integer minimumPrice = accommodation.getRoomList().stream()
                 .mapToInt(Room::getPrice)
                 .min()
-                .orElse(100000);
+                .orElse(0);
 
             return InnerClass.builder()
                 .id(accommodation.getId())
@@ -79,6 +79,8 @@ public class AccommodationListResponse {
                 .phoneNumber(accommodation.getPhoneNumber())
                 .price(minimumPrice)
                 .accommodationImageUrl(imageUrl)
+                .address(accommodation.getAddress())
+                .isAvailable(minimumPrice == 0 ? false : true)
                 .build();
         }
     }

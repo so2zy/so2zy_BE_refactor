@@ -2,6 +2,7 @@ package com.aroom.domain.roomCart.service;
 
 import com.aroom.domain.accommodation.dto.response.CartAccommodationResponse;
 import com.aroom.domain.accommodation.model.Accommodation;
+import com.aroom.domain.cart.exception.CartNotFoundException;
 import com.aroom.domain.roomCart.dto.response.FindCartResponse;
 import com.aroom.domain.cart.model.Cart;
 import com.aroom.domain.cart.repository.CartRepository;
@@ -75,9 +76,10 @@ public class RoomCartService {
         return new RoomCartResponse(cart);
     }
 
+    @Transactional
     public FindCartResponse getCartList(Long memberId) {
         Cart cart = cartRepository.findByMemberId(memberId)
-            .orElseThrow(MemberNotFoundException::new);
+            .orElseThrow(CartNotFoundException::new);
 
         List<RoomCart> roomCartList = cart.getRoomCartList();
         return createResponse(roomCartList);
@@ -150,7 +152,7 @@ public class RoomCartService {
         LocalDate preDate = roomProductList.get(0).getStartDate();
         LocalDate startDate = roomProductList.get(0).getStartDate();
 
-        for (int i = 1; i < roomProductList.size();i++) {
+        for (int i = 0; i < roomProductList.size();i++) {
             RoomProduct roomProduct = roomProductList.get(i);
 
             if (preDate.plusDays(1).isEqual(roomProduct.getStartDate())

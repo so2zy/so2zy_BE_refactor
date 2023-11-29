@@ -78,6 +78,7 @@ public class RoomCartRestControllerTest extends ControllerTestWithoutSecurityHel
 
         @Test
         @DisplayName("성공시 장바구니에 담겨있는 숙소 정보를 반환한다.")
+        @WithMockAccountContext
         void find_tester_cart_info_success() throws Exception {
             // given
             CartRoomResponse cartRoomResponse = CartRoomResponse.builder()
@@ -105,13 +106,13 @@ public class RoomCartRestControllerTest extends ControllerTestWithoutSecurityHel
             given(roomCartService.getCartList(any())).willReturn(findCartResponse);
 
             // when
-            ResultActions response = mockMvc.perform(get("/v1/carts")
+            ResultActions response = mockMvc.perform(get("/v2/carts")
                 .with(csrf()));
 
             // then
             response.andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(jsonPath("$.data.accommodationList.accommodationName",
+                .andExpect(jsonPath("$.data.accommodationList[0].accommodationName",
                     is(cartAccommodationResponse.getAccommodationName())));
         }
 

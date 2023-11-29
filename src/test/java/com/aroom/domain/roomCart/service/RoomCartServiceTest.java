@@ -8,13 +8,16 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
+import com.aroom.domain.accommodation.model.Accommodation;
 import com.aroom.domain.cart.model.Cart;
 import com.aroom.domain.cart.repository.CartRepository;
 import com.aroom.domain.member.model.Member;
 import com.aroom.domain.member.repository.MemberRepository;
 import com.aroom.domain.room.model.Room;
+import com.aroom.domain.room.model.RoomImage;
 import com.aroom.domain.room.repository.RoomRepository;
 import com.aroom.domain.roomCart.dto.request.RoomCartRequest;
+import com.aroom.domain.roomCart.dto.response.FindCartResponse;
 import com.aroom.domain.roomCart.dto.response.RoomCartResponse;
 import com.aroom.domain.roomCart.exception.OutOfStockException;
 import com.aroom.domain.roomCart.model.RoomCart;
@@ -198,9 +201,7 @@ public class RoomCartServiceTest {
                 .roomCartList(roomCartList)
                 .build();
 
-            tester.setCart(cart);
-
-            given(memberRepository.findById(any())).willReturn(Optional.of(tester));
+            given(cartRepository.findByMemberId(any())).willReturn(Optional.of(cart));
 
             // when
             FindCartResponse findCartResponse = roomCartService.getCartList(1L);

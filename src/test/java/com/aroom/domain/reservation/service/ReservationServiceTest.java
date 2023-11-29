@@ -139,7 +139,7 @@ class ReservationServiceTest {
                 .build();
 
             given(memberRepository.findById(any())).willReturn(Optional.of(tester));
-            given(roomRepository.findByIdWithLock(any())).willReturn(Optional.of(testRoom));
+            given(roomRepository.findById(any())).willReturn(Optional.of(testRoom));
             given(reservationRoomRepository.save(any())).willReturn(reservationRoom);
             given(reservationRepository.save(any())).willReturn(reservation);
             given(roomImageRepository.findById(any())).willReturn(Optional.of(roomImage));
@@ -165,6 +165,13 @@ class ReservationServiceTest {
                 .endDate(LocalDate.of(2023, 12, 23))
                 .build();
 
+            RoomProduct outOfStockProduct = RoomProduct.builder()
+                .id(1L)
+                .room(testRoom)
+                .stock(0)
+                .startDate(LocalDate.of(2023, 12, 12))
+                .build();
+
             ReservationRequest request = ReservationRequest.builder()
                 .roomList(List.of(roomRequest))
                 .personnel(2)
@@ -173,10 +180,10 @@ class ReservationServiceTest {
                 .build();
 
             given(memberRepository.findById(any())).willReturn(Optional.of(tester));
-            given(roomRepository.findByIdWithLock(any())).willReturn(Optional.of(testRoom));
+            given(roomRepository.findById(any())).willReturn(Optional.of(testRoom));
             given(reservationRepository.save(any())).willReturn(reservation);
             given(roomProductRepository.findByRoomAndBetweenStartDateAndEndDate(any(), any(),
-                any())).willReturn(List.of(roomProduct));
+                any())).willReturn(List.of(outOfStockProduct));
 
             // when then
             Assertions.assertThatThrownBy(() -> {

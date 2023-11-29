@@ -10,13 +10,23 @@
 객실을 장바구니에 추가하는 API 입니다.
 
 === HttpRequest
-
 include::{snippets}/roomCart-post/http-request.adoc[]
 include::{snippets}/roomCart-post/path-parameters.adoc[]
 include::{snippets}/roomCart-post/request-fields.adoc[]
 
 
 === HttpResponse
-
 include::{snippets}/roomCart-post/http-response.adoc[]
 include::{snippets}/roomCart-post/response-fields.adoc[]
+
+
+[[roomCart-get]]
+== 장바구니 조회
+장바구니를 조회하는 API 입니다.
+
+=== HttpRequest
+include::{snippets}/roomCart-get/http-request.adoc[]
+
+=== HttpResponse
+include::{snippets}/roomCart-get/http-response.adoc[]
+include::{snippets}/roomCart-get/response-fields.adoc[]

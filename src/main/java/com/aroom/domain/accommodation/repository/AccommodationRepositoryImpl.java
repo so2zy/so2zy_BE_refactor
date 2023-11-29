@@ -38,7 +38,7 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
         return jpaQueryFactory.select(accommodation)
             .from(accommodation)
             .where(booleanBuilderProvider(searchCondition),greaterOrEqualsCapacity(searchCondition))
-            .offset(pageable.getPageNumber())
+            .offset((long)pageable.getPageNumber() * pageable.getPageSize()+1)
             .limit(pageable.getPageSize())
             .fetch();
 
@@ -58,7 +58,7 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
             .where(betweenDate(searchCondition),
                 greaterThanStock(0)
                 ,greaterOrEqualsCapacity(searchCondition))
-            .offset(pageable.getPageNumber())
+            .offset((long)pageable.getPageNumber() * pageable.getPageSize()+1)
             .limit(pageable.getPageSize())
             .fetch();
 
@@ -75,7 +75,7 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
             .join(accommodation.roomList, room)
             .where(booleanBuilderForDate(searchCondition)
                 ,greaterOrEqualsCapacity(searchCondition))
-            .offset(pageable.getPageNumber())
+            .offset((long)pageable.getPageNumber() * pageable.getPageSize()+1)
             .limit(pageable.getPageSize())
             .orderBy(getOrderBy(sortCondition))
             .fetch();
@@ -89,7 +89,7 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
             .from(accommodation)
             .where(booleanBuilderProvider(searchCondition),
                 greaterOrEqualsCapacity(searchCondition))
-            .offset(pageable.getPageNumber())
+            .offset((long)pageable.getPageNumber() * pageable.getPageSize()+1)
             .limit(pageable.getPageSize())
             .orderBy(getOrderBy(sortCondition))
             .fetch();

@@ -2,6 +2,7 @@ package com.aroom.domain.roomCart.service;
 
 import com.aroom.domain.accommodation.dto.response.CartAccommodationResponse;
 import com.aroom.domain.accommodation.model.Accommodation;
+import com.aroom.domain.cart.exception.CartNotFoundException;
 import com.aroom.domain.roomCart.dto.response.FindCartResponse;
 import com.aroom.domain.cart.model.Cart;
 import com.aroom.domain.cart.repository.CartRepository;
@@ -75,7 +76,7 @@ public class RoomCartService {
 
     public FindCartResponse getCartList(Long memberId) {
         Cart cart = cartRepository.findByMemberId(memberId)
-            .orElseThrow(MemberNotFoundException::new);
+            .orElseThrow(CartNotFoundException::new);
 
         List<RoomCart> roomCartList = cart.getRoomCartList();
         return createResponse(roomCartList);

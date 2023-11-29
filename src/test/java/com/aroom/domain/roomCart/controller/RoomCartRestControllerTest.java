@@ -78,6 +78,7 @@ public class RoomCartRestControllerTest extends ControllerTestWithoutSecurityHel
 
         @Test
         @DisplayName("성공시 장바구니에 담겨있는 숙소 정보를 반환한다.")
+        @WithMockAccountContext
         void find_tester_cart_info_success() throws Exception {
             // given
             CartRoomResponse cartRoomResponse = CartRoomResponse.builder()

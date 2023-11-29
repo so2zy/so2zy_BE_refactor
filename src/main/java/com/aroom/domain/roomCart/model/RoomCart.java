@@ -32,7 +32,7 @@ public class RoomCart extends BaseTimeEntity {
     @JoinColumn(name = "cart_id")
     private Cart cart;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_product_id")
     private RoomProduct roomProduct;
 

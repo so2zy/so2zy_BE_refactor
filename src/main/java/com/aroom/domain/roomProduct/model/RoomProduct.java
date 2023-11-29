@@ -29,7 +29,7 @@ public class RoomProduct extends BaseTimeEntity {
     private Long id;
 
     @JsonBackReference
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id", nullable = false)
     private Room room;
 

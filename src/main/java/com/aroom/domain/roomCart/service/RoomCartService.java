@@ -74,6 +74,7 @@ public class RoomCartService {
         return new RoomCartResponse(cart);
     }
 
+    @Transactional
     public FindCartResponse getCartList(Long memberId) {
         Cart cart = cartRepository.findByMemberId(memberId)
             .orElseThrow(CartNotFoundException::new);

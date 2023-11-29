@@ -14,6 +14,7 @@ import com.aroom.domain.reservation.dto.response.ReservationResponse;
 import com.aroom.domain.reservation.service.ReservationService;
 import com.aroom.domain.room.dto.request.RoomReservationRequest;
 import com.aroom.domain.room.dto.response.RoomReservationResponse;
+import com.aroom.util.security.WithMockAccountContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -79,7 +80,7 @@ class ReservationRestControllerTest {
 
         @Test
         @DisplayName("성공시 예약을 확인할 수 있는 정보를 반환한다.")
-        @WithMockUser("test@naver.com")
+        @WithMockAccountContext
         void reserve_one_room_of_one_accommodation_success() throws Exception {
             // given
             ReservationRequest request = ReservationRequest.builder()
@@ -104,7 +105,7 @@ class ReservationRestControllerTest {
 
         @Test
         @DisplayName("방에 대한 정보가 없을 때는 예약을 할 수 없다.")
-        @WithMockUser("test@naver.com")
+        @WithMockAccountContext
         void reserve_no_room_data_fail() throws Exception {
             // given
             ReservationRequest request = ReservationRequest.builder()

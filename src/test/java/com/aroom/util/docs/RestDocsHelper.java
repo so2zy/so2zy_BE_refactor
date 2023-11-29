@@ -20,7 +20,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 public abstract class RestDocsHelper {
 
     protected MockMvc mockMvc;
-    protected ObjectMapper objectMapper = new ObjectMapper();
+    protected ObjectMapper objectMapper = new ObjectMapper().setDateFormat(new StdDateFormat());
 
     @BeforeEach
     void setUp(RestDocumentationContextProvider provider) {

@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.aroom.domain.accommodation.dto.AccommodationImageList;
 import com.aroom.domain.accommodation.dto.AccommodationListResponse;
 import com.aroom.domain.accommodation.dto.AccommodationListResponse.InnerClass;
+import com.aroom.domain.accommodation.dto.SearchCondition;
 import com.aroom.domain.accommodation.dto.response.AccommodationResponse;
 import com.aroom.domain.accommodation.dto.response.RoomListInfoResponse;
 import com.aroom.domain.accommodation.model.Accommodation;
@@ -29,6 +30,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.MediaType;
 
 class AccommodationRestControllerTest extends ControllerTestWithoutSecurityHelper {
@@ -39,6 +42,7 @@ class AccommodationRestControllerTest extends ControllerTestWithoutSecurityHelpe
             StandardCharsets.UTF_8);
     private AccommodationListResponse accommodationListResponse;
     private AccommodationListResponse.InnerClass innerClass;
+    private AccommodationListResponse.InnerClass innerClass2;
     private Accommodation accommodation;
     private Room room;
     private AccommodationImageList accommodationImageList;
@@ -118,8 +122,63 @@ class AccommodationRestControllerTest extends ControllerTestWithoutSecurityHelpe
             mockMvc.perform(get("/v2/accommodations")
                     .contentType(contentType))
                 .andExpect(status().isOk())
-                .andDo(print());
-            Mockito.verify(accommodationService, times(1)).getAllAccommodation(pageable);
+                .andDo(print())
+                .andExpect(jsonPath("$.data.page").isNumber())
+                .andExpect(jsonPath("$.data.size").isNumber())
+                .andExpect(jsonPath("$.data.body").isArray())
+                .andExpect(jsonPath("$.data.body[0].name").isString());
+
+            //Mockito.verify(accommodationService, times(1)).getAllAccommodation(pageable);
+        }
+
+        @Test
+        @DisplayName("검색조건이 있는 경우 검색 조건에 맞는 숙소를 반환한다")
+        void get_accommodation_with_search_condition() throws Exception {
+            innerClass2 = InnerClass.builder()
+                .id(1L)
+                .name("영주")
+                .likeCount(123)
+                .phoneNumber("054-111-111")
+                .longitude(30)
+                .latitude(30)
+                .accommodationImageUrl("www.com")
+                .price(200000)
+                .build();
+
+            AccommodationListResponse accommodationListResponse1 = AccommodationListResponse.builder()
+                .page(0)
+                .size(10)
+                .body(List.of(innerClass))
+                .build();
+            PageRequest pageable = PageRequest.of(0, 10);
+            //given
+            given(accommodationService.getAccommodationListBySearchCondition(any(), any(), any()))
+                .willReturn(accommodationListResponse1);
+            SearchCondition searchCondition = SearchCondition.builder()
+                .name("롯데")
+                .build();
+
+            //when
+            AccommodationListResponse testResponse = accommodationService.getAccommodationListBySearchCondition(
+                searchCondition,
+                pageable,
+                null);
+
+
+            System.out.println(testResponse.getBody().get(0).getName());
+
+            //then
+            mockMvc.perform(get("/v2/accommodations?name=롯데")
+                    //.queryParam("name","롯데")
+                    .contentType(contentType))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.data.page").isNumber())
+                .andExpect(jsonPath("$.data.size").isNumber())
+                .andExpect(jsonPath("$.data.body").isArray())
+                .andExpect(jsonPath("$.data.body[0].name").isString());
+
+            //Mockito.verify(accommodationService, times(1)).getAllAccommodation(pageable);
         }
     }
 

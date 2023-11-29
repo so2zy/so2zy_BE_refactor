@@ -37,7 +37,7 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
 
         return jpaQueryFactory.select(accommodation)
             .from(accommodation)
-            .where(booleanBuilderProvider(searchCondition))
+            .where(booleanBuilderProvider(searchCondition),greaterOrEqualsCapacity(searchCondition))
             .offset(pageable.getPageNumber())
             .limit(pageable.getPageSize())
             .fetch();
@@ -56,7 +56,8 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
             .join(accommodation.roomList, room)
             .join(room.roomProductList, roomProduct)
             .where(betweenDate(searchCondition),
-                greaterThanStock(0))
+                greaterThanStock(0)
+                ,greaterOrEqualsCapacity(searchCondition))
             .offset(pageable.getPageNumber())
             .limit(pageable.getPageSize())
             .fetch();
@@ -72,7 +73,8 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
             .select(accommodation)
             .from(accommodation)
             .join(accommodation.roomList, room)
-            .where(booleanBuilderForDate(searchCondition))
+            .where(booleanBuilderForDate(searchCondition)
+                ,greaterOrEqualsCapacity(searchCondition))
             .offset(pageable.getPageNumber())
             .limit(pageable.getPageSize())
             .orderBy(getOrderBy(sortCondition))
@@ -82,9 +84,11 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
     @Override
     public List<Accommodation> getAccommodationBySearchConditionWithSortCondition(
         SearchCondition searchCondition, Pageable pageable, Sort sortCondition) {
-        return jpaQueryFactory.select(accommodation)
+        return jpaQueryFactory
+            .select(accommodation)
             .from(accommodation)
-            .where(booleanBuilderProvider(searchCondition))
+            .where(booleanBuilderProvider(searchCondition),
+                greaterOrEqualsCapacity(searchCondition))
             .offset(pageable.getPageNumber())
             .limit(pageable.getPageSize())
             .orderBy(getOrderBy(sortCondition))
@@ -115,11 +119,11 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
         if (searchCondition.getPhoneNumber() != null) {
             booleanBuilder.and(accommodation.phoneNumber.eq(searchCondition.getPhoneNumber()));
         }
-        if (searchCondition.getCapacity() != null) {
-            booleanBuilder.and(
-                //숙소의 최대수용인원이 사용자가 입력한 인원수보다 무조건 커야함
-                accommodation.roomList.any().maxCapacity.goe(searchCondition.getCapacity()));
-        }
+//        if (searchCondition.getCapacity() != null) {
+//            booleanBuilder.and(
+//                //숙소의 최대수용인원이 사용자가 입력한 인원수보다 무조건 커야함
+//                accommodation.roomList.any().maxCapacity.goe(searchCondition.getCapacity()));
+//        }
         //lowestPrice와 higestPrice가 둘 다 NULL이 아닌 경우
         if (searchCondition.getLowestPrice() != null &&
             searchCondition.getHighestPrice() != null) {
@@ -151,6 +155,12 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
         }
 
         return booleanBuilder;
+    }
+    private BooleanExpression greaterOrEqualsCapacity(SearchCondition searchCondition){
+        if (searchCondition.getCapacity() == null){
+            return null;
+        }
+        return accommodation.roomList.any().maxCapacity.goe(searchCondition.getCapacity());
     }
 
     private BooleanBuilder booleanBuilderForDate(SearchCondition searchCondition) {

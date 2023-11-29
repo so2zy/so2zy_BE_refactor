@@ -39,7 +39,8 @@ public class AccommodationRestController {
         @Nullable @RequestParam(defaultValue = "10") Integer size
     ) {
         //쿼리스트링 유무 검증
-        if (validateQueryParamIsNull(searchCondition, page, size)) {
+        // searchCondition, page, size 모두 null 이면 else로 분기
+        if (validateQueryParamIsNotNull(searchCondition, page, size)) {
             //Default 정렬조건 세팅
             Sort sortCondition = Sort.by(
                 Direction.fromOptionalString(searchCondition.getOrderBy())
@@ -49,7 +50,7 @@ public class AccommodationRestController {
 
             PageRequest pageRequest = PageRequest.of(page, size);
 
-            if (searchCondition.getStartDate() != null && searchCondition.getEndDate() != null) {
+            if (searchCondition.getStartDate() != null || searchCondition.getEndDate() != null) {
                 return ResponseEntity.status(HttpStatus.OK)
                     .body(new ApiResponse<>(LocalDateTime.now(), "숙소 정보를 성공적으로 조회했습니다",
                         accommodationService.getAccommodationListByDateSearchCondition(
@@ -70,9 +71,11 @@ public class AccommodationRestController {
     }
 
 
-    private boolean validateQueryParamIsNull(SearchCondition searchCondition, Integer page,
+    private boolean validateQueryParamIsNotNull(SearchCondition searchCondition, Integer page,
         Integer size) {
-        if (searchCondition.getOrderCondition() != null ||
+        if (
+            //하나라도 참이면 true 반환 즉, searchCondition의 하나라도 값이 있으며 true
+            searchCondition.getOrderCondition() != null ||
             searchCondition.getHighestPrice() != null ||
             searchCondition.getLowestPrice() != null ||
             searchCondition.getCheckIn() != null ||
@@ -84,9 +87,7 @@ public class AccommodationRestController {
             searchCondition.getAreaCode() != null ||
             searchCondition.getAreaName() != null ||
             searchCondition.getSigunguCode() != null ||
-            searchCondition.getSigunguName() != null ||
-            page != null ||
-            size != null) {
+            searchCondition.getSigunguName() != null) {
             return true;
         }
         return false;

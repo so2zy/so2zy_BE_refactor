@@ -56,14 +56,13 @@ public class AccommodationService {
     @Transactional(readOnly = true)
     public AccommodationListResponse getAccommodationListBySearchCondition(
         SearchCondition searchCondition, Pageable pageable, Sort sortCondition) {
-        if (sortCondition.toString().contains(NO_ORDER_CONDITION)) {
+        if (searchCondition.getOrderCondition() == null && searchCondition.getOrderBy() == null){
             List<Accommodation> accommodation = accommodationRepository.getAccommodationBySearchCondition(
                 searchCondition, pageable);
 
-           return convertAccommodationListToAccommodationListResponse(
+            return convertAccommodationListToAccommodationListResponse(
                 pageable, accommodation);
         }
-
         List<Accommodation> accommodation = accommodationRepository.getAccommodationBySearchConditionWithSortCondition(
             searchCondition, pageable, sortCondition);
 

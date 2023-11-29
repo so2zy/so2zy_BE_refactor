@@ -120,7 +120,7 @@ public class AccommodationServiceTest {
         void get_accommodation_with_no_search_condition() throws Exception {
             PageRequest pageable = PageRequest.of(0, 10);
             List<Accommodation> mockAccommodations = Arrays.asList(accommodation, accommodation2);
-            given(accommodationRepository.findAll())
+            given(accommodationRepository.getAll(any()))
                 .willReturn(mockAccommodations);
             //when
             AccommodationListResponse result = accommodationService.getAllAccommodation(pageable);

@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Version;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -44,5 +45,9 @@ public class RoomProduct extends BaseTimeEntity {
         this.room = room;
         this.stock = stock;
         this.startDate = startDate;
+    }
+
+    public void sellRoomProduct(){
+        this.stock--;
     }
 }

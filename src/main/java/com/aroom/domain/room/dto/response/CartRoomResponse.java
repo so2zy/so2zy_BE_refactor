@@ -21,11 +21,12 @@ public class CartRoomResponse {
     private LocalDate startDate;
     private LocalDate endDate;
     private String roomImageUrl;
+    private int personnel;
 
     @Builder
     public CartRoomResponse(Long roomId, String type, LocalTime checkIn, LocalTime checkOut,
         int capacity, int maxCapacity, int price, LocalDate startDate, LocalDate endDate,
-        String roomImageUrl) {
+        String roomImageUrl, int personnel) {
         this.roomId = roomId;
         this.type = type;
         this.checkIn = checkIn;
@@ -36,5 +37,6 @@ public class CartRoomResponse {
         this.startDate = startDate;
         this.endDate = endDate;
         this.roomImageUrl = roomImageUrl;
+        this.personnel = personnel;
     }
 }

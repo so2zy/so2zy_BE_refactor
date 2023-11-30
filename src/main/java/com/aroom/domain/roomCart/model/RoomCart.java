@@ -36,10 +36,14 @@ public class RoomCart extends BaseTimeEntity {
     @JoinColumn(name = "room_product_id")
     private RoomProduct roomProduct;
 
+    @Column(nullable = false)
+    private int personnel;
+
     @Builder
-    public RoomCart(Long id, Cart cart, RoomProduct roomProduct) {
+    public RoomCart(Long id, Cart cart, RoomProduct roomProduct, int personnel) {
         this.id = id;
         this.cart = cart;
         this.roomProduct = roomProduct;
+        this.personnel = personnel;
     }
 }

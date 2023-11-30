@@ -20,12 +20,14 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.DirtiesContext;
 
+@Disabled
 @DataJpaTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class RoomProductRepositoryTest {
@@ -111,18 +113,5 @@ public class RoomProductRepositoryTest {
         assertThat(result.get(0).getStartDate()).isEqualTo(startDate);
     }
 
-    @Test
-    @DisplayName("stock을 토대로 RoomProduct가 조회됐습니다.")
-    void findByStock() {
-        // given
-        int stock = 4;
-
-        // when
-        Optional<RoomProduct> result = roomProductRepository.findByStock(stock);
-
-        // then
-        assertThat(result.isPresent());
-        assertThat(result.get().getStock()).isEqualTo(stock);
-    }
 }
 

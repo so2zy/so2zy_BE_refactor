@@ -63,7 +63,7 @@ public class ReservationService {
             requiredRoom.addSoldCount();
 
             List<RoomProduct> roomProductList = roomProductRepository.findByRoomAndBetweenStartDateAndEndDate(
-                requiredRoom, roomRequest.getStartDate(), roomRequest.getEndDate());
+                requiredRoom, roomRequest.getStartDate(), roomRequest.getEndDate().minusDays(1));
 
             checkOverlappingReservation(roomProductList);
 

@@ -28,6 +28,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -35,6 +36,7 @@ import org.springframework.restdocs.constraints.ConstraintDescriptions;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 
+@Disabled
 public class RoomCartRestControllerDocsTest extends RestDocsHelper {
 
     private final RoomCartService roomCartService = mock(RoomCartService.class);

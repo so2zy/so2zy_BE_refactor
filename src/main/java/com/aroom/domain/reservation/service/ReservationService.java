@@ -14,6 +14,7 @@ import com.aroom.domain.reservationRoom.model.ReservationRoom;
 import com.aroom.domain.reservationRoom.repository.ReservationRoomRepository;
 import com.aroom.domain.room.dto.request.RoomReservationRequest;
 import com.aroom.domain.room.dto.response.RoomReservationResponse;
+import com.aroom.domain.room.exception.RoomNotFoundException;
 import com.aroom.domain.room.model.Room;
 import com.aroom.domain.room.model.RoomImage;
 import com.aroom.domain.room.repository.RoomImageRepository;
@@ -54,9 +55,10 @@ public class ReservationService {
 
         for (RoomReservationRequest roomRequest : request.getRoomList()) {
             Room requiredRoom = roomRepository.findById(roomRequest.getRoomId())
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new OutOfStockException("해당 방이 존재하지 않습니다.",
+                ReservationErrorCode.OUT_OF_STOCK_ERROR));
 
-            checkCapacityOfRoom(request.getPersonnel(), requiredRoom);
+            checkCapacityOfRoom(roomRequest.getPersonnel(), requiredRoom);
 
             requiredRoom.addSoldCount();
 
@@ -75,7 +77,7 @@ public class ReservationService {
                     .startDate(roomRequest.getStartDate())
                     .endDate(roomRequest.getEndDate())
                     .price(roomRequest.getPrice())
-                    .personnel(request.getPersonnel())
+                    .personnel(roomRequest.getPersonnel())
                     .build();
 
                 ReservationRoom savedReservationRoom = reservationRoomRepository.save(

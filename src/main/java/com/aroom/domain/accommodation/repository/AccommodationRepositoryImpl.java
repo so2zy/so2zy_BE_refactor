@@ -112,31 +112,25 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
 
     private BooleanBuilder booleanBuilderProvider(SearchCondition searchCondition) {
         BooleanBuilder booleanBuilder = new BooleanBuilder();
-        if (searchCondition.getAreaCode() != null) {
-            booleanBuilder.and(
-                accommodation.addressEntity.areaCode.eq(searchCondition.getAreaCode()));
-        }
         if (searchCondition.getAreaName() != null) {
             booleanBuilder.and(
-                accommodation.addressEntity.areaName.contains(searchCondition.getAreaName()));
-        }
-        if (searchCondition.getSigunguCode() != null) {
-            booleanBuilder.and(
-                accommodation.addressEntity.sigunguCode.eq(searchCondition.getSigunguCode()));
+                accommodation.addressEntity.areaName.eq(searchCondition.getAreaName()));
         }
         if (searchCondition.getSigunguName() != null) {
             booleanBuilder.and(
-                accommodation.addressEntity.sigunguName.contains(searchCondition.getSigunguName()));
+                accommodation.addressEntity.sigunguName.eq(searchCondition.getSigunguName()));
         }
         if (searchCondition.getName() != null) {
-            booleanBuilder.and(accommodation.name.contains(searchCondition.getName()));
+            booleanBuilder.and(
+                accommodation.name.contains(searchCondition.getName()));
         }
         if (searchCondition.getLikeCount() != null) {
             booleanBuilder.and(
                 accommodation.likeCount.goe(Integer.parseInt(searchCondition.getLikeCount())));
         }
         if (searchCondition.getPhoneNumber() != null) {
-            booleanBuilder.and(accommodation.phoneNumber.eq(searchCondition.getPhoneNumber()));
+            booleanBuilder.and(
+                accommodation.phoneNumber.eq(searchCondition.getPhoneNumber()));
         }
         //lowestPrice와 higestPrice가 둘 다 NULL이 아닌 경우
         if (searchCondition.getLowestPrice() != null &&

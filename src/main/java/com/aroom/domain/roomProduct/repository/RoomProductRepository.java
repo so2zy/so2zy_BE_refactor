@@ -16,15 +16,13 @@ import org.springframework.stereotype.Repository;
 public interface RoomProductRepository extends JpaRepository<RoomProduct, Long> {
 
     @Query("select rp from RoomProduct rp where rp.room.id = :roomId and rp.startDate =:startDate and rp.stock > 0")
-    List<RoomProduct> findByRoomIdAndStartDate(@Param("roomId") long roomId,
+    Optional<RoomProduct> findByRoomIdAndStartDate(@Param("roomId") long roomId,
         @Param("startDate") LocalDate startDate);
 
     @Query("select rp from RoomProduct rp where rp.room.id = :roomId and (rp.startDate between :startDate and :endDate) and rp.stock > 0")
     List<RoomProduct> findByRoomIdAndStartDateAndEndDate(@Param("roomId") long roomId,
         @Param("startDate")
             LocalDate startDate, @Param("endDate") LocalDate endDate);
-
-    Optional<RoomProduct> findByStock(int stock);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select rp from RoomProduct rp where rp.room = :room and (rp.startDate between :startDate and :endDate)")

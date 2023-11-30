@@ -29,6 +29,7 @@ import java.util.Map;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,32 +56,41 @@ public class RoomCartService {
             return cartRepository.save(new Cart(member));
         });
 
-        List<RoomProduct> roomProductList;
+        List<RoomProduct> roomProductList = new ArrayList<>();
         if(roomCartRequest.getStartDate().equals(roomCartRequest.getEndDate().minusDays(1))){
-            roomProductList = roomProductRepository.findByRoomIdAndStartDate(
-                room_id, roomCartRequest.getStartDate());
+            RoomProduct roomProduct = roomProductRepository.findByRoomIdAndStartDate(
+                room_id, roomCartRequest.getStartDate()).orElseThrow(RoomProductNotFoundException::new);
+            List<RoomCart> roomCartList = roomCartRepository.findByRoomProductId(roomProduct.getId());
+            if(roomProduct.getStock() - roomCartList.size() > 0) {
+                RoomCart roomCart = RoomCart.builder().cart(cart).roomProduct(roomProduct).build();
+                roomCartRepository.save(roomCart);
+                cart.postRoomCarts(roomCart);
+                return new RoomCartResponse(cart);
+            } else {
+                throw new OutOfStockException();
+            }
         } else {
             roomProductList = roomProductRepository.findByRoomIdAndStartDateAndEndDate(
                 room_id,
                 roomCartRequest.getStartDate(), roomCartRequest.getEndDate().minusDays(1));
-        }
+            checkContinualDate(roomProductList, roomCartRequest);
 
-        checkContinualDate(roomProductList, roomCartRequest);
+            RoomProduct roomProductMinStock = findMinStockRoomProduct(roomProductList);
 
-        RoomProduct roomProductMinStock = findMinStockRoomProduct(roomProductList);
-
-        for (RoomProduct roomProduct : roomProductList) {
-            List<RoomCart> roomCartList = roomCartRepository.findByRoomProductId(
-                roomProductMinStock.getId());
-            if (roomProduct.getStock() - roomCartList.size() > 0) {
-                RoomCart roomCart = RoomCart.builder().cart(cart).roomProduct(roomProduct).build();
-                roomCartRepository.save(roomCart);
-                cart.postRoomCarts(roomCart);
-            } else {
-                throw new OutOfStockException();
+            for (RoomProduct roomProduct : roomProductList) {
+                List<RoomCart> roomCartList = roomCartRepository.findByRoomProductId(
+                    roomProductMinStock.getId());
+                if (roomProduct.getStock() - roomCartList.size() > 0) {
+                    RoomCart roomCart = RoomCart.builder().cart(cart).roomProduct(roomProduct).build();
+                    roomCartRepository.save(roomCart);
+                    cart.postRoomCarts(roomCart);
+                } else {
+                    throw new OutOfStockException();
+                }
             }
+            return new RoomCartResponse(cart);
         }
-        return new RoomCartResponse(cart);
+
     }
 
     @Transactional
@@ -207,12 +217,19 @@ public class RoomCartService {
     }
 
     private RoomProduct findMinStockRoomProduct(List<RoomProduct> roomProductList) {
-        int minStock = Integer.MAX_VALUE;
-        for (RoomProduct roomProduct : roomProductList) {
-            minStock = Math.min(roomProduct.getStock(), minStock);
-        }
-        RoomProduct minStockRoomProduct = roomProductRepository.findByStock(minStock).get();
-        return minStockRoomProduct;
+        roomProductList.sort(new Comparator<RoomProduct>() {
+            @Override
+            public int compare(RoomProduct o1, RoomProduct o2) {
+                if(o1.getStock() > o2.getStock()){
+                    return 1;
+                } else if (o1.getStock() < o2.getStock()) {
+                    return -1;
+                }else {
+                    return 0;
+                }
+            }
+        });
+        return roomProductList.get(0);
     }
 
     private void checkStartDateEndDate(RoomCartRequest roomCartRequest) {

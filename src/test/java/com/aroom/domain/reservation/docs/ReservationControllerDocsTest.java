@@ -68,7 +68,7 @@ class ReservationControllerDocsTest extends RestDocsHelper {
                         .description("예약 종료일")
                         .attributes(key("constraints").value("yyyy-mm-dd 포맷")),
                     fieldWithPath("roomList[].price").type(JsonFieldType.NUMBER).description("가격"),
-                    fieldWithPath("personnel").type(JsonFieldType.NUMBER).description("투숙 인원")
+                    fieldWithPath("roomList[].personnel").type(JsonFieldType.NUMBER).description("예약 인원")
                         .attributes(key("constraints").value("1명 이상")),
                     fieldWithPath("agreement").type(JsonFieldType.BOOLEAN).description("약관 동의 여부")
                         .attributes(key("constraints").value("반드시 True여야 함.")),

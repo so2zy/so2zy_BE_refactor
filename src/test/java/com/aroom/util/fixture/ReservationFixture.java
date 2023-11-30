@@ -33,6 +33,7 @@ public abstract class ReservationFixture {
             .startDate(LocalDate.parse("2023-12-22"))
             .endDate(LocalDate.parse("2023-12-23"))
             .price(100000)
+            .personnel(2)
             .build();
     }
 

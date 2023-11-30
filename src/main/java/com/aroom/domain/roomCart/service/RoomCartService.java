@@ -55,9 +55,15 @@ public class RoomCartService {
             return cartRepository.save(new Cart(member));
         });
 
-        List<RoomProduct> roomProductList = roomProductRepository.findByRoomIdAndStartDateAndEndDate(
-            room_id,
-            roomCartRequest.getStartDate(), roomCartRequest.getEndDate());
+        List<RoomProduct> roomProductList;
+        if(roomCartRequest.getStartDate().equals(roomCartRequest.getEndDate().minusDays(1))){
+            roomProductList = roomProductRepository.findByRoomIdAndStartDate(
+                room_id, roomCartRequest.getStartDate());
+        } else {
+            roomProductList = roomProductRepository.findByRoomIdAndStartDateAndEndDate(
+                room_id,
+                roomCartRequest.getStartDate(), roomCartRequest.getEndDate().minusDays(1));
+        }
 
         checkContinualDate(roomProductList, roomCartRequest);
 

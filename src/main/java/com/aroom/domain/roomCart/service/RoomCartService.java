@@ -2,8 +2,6 @@ package com.aroom.domain.roomCart.service;
 
 import com.aroom.domain.accommodation.dto.response.CartAccommodationResponse;
 import com.aroom.domain.accommodation.model.Accommodation;
-import com.aroom.domain.cart.exception.CartNotFoundException;
-import com.aroom.domain.roomCart.dto.response.FindCartResponse;
 import com.aroom.domain.cart.model.Cart;
 import com.aroom.domain.cart.repository.CartRepository;
 import com.aroom.domain.member.exception.MemberNotFoundException;
@@ -12,6 +10,7 @@ import com.aroom.domain.member.repository.MemberRepository;
 import com.aroom.domain.room.dto.response.CartRoomResponse;
 import com.aroom.domain.room.model.Room;
 import com.aroom.domain.roomCart.dto.request.RoomCartRequest;
+import com.aroom.domain.roomCart.dto.response.FindCartResponse;
 import com.aroom.domain.roomCart.dto.response.RoomCartResponse;
 import com.aroom.domain.roomCart.exception.OutOfStockException;
 import com.aroom.domain.roomCart.exception.WrongDateException;
@@ -21,16 +20,14 @@ import com.aroom.domain.roomProduct.exception.RoomProductNotFoundException;
 import com.aroom.domain.roomProduct.model.RoomProduct;
 import com.aroom.domain.roomProduct.repository.RoomProductRepository;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,18 +47,16 @@ public class RoomCartService {
         checkStartDateEndDate(roomCartRequest);
 
         Optional<Cart> optionalCart = cartRepository.findByMemberId(member_id);
-        Cart cart = optionalCart.orElseGet(() -> {
-            Member member = memberRepository.findById(member_id).orElseThrow(
-                MemberNotFoundException::new);
-            return cartRepository.save(new Cart(member));
-        });
+        Cart cart = getOrCreateCart(optionalCart, member_id);
 
         List<RoomProduct> roomProductList = new ArrayList<>();
-        if(roomCartRequest.getStartDate().equals(roomCartRequest.getEndDate().minusDays(1))){
+        if (roomCartRequest.getStartDate().equals(roomCartRequest.getEndDate().minusDays(1))) {
             RoomProduct roomProduct = roomProductRepository.findByRoomIdAndStartDate(
-                room_id, roomCartRequest.getStartDate()).orElseThrow(RoomProductNotFoundException::new);
-            List<RoomCart> roomCartList = roomCartRepository.findByRoomProductId(roomProduct.getId());
-            if(roomProduct.getStock() - roomCartList.size() > 0) {
+                    room_id, roomCartRequest.getStartDate())
+                .orElseThrow(RoomProductNotFoundException::new);
+            List<RoomCart> roomCartList = roomCartRepository.findByRoomProductId(
+                roomProduct.getId());
+            if (roomProduct.getStock() - roomCartList.size() > 0) {
                 RoomCart roomCart = RoomCart.builder().cart(cart).roomProduct(roomProduct)
                     .personnel(roomCartRequest.getPersonnel()).build();
                 roomCartRepository.save(roomCart);
@@ -82,7 +77,8 @@ public class RoomCartService {
                 List<RoomCart> roomCartList = roomCartRepository.findByRoomProductId(
                     roomProductMinStock.getId());
                 if (roomProduct.getStock() - roomCartList.size() > 0) {
-                    RoomCart roomCart = RoomCart.builder().cart(cart).roomProduct(roomProduct).build();
+                    RoomCart roomCart = RoomCart.builder().cart(cart).roomProduct(roomProduct)
+                        .personnel(roomCartRequest.getPersonnel()).build();
                     roomCartRepository.save(roomCart);
                     cart.postRoomCarts(roomCart);
                 } else {
@@ -96,33 +92,37 @@ public class RoomCartService {
 
     @Transactional
     public FindCartResponse getCartList(Long memberId) {
-        Optional<Cart> cartOptional = cartRepository.findByMemberId(memberId);
-        Cart cart = null;
-        if(cartOptional.isEmpty()){
-            cart = Cart.builder()
-                .member(
-                    memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new))
-                .roomCartList(new ArrayList<>())
-                .build();
-
-            cart = cartRepository.save(cart);
-        }else{
-            cart = cartOptional.get();
-        }
+        Optional<Cart> optionalCart = cartRepository.findByMemberId(memberId);
+        Cart cart = getOrCreateCart(optionalCart, memberId);
 
         List<RoomCart> roomCartList = cart.getRoomCartList();
+
         return createResponse(roomCartList);
     }
 
-    private FindCartResponse createResponse(List<RoomCart> roomCartList){
+
+    private Cart getOrCreateCart(Optional<Cart> optionalCart, Long memberId) {
+        return optionalCart.orElseGet(() -> {
+            Member member = memberRepository.findById(memberId).orElseThrow(
+                MemberNotFoundException::new);
+            return cartRepository.save(new Cart(member));
+        });
+    }
+
+    private FindCartResponse createResponse(List<RoomCart> roomCartList) {
         Map<Long, List<RoomProduct>> roomProductListMap = createRoomProductListMap(roomCartList);
+
+        List<Integer> personnelList = new ArrayList<>();
+        for (RoomCart roomCart : roomCartList) {
+            personnelList.add(roomCart.getPersonnel());
+        }
 
         List<CartAccommodationResponse> cartAccommodationList = new ArrayList<>();
         for (Long id : roomProductListMap.keySet()) {
             List<RoomProduct> roomProductList = roomProductListMap.get(id);
-            sortRoomProductListByDate(roomProductList);
 
-            List<CartRoomResponse> cartRoomList = createCartRoomList(roomProductList, roomCartList);
+            List<CartRoomResponse> cartRoomList = createCartRoomList(roomProductList,
+                personnelList);
 
             Accommodation accommodation = roomProductList.get(0).getRoom().getAccommodation();
 
@@ -141,11 +141,10 @@ public class RoomCartService {
             .build();
     }
 
-    private Map<Long, List<RoomProduct>> createRoomProductListMap(List<RoomCart> roomCartList){
+    private Map<Long, List<RoomProduct>> createRoomProductListMap(List<RoomCart> roomCartList) {
         Map<Long, List<RoomProduct>> roomProductListMap = new HashMap<>();
 
         for (RoomCart roomCart : roomCartList) {
-            roomCart.getPersonnel();
             Room room = roomCart.getRoomProduct().getRoom();
             roomProductListMap.put(room.getId(), new ArrayList<>());
         }
@@ -161,41 +160,20 @@ public class RoomCartService {
         return roomProductListMap;
     }
 
-    private void sortRoomProductListByDate(List<RoomProduct> roomProductList){
-        roomProductList.sort(new Comparator<RoomProduct>() {
-            @Override
-            public int compare(RoomProduct o1, RoomProduct o2) {
-                if(o1.getStartDate().isBefore(o2.getStartDate())){
-                    return 1;
-                }else if(o1.getStartDate().isAfter(o2.getStartDate())){
-                    return -1;
-                }else{
-                    return 0;
-                }
-            }
-        });
-    }
-
-    private List<CartRoomResponse> createCartRoomList(List<RoomProduct> roomProductList, List<RoomCart> roomCartList){
+    private List<CartRoomResponse> createCartRoomList(List<RoomProduct> roomProductList,
+        List<Integer> personnelList) {
         List<CartRoomResponse> cartRoomList = new ArrayList<>();
 
         LocalDate preDate = roomProductList.get(0).getStartDate();
         LocalDate startDate = roomProductList.get(0).getStartDate();
 
-        for (int i = 0; i < roomProductList.size();i++) {
-            RoomProduct roomProduct = roomProductList.get(i);
+        RoomProduct roomProduct = null;
+        for (int i = 0; i < roomProductList.size(); i++) {
+            roomProduct = roomProductList.get(i);
 
-            if (preDate.plusDays(1).isEqual(roomProduct.getStartDate())
-                && i < roomProductList.size() - 1) {
+            if (preDate.plusDays(1).isEqual(roomProduct.getStartDate()) || i == 0) {
                 preDate = roomProduct.getStartDate();
             } else {
-                int personnel = 0;
-                for (RoomCart roomCart : roomCartList) {
-                    if(roomCart.getRoomProduct().equals(roomProduct)){
-                        personnel = roomCart.getPersonnel();
-                        break;
-                    }
-                }
                 cartRoomList.add(CartRoomResponse.builder()
                     .roomId(roomProduct.getRoom().getId())
                     .type(roomProduct.getRoom().getType())
@@ -205,17 +183,33 @@ public class RoomCartService {
                     .maxCapacity(roomProduct.getRoom().getMaxCapacity())
                     .price(roomProduct.getRoom().getPrice())
                     .startDate(startDate)
-                    .endDate(startDate.plusDays(1))
+                    .endDate(preDate.plusDays(1))
                     .roomImageUrl(roomProduct.getRoom().getRoomImageList().get(0).getUrl())
-                    .personnel(personnel)
+                    .personnel(personnelList.get(i))
                     .build());
 
                 startDate = roomProduct.getStartDate();
+                preDate = startDate;
             }
         }
 
+        cartRoomList.add(CartRoomResponse.builder()
+            .roomId(roomProduct.getRoom().getId())
+            .type(roomProduct.getRoom().getType())
+            .checkIn(roomProduct.getRoom().getCheckIn())
+            .checkOut(roomProduct.getRoom().getCheckOut())
+            .capacity(roomProduct.getRoom().getCapacity())
+            .maxCapacity(roomProduct.getRoom().getMaxCapacity())
+            .price(roomProduct.getRoom().getPrice())
+            .startDate(startDate)
+            .endDate(preDate.plusDays(1))
+            .roomImageUrl(roomProduct.getRoom().getRoomImageList().get(0).getUrl())
+            .personnel(personnelList.get(personnelList.size() - 1))
+            .build());
+
         return cartRoomList;
     }
+
     private void checkContinualDate(List<RoomProduct> roomProductList,
         RoomCartRequest roomCartRequest) {
         LocalDate startDate = roomCartRequest.getStartDate();
@@ -230,11 +224,11 @@ public class RoomCartService {
         roomProductList.sort(new Comparator<RoomProduct>() {
             @Override
             public int compare(RoomProduct o1, RoomProduct o2) {
-                if(o1.getStock() > o2.getStock()){
+                if (o1.getStock() > o2.getStock()) {
                     return 1;
                 } else if (o1.getStock() < o2.getStock()) {
                     return -1;
-                }else {
+                } else {
                     return 0;
                 }
             }
@@ -245,7 +239,7 @@ public class RoomCartService {
     private void checkStartDateEndDate(RoomCartRequest roomCartRequest) {
         LocalDate startDate = roomCartRequest.getStartDate();
         LocalDate endDate = roomCartRequest.getEndDate();
-        if(startDate.isAfter(endDate)){
+        if (startDate.isAfter(endDate)) {
             throw new WrongDateException();
         }
     }

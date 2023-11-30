@@ -1,0 +1,20 @@
+= 예약 v2 API 문서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+[[Reservation-Create]]
+== 숙소 예약
+숙소를 예약하는 API 입니다.
+
+=== HttpRequest
+
+include::{snippets}/reservations-create/http-request.adoc[]
+include::{snippets}/reservations-create/request-fields.adoc[]
+
+=== HttpResponse
+
+include::{snippets}/reservations-create/http-response.adoc[]
+include::{snippets}/reservations-create/response-fields.adoc[]

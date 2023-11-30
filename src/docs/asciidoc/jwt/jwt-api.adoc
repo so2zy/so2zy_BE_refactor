@@ -1,0 +1,20 @@
+= 토큰 API v1 문서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+[[Refresh-AccessToken]]
+== AccessToken 재발급
+AccessToken은 비교적 짧은 수명을 가지고 있습니다. AccessToken이 만료되었을때, 이를 재발급받기 위해 사용되는 API입니다.
+
+=== HttpRequest
+
+include::{snippets}/jwt-accesstoken-refresh/http-request.adoc[]
+include::{snippets}/jwt-accesstoken-refresh/request-fields.adoc[]
+
+=== HttpResponse
+
+include::{snippets}/jwt-accesstoken-refresh/http-response.adoc[]
+include::{snippets}/jwt-accesstoken-refresh/response-fields.adoc[]

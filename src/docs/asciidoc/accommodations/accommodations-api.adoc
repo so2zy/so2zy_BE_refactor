@@ -1,0 +1,22 @@
+= 숙소 v2 API 문서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+[[Get-Specific-Accommodation]]
+== 숙소 상세 조회
+숙소를 상세 조회하는 API 입니다.
+
+=== HttpRequest
+
+include::{snippets}/accommodation-specific-get/http-request.adoc[]
+include::{snippets}/accommodation-specific-get/path-parameters.adoc[]
+include::{snippets}/accommodation-specific-get/query-parameters.adoc[]
+
+
+=== HttpResponse
+
+include::{snippets}/accommodation-specific-get/http-response.adoc[]
+include::{snippets}/accommodation-specific-get/response-fields.adoc[]

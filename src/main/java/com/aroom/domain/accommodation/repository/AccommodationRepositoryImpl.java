@@ -49,6 +49,7 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
             .where(booleanBuilderProvider(searchCondition),greaterOrEqualsCapacity(searchCondition))
             .offset((long)pageable.getPageNumber() * pageable.getPageSize()+1)
             .limit(pageable.getPageSize())
+            .distinct()
             .fetch();
 
     }
@@ -66,9 +67,10 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
             .join(room.roomProductList, roomProduct)
             .where(betweenDate(searchCondition),
                 greaterThanStock(0)
-                ,greaterOrEqualsCapacity(searchCondition))
-            .offset((long)pageable.getPageNumber() * pageable.getPageSize()+1)
+                , greaterOrEqualsCapacity(searchCondition))
+            .offset((long) pageable.getPageNumber() * pageable.getPageSize())
             .limit(pageable.getPageSize())
+            .distinct()
             .fetch();
 
     }
@@ -83,12 +85,14 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
             .from(accommodation)
             .join(accommodation.roomList, room)
             .where(booleanBuilderForDate(searchCondition)
-                ,greaterOrEqualsCapacity(searchCondition))
-            .offset((long)pageable.getPageNumber() * pageable.getPageSize()+1)
+                , greaterOrEqualsCapacity(searchCondition))
+            .offset((long) pageable.getPageNumber() * pageable.getPageSize())
             .limit(pageable.getPageSize())
             .orderBy(getOrderBy(sortCondition))
+            .distinct()
             .fetch();
     }
+
 
     @Override
     public List<Accommodation> getAccommodationBySearchConditionWithSortCondition(
@@ -96,43 +100,38 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
         return jpaQueryFactory
             .select(accommodation)
             .from(accommodation)
-            .where(booleanBuilderProvider(searchCondition),
-                greaterOrEqualsCapacity(searchCondition))
-            .offset((long)pageable.getPageNumber() * pageable.getPageSize()+1)
-            .limit(pageable.getPageSize())
+            .leftJoin(room)
+            .on(accommodation.id.eq(room.accommodation.id))
+            .groupBy(accommodation.roomList.any().price)
             .orderBy(getOrderBy(sortCondition))
+            .offset(((long) pageable.getPageNumber() * pageable.getPageSize()))
+            .limit(pageable.getPageSize())
+            .distinct()
             .fetch();
     }
 
     private BooleanBuilder booleanBuilderProvider(SearchCondition searchCondition) {
         BooleanBuilder booleanBuilder = new BooleanBuilder();
-        if (searchCondition.getAreaCode()!=null){
-            booleanBuilder.and(accommodation.addressEntity.areaCode.eq(searchCondition.getAreaCode()));
+        if (searchCondition.getAreaName() != null) {
+            booleanBuilder.and(
+                accommodation.addressEntity.areaName.eq(searchCondition.getAreaName()));
         }
-        if (searchCondition.getAreaName()!=null){
-            booleanBuilder.and(accommodation.addressEntity.areaName.contains(searchCondition.getAreaName()));
-        }
-        if (searchCondition.getSigunguCode()!=null){
-            booleanBuilder.and(accommodation.addressEntity.sigunguCode.eq(searchCondition.getSigunguCode()));
-        }
-        if (searchCondition.getSigunguName()!=null){
-            booleanBuilder.and(accommodation.addressEntity.sigunguName.contains(searchCondition.getSigunguName()));
+        if (searchCondition.getSigunguName() != null) {
+            booleanBuilder.and(
+                accommodation.addressEntity.sigunguName.eq(searchCondition.getSigunguName()));
         }
         if (searchCondition.getName() != null) {
-            booleanBuilder.and(accommodation.name.contains(searchCondition.getName()));
+            booleanBuilder.and(
+                accommodation.name.contains(searchCondition.getName()));
         }
         if (searchCondition.getLikeCount() != null) {
             booleanBuilder.and(
                 accommodation.likeCount.goe(Integer.parseInt(searchCondition.getLikeCount())));
         }
         if (searchCondition.getPhoneNumber() != null) {
-            booleanBuilder.and(accommodation.phoneNumber.eq(searchCondition.getPhoneNumber()));
+            booleanBuilder.and(
+                accommodation.phoneNumber.eq(searchCondition.getPhoneNumber()));
         }
-//        if (searchCondition.getCapacity() != null) {
-//            booleanBuilder.and(
-//                //숙소의 최대수용인원이 사용자가 입력한 인원수보다 무조건 커야함
-//                accommodation.roomList.any().maxCapacity.goe(searchCondition.getCapacity()));
-//        }
         //lowestPrice와 higestPrice가 둘 다 NULL이 아닌 경우
         if (searchCondition.getLowestPrice() != null &&
             searchCondition.getHighestPrice() != null) {
@@ -165,8 +164,9 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
 
         return booleanBuilder;
     }
-    private BooleanExpression greaterOrEqualsCapacity(SearchCondition searchCondition){
-        if (searchCondition.getCapacity() == null){
+
+    private BooleanExpression greaterOrEqualsCapacity(SearchCondition searchCondition) {
+        if (searchCondition.getCapacity() == null) {
             return null;
         }
         return accommodation.roomList.any().maxCapacity.goe(searchCondition.getCapacity());

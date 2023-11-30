@@ -148,18 +148,22 @@ public class AccommodationServiceTest {
             assertEquals(accommodationListResponse.getBody().size(), 1);
             assertEquals(accommodationListResponse.getBody().get(0).getName(), "영주호텔");
         }
+
         @Test
         @DisplayName("정렬조건이 있는 경우")
         void get_accommodation_with_sort_condition() throws Exception {
             // Given
             SearchCondition searchCondition = SearchCondition.builder()
                 .name("영주")
+                .orderCondition("likeCount")
+                .orderBy("asc")
                 .build();
             Pageable pageable = PageRequest.of(0, 10);
             Sort sortCondition = Sort.by(Sort.Direction.ASC, "likeCount");
             List<Accommodation> mockAccommodations = Arrays.asList(accommodation2);
             // Mock the repository behavior
-            when(accommodationRepository.getAccommodationBySearchConditionWithSortCondition(any(), any(), any()))
+            when(accommodationRepository.getAccommodationBySearchConditionWithSortCondition(any(),
+                any(), any()))
                 .thenReturn(mockAccommodations);
             AccommodationListResponse accommodationListResponse = accommodationService.getAccommodationListBySearchCondition(
                 searchCondition, pageable, sortCondition);
@@ -167,6 +171,7 @@ public class AccommodationServiceTest {
             assertEquals(accommodationListResponse.getBody().get(0).getName(), "영주호텔");
         }
     }
+
     @Nested
     @DisplayName("getSpecificAccommodation()는")
     class Context_getSpecificAccommodation {

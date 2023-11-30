@@ -37,9 +37,6 @@ public class SearchCondition {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
-    private Integer areaCode;
-    private Integer sigunguCode;
-
     private String orderBy;
     private String orderCondition;
 

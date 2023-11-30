@@ -85,8 +85,8 @@ public class ReservationService {
                 reservationRoomId = savedReservationRoom.getId();
             }
 
-            RoomImage roomImage = roomImageRepository.findById(
-                requiredRoom.getAccommodation().getId()).orElseThrow(RuntimeException::new);
+            RoomImage roomImage = roomImageRepository.findByRoomId(
+                requiredRoom.getId()).orElseThrow(RuntimeException::new);
 
             RoomReservationResponse responseRoom = RoomReservationResponse.builder()
                 .roomId(requiredRoom.getId())

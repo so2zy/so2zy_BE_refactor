@@ -27,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.DirtiesContext;
 
-@Disabled
 @DataJpaTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class RoomProductRepositoryTest {
@@ -92,12 +91,27 @@ public class RoomProductRepositoryTest {
             .build();
         roomProductRepository.save(roomProduct);
 
-        roomCart = RoomCart.builder().id(1L).roomProduct(roomProduct).cart(cart).build();
+        roomCart = RoomCart.builder().id(1L).roomProduct(roomProduct).cart(cart).personnel(3).build();
         roomCartRepository.save(roomCart);
     }
 
     @Test
-    @DisplayName("roomId, startDate, endDate를 토대로 stock >0 인 RoomProduct가 조회됐습니다..")
+    @DisplayName("roomId, startDate를 토대로 stock >0인 RoomProduct가 조회됐습니다.")
+    void findByRoomIdAndStartDate() {
+        // given
+        Long roomId = 1L;
+        LocalDate startDate = LocalDate.of(2023, 11, 27);
+
+        // when
+        Optional<RoomProduct> result = roomProductRepository.findByRoomIdAndStartDate(roomId,startDate);
+
+        // then
+        assertThat(result.get().getRoom().getId()).isEqualTo(roomId);
+        assertThat(result.get().getStartDate()).isEqualTo(startDate);
+    }
+
+    @Test
+    @DisplayName("roomId, startDate, endDate를 토대로 stock >0 인 RoomProduct가 조회됐습니다.")
     void findByRoomIdAndStartDateAndEndDate() {
         // given
         Long roomId = 1L;
@@ -112,6 +126,5 @@ public class RoomProductRepositoryTest {
         assertThat(result.get(0).getRoom().getId()).isEqualTo(roomId);
         assertThat(result.get(0).getStartDate()).isEqualTo(startDate);
     }
-
 }
 

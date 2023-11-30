@@ -36,7 +36,6 @@ import org.springframework.restdocs.constraints.ConstraintDescriptions;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 
-@Disabled
 public class RoomCartRestControllerDocsTest extends RestDocsHelper {
 
     private final RoomCartService roomCartService = mock(RoomCartService.class);
@@ -54,7 +53,7 @@ public class RoomCartRestControllerDocsTest extends RestDocsHelper {
     void postRoomCart() throws Exception {
         // given
         RoomCartRequest roomCartRequest = RoomCartRequest.builder()
-            .startDate(LocalDate.of(2023, 11, 27)).endDate(LocalDate.of(2023, 11, 28)).build();
+            .startDate(LocalDate.of(2023, 11, 27)).endDate(LocalDate.of(2023, 11, 28)).personnel(3).build();
 
         List<RoomCartInfoResponse> roomCartInfoResponseList = Arrays.asList(
             RoomCartInfoResponse.builder().room_id(1L).cart_id(1L).build(),
@@ -82,7 +81,14 @@ public class RoomCartRestControllerDocsTest extends RestDocsHelper {
                             postDescriptions.descriptionsForProperty("startDate"))),
                     fieldWithPath("endDate").type(JsonFieldType.STRING).description("종료 일자")
                         .attributes(key("constraints").value(
-                            postDescriptions.descriptionsForProperty("endDate")))),
+                            postDescriptions.descriptionsForProperty("endDate"))),
+                    fieldWithPath("endDate").type(JsonFieldType.STRING).description("종료 일자")
+                        .attributes(key("constraints").value(
+                            postDescriptions.descriptionsForProperty("endDate"))),
+                    fieldWithPath("personnel").type(JsonFieldType.NUMBER).description("인원")
+                        .attributes(key("constraints").value(
+                            postDescriptions.descriptionsForProperty("personnel")))
+                    ),
                 responseFields(
                     fieldWithPath("timeStamp").type(JsonFieldType.STRING).description("응답 시간"),
                     fieldWithPath("detail").type(JsonFieldType.STRING).optional()
@@ -171,7 +177,9 @@ public class RoomCartRestControllerDocsTest extends RestDocsHelper {
                 fieldWithPath("data.accommodationList[].roomList[].endDate").type(JsonFieldType.STRING)
                     .description("예약 종료 일"),
                 fieldWithPath("data.accommodationList[].roomList[].roomImageUrl").type(JsonFieldType.STRING)
-                    .description("객실 이미지 url"))
+                    .description("객실 이미지 url"),
+                fieldWithPath("data.accommodationList[].roomList[].personnel").type(JsonFieldType.NUMBER)
+                    .description("객실 인원"))
             ));
     }
 }

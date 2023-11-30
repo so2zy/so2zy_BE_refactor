@@ -142,7 +142,7 @@ class ReservationServiceTest {
             given(roomRepository.findById(any())).willReturn(Optional.of(testRoom));
             given(reservationRoomRepository.save(any())).willReturn(reservationRoom);
             given(reservationRepository.save(any())).willReturn(reservation);
-            given(roomImageRepository.findById(any())).willReturn(Optional.of(roomImage));
+            given(roomImageRepository.findByRoomId(any())).willReturn(Optional.of(roomImage));
             given(roomProductRepository.findByRoomAndBetweenStartDateAndEndDate(any(), any(),
                 any())).willReturn(List.of(roomProduct));
 

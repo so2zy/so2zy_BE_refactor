@@ -1,5 +1,6 @@
 package com.aroom.domain.reservation.service;
 
+import com.aroom.domain.cart.model.Cart;
 import com.aroom.domain.member.exception.MemberNotFoundException;
 import com.aroom.domain.member.model.Member;
 import com.aroom.domain.member.repository.MemberRepository;
@@ -24,6 +25,7 @@ import com.aroom.domain.roomProduct.repository.RoomProductRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,8 +87,10 @@ public class ReservationService {
                 reservationRoomId = savedReservationRoom.getId();
             }
 
-            RoomImage roomImage = roomImageRepository.findByRoomId(
-                requiredRoom.getId()).orElseThrow(RuntimeException::new);
+            Optional<RoomImage> optionalRoomImage = roomImageRepository.findByRoomId(requiredRoom.getId());
+            RoomImage roomImage = optionalRoomImage.orElseGet(() -> {
+                return RoomImage.builder().url("").build();
+            });
 
             RoomReservationResponse responseRoom = RoomReservationResponse.builder()
                 .roomId(requiredRoom.getId())

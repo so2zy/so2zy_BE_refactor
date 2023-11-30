@@ -51,6 +51,7 @@ class ReservationRestControllerTest {
             .roomId(1L)
             .startDate(LocalDate.of(2023, 12, 22))
             .endDate(LocalDate.of(2023, 12, 23))
+            .personnel(2)
             .build();
 
         RoomReservationResponse roomResponse = RoomReservationResponse.builder()
@@ -85,7 +86,6 @@ class ReservationRestControllerTest {
             // given
             ReservationRequest request = ReservationRequest.builder()
                 .roomList(List.of(roomRequest))
-                .personnel(2)
                 .agreement(true)
                 .isFromCart(false)
                 .build();
@@ -109,7 +109,6 @@ class ReservationRestControllerTest {
         void reserve_no_room_data_fail() throws Exception {
             // given
             ReservationRequest request = ReservationRequest.builder()
-                .personnel(2)
                 .agreement(true)
                 .isFromCart(false)
                 .build();

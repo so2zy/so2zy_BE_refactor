@@ -52,7 +52,7 @@ public class RoomCartRestControllerTest extends ControllerTestWithoutSecurityHel
         void _willSuccess() throws Exception {
             // given
             RoomCartRequest roomCartRequest = RoomCartRequest.builder()
-                .startDate(LocalDate.of(2023, 11, 27)).endDate(LocalDate.of(2023, 11, 28)).build();
+                .startDate(LocalDate.of(2023, 11, 27)).endDate(LocalDate.of(2023, 11, 28)).personnel(3).build();
             List<RoomCartInfoResponse> roomCartInfoResponseList = Arrays.asList(
                 RoomCartInfoResponse.builder().room_id(1L).cart_id(1L).build(),
                 RoomCartInfoResponse.builder().room_id(1L).cart_id(1L).build()

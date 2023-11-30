@@ -3,6 +3,8 @@ package com.aroom.domain.favorite.service;
 import com.aroom.domain.accommodation.exception.AccommodationNotFoundException;
 import com.aroom.domain.accommodation.model.Accommodation;
 import com.aroom.domain.accommodation.repository.AccommodationRepository;
+import com.aroom.domain.favorite.exception.AlreadyFavoriteException;
+import com.aroom.domain.favorite.exception.FavoriteNotFoundException;
 import com.aroom.domain.favorite.model.Favorite;
 import com.aroom.domain.favorite.repository.FavoriteRepository;
 import com.aroom.domain.member.model.Member;
@@ -32,6 +34,13 @@ public class FavoriteService {
         Accommodation targetAccommodation = accommodationRepository.findById(
             request.accommodationId()).orElseThrow(AccommodationNotFoundException::new);
 
+        if (favoriteRepository.existsByMemberIdAndAccommodationId(request.memberId(),
+            request.accommodationId())) {
+            throw new AlreadyFavoriteException(
+                "favorite already exist! / memberId : %d, accommodationId : %d".formatted(
+                    request.memberId(), request.accommodationId()));
+        }
+
         favoriteRepository.save(Favorite.builder()
             .accommodation(targetAccommodation)
             .member(Member.builder().id(memberResponse.memberId()).build())
@@ -40,7 +49,11 @@ public class FavoriteService {
 
     public void deleteFavorite(FavoriteCreateRequest request) {
         Favorite favorite = favoriteRepository.findByMemberIdAndAccommodationId(request.memberId(),
-            request.accommodationId()).orElseThrow(IllegalArgumentException::new);
+                request.accommodationId())
+            .orElseThrow(() ->
+                new FavoriteNotFoundException(
+                    "favorite not found! / memberId : %d, accommodationId : %d"
+                        .formatted(request.memberId(), request.accommodationId())));
 
         favoriteRepository.delete(favorite);
     }

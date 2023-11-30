@@ -168,8 +168,8 @@ class AccommodationRestControllerTest extends ControllerTestWithoutSecurityHelpe
             System.out.println(testResponse.getBody().get(0).getName());
 
             //then
-            mockMvc.perform(get("/v2/accommodations?name=롯데")
-                    //.queryParam("name","롯데")
+            mockMvc.perform(get("/v2/accommodations")
+                    .queryParam("name","롯데")
                     .contentType(contentType))
                 .andExpect(status().isOk())
                 .andDo(print())

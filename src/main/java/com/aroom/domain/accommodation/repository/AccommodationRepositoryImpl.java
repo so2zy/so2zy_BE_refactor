@@ -14,11 +14,13 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@Slf4j
 public class AccommodationRepositoryImpl implements AccommodationRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
@@ -34,7 +36,7 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
     public List<Accommodation> getAll(Pageable pageable) {
         return jpaQueryFactory.selectFrom(accommodation)
             .from(accommodation)
-            .offset((long)pageable.getPageNumber() * pageable.getPageSize()+1)
+            .offset((long) pageable.getPageNumber() * pageable.getPageSize() + 1)
             .limit(pageable.getPageSize())
             .fetch();
     }
@@ -46,8 +48,9 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
 
         return jpaQueryFactory.select(accommodation)
             .from(accommodation)
-            .where(booleanBuilderProvider(searchCondition),greaterOrEqualsCapacity(searchCondition))
-            .offset((long)pageable.getPageNumber() * pageable.getPageSize()+1)
+            .where(booleanBuilderProvider(searchCondition),
+                greaterOrEqualsCapacity(searchCondition))
+            .offset((long) pageable.getPageNumber() * pageable.getPageSize() + 1)
             .limit(pageable.getPageSize())
             .distinct()
             .fetch();
@@ -85,6 +88,7 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
             .from(accommodation)
             .join(accommodation.roomList, room)
             .where(booleanBuilderForDate(searchCondition)
+                , booleanBuilderProvider(searchCondition)
                 , greaterOrEqualsCapacity(searchCondition))
             .offset((long) pageable.getPageNumber() * pageable.getPageSize())
             .limit(pageable.getPageSize())
@@ -100,12 +104,13 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
         return jpaQueryFactory
             .select(accommodation)
             .from(accommodation)
-            .leftJoin(room)
-            .on(accommodation.id.eq(room.accommodation.id))
+            .join(accommodation.roomList, room)
+            .where(booleanBuilderProvider(searchCondition)
+                , greaterOrEqualsCapacity(searchCondition))
             .groupBy(accommodation.roomList.any().price)
-            .orderBy(getOrderBy(sortCondition))
             .offset(((long) pageable.getPageNumber() * pageable.getPageSize()))
             .limit(pageable.getPageSize())
+            .orderBy(getOrderBy(sortCondition))
             .distinct()
             .fetch();
     }

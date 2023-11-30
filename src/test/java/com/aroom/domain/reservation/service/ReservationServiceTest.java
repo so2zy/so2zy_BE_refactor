@@ -120,11 +120,11 @@ class ReservationServiceTest {
                 .roomId(1L)
                 .startDate(LocalDate.of(2023, 12, 22))
                 .endDate(LocalDate.of(2023, 12, 23))
+                .personnel(2)
                 .build();
 
             ReservationRequest request = ReservationRequest.builder()
                 .roomList(List.of(roomRequest))
-                .personnel(2)
                 .isFromCart(false)
                 .agreement(true)
                 .build();
@@ -135,7 +135,7 @@ class ReservationServiceTest {
                 .startDate(request.getRoomList().get(0).getStartDate())
                 .endDate(request.getRoomList().get(0).getEndDate())
                 .price(testRoom.getPrice())
-                .personnel(request.getPersonnel())
+                .personnel(roomRequest.getPersonnel())
                 .build();
 
             given(memberRepository.findById(any())).willReturn(Optional.of(tester));
@@ -163,6 +163,7 @@ class ReservationServiceTest {
                 .roomId(1L)
                 .startDate(LocalDate.of(2023, 12, 22))
                 .endDate(LocalDate.of(2023, 12, 23))
+                .personnel(2)
                 .build();
 
             RoomProduct outOfStockProduct = RoomProduct.builder()
@@ -174,7 +175,6 @@ class ReservationServiceTest {
 
             ReservationRequest request = ReservationRequest.builder()
                 .roomList(List.of(roomRequest))
-                .personnel(2)
                 .agreement(true)
                 .isFromCart(false)
                 .build();

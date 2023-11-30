@@ -84,9 +84,7 @@ public class AccommodationRestController {
             searchCondition.getName() != null ||
             searchCondition.getOrderBy() != null ||
             searchCondition.getPhoneNumber() != null ||
-            searchCondition.getAreaCode() != null ||
             searchCondition.getAreaName() != null ||
-            searchCondition.getSigunguCode() != null ||
             searchCondition.getSigunguName() != null) {
             return true;
         }

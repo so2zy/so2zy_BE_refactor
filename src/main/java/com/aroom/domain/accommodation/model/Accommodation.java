@@ -19,6 +19,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 @Entity
 @Getter
@@ -52,6 +53,7 @@ public class Accommodation extends BaseTimeEntity {
     @OneToMany(mappedBy = "accommodation", fetch = FetchType.LAZY)
     private List<Room> roomList = new ArrayList<>();
 
+    @BatchSize(size = 100)
     @JsonManagedReference
     @OneToMany(mappedBy = "accommodation", fetch = FetchType.LAZY)
     private List<AccommodationImage> accommodationImageList = new ArrayList<>();

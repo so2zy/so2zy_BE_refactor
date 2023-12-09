@@ -2,7 +2,7 @@ package com.aroom.domain.roomCart.service;
 
 import com.aroom.domain.accommodation.dto.response.CartAccommodationResponse;
 import com.aroom.domain.accommodation.model.Accommodation;
-import com.aroom.domain.cart.exception.CartNotFoundException;
+import com.aroom.domain.roomCart.dto.request.RemoveRoomCartRequest;
 import com.aroom.domain.roomCart.dto.response.FindCartResponse;
 import com.aroom.domain.cart.model.Cart;
 import com.aroom.domain.cart.repository.CartRepository;
@@ -20,7 +20,9 @@ import com.aroom.domain.roomCart.repository.RoomCartRepository;
 import com.aroom.domain.roomProduct.exception.RoomProductNotFoundException;
 import com.aroom.domain.roomProduct.model.RoomProduct;
 import com.aroom.domain.roomProduct.repository.RoomProductRepository;
+import com.aroom.global.resolver.LoginInfo;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -29,8 +31,6 @@ import java.util.Map;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -111,6 +111,11 @@ public class RoomCartService {
         }
 
         List<RoomCart> roomCartList = cart.getRoomCartList();
+        for (RoomCart roomCart : roomCartList) {
+            if(roomCart.getDeletedAt() != null){
+                roomCartList.remove(roomCart);
+            }
+        }
         return createResponse(roomCartList);
     }
 
@@ -248,5 +253,23 @@ public class RoomCartService {
         if(startDate.isAfter(endDate)){
             throw new WrongDateException();
         }
+    }
+
+    public void removeRoomCart(LoginInfo loginInfo, RemoveRoomCartRequest removeRoomCartRequest) {
+        List<RoomProduct> targetRoomProductList = roomProductRepository.findByRoomIdAndStartDateAndEndDate(
+            removeRoomCartRequest.getRoomId(),
+            removeRoomCartRequest.getStartDate(), removeRoomCartRequest.getEndDate().minusDays(1));
+
+        Member member = memberRepository.findById(loginInfo.memberId()).orElseThrow(MemberNotFoundException::new);
+
+        List<RoomCart> roomCartList = member.getCart().getRoomCartList();
+        for (RoomCart roomCart : roomCartList) {
+            for (RoomProduct target : targetRoomProductList) {
+                if(roomCart.getRoomProduct().equals(target)){
+                    roomCart.setDeletedAt(LocalDateTime.now());
+                }
+            }
+        }
+
     }
 }

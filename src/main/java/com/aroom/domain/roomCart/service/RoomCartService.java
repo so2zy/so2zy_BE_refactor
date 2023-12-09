@@ -31,6 +31,7 @@ import java.util.Map;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -111,12 +112,13 @@ public class RoomCartService {
         }
 
         List<RoomCart> roomCartList = cart.getRoomCartList();
+        List<RoomCart> tempRoomCartList = new ArrayList<>();
         for (RoomCart roomCart : roomCartList) {
-            if(roomCart.getDeletedAt() != null){
-                roomCartList.remove(roomCart);
+            if(roomCart.getDeletedAt() == null){
+                tempRoomCartList.add(roomCart);
             }
         }
-        return createResponse(roomCartList);
+        return createResponse(tempRoomCartList);
     }
 
     private FindCartResponse createResponse(List<RoomCart> roomCartList){
@@ -255,6 +257,7 @@ public class RoomCartService {
         }
     }
 
+    @Transactional
     public void removeRoomCart(LoginInfo loginInfo, RemoveRoomCartRequest removeRoomCartRequest) {
         List<RoomProduct> targetRoomProductList = roomProductRepository.findByRoomIdAndStartDateAndEndDate(
             removeRoomCartRequest.getRoomId(),
@@ -263,13 +266,13 @@ public class RoomCartService {
         Member member = memberRepository.findById(loginInfo.memberId()).orElseThrow(MemberNotFoundException::new);
 
         List<RoomCart> roomCartList = member.getCart().getRoomCartList();
-        for (RoomCart roomCart : roomCartList) {
-            for (RoomProduct target : targetRoomProductList) {
-                if(roomCart.getRoomProduct().equals(target)){
+        for (RoomProduct target : targetRoomProductList) {
+            for (RoomCart roomCart : roomCartList) {
+                if (roomCart.getRoomProduct().equals(target)) {
                     roomCart.setDeletedAt(LocalDateTime.now());
+                    break;
                 }
             }
         }
-
     }
 }

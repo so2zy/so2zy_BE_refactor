@@ -107,7 +107,6 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
             .join(accommodation.roomList, room)
             .where(booleanBuilderProvider(searchCondition)
                 , greaterOrEqualsCapacity(searchCondition))
-            .groupBy(accommodation.roomList.any().price)
             .offset(((long) pageable.getPageNumber() * pageable.getPageSize()))
             .limit(pageable.getPageSize())
             .orderBy(getOrderBy(sortCondition))

@@ -110,6 +110,7 @@ public class RoomCartRestControllerDocsTest extends RestDocsHelper {
         // given
         CartRoomResponse cartRoomResponse = CartRoomResponse.builder()
             .roomId(1L)
+            .roomCartId(1L)
             .type("p1")
             .checkIn(LocalTime.of(10, 00, 00))
             .checkOut(LocalTime.of(11, 00, 00))
@@ -160,6 +161,8 @@ public class RoomCartRestControllerDocsTest extends RestDocsHelper {
                     .description("객실 정보"),
                 fieldWithPath("data.accommodationList[].roomList[].roomId").type(JsonFieldType.NUMBER)
                     .description("객실 식별자"),
+                fieldWithPath("data.accommodationList[].roomList[].roomCartId").type(JsonFieldType.NUMBER)
+                    .description("장바구니 객실 식별자"),
                 fieldWithPath("data.accommodationList[].roomList[].type").type(JsonFieldType.STRING)
                     .description("객실 타입"),
                 fieldWithPath("data.accommodationList[].roomList[].checkIn").type(JsonFieldType.STRING)

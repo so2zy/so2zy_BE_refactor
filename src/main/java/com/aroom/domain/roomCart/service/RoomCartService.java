@@ -62,7 +62,14 @@ public class RoomCartService {
             RoomProduct roomProduct = roomProductRepository.findByRoomIdAndStartDate(
                 room_id, roomCartRequest.getStartDate()).orElseThrow(RoomProductNotFoundException::new);
             List<RoomCart> roomCartList = roomCartRepository.findByRoomProductId(roomProduct.getId());
-            if(roomProduct.getStock() - roomCartList.size() > 0) {
+            List<RoomCart> tempRoomCartList = new ArrayList<>();
+            for (RoomCart roomCart : roomCartList) {
+                if(roomCart.getDeletedAt() == null){
+                    tempRoomCartList.add(roomCart);
+                }
+            }
+
+            if(roomProduct.getStock() - tempRoomCartList.size() > 0) {
                 RoomCart roomCart = RoomCart.builder().cart(cart).roomProduct(roomProduct)
                     .personnel(roomCartRequest.getPersonnel()).build();
                 roomCartRepository.save(roomCart);

@@ -1,21 +1,22 @@
 package com.aroom.domain.accommodation.repository;
 
+import com.aroom.domain.accommodation.dto.AccommodationListResponse;
+import com.aroom.domain.accommodation.dto.AccommodationResponse;
 import com.aroom.domain.accommodation.dto.SearchCondition;
 import com.aroom.domain.accommodation.model.Accommodation;
 import java.util.List;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AccommodationRepositoryCustom {
+    Page<AccommodationListResponse.InnerClass> getAll(Pageable pageable);
 
-    List<Accommodation> getAccommodationBySearchCondition(SearchCondition searchCondition, Pageable pageable);
+    Page<AccommodationListResponse.InnerClass> searchByCondition(SearchCondition searchCondition,
+        Pageable pageable);
 
-    List<Accommodation> getAccommodationBySearchConditionWithSortCondition(SearchCondition searchCondition, Pageable pageable, Sort sortCondition);
-
-    List<Accommodation> getAccommodationByDateSearchCondition(SearchCondition searchCondition, Pageable pageable);
-    List<Accommodation> getAccommodationByDateSearchConditionWithSortCondition(SearchCondition searchCondition, Pageable pageable, Sort sortCondition);
-
-    List<Accommodation> getAll(Pageable pageable);
+    Page<AccommodationListResponse.InnerClass> searchByConditionWithSort(SearchCondition searchCondition,
+        Pageable pageable);
 }

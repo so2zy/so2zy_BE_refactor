@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class CartRoomResponse {
     private Long roomId;
+    private Long roomCartId;
     private String type;
     private LocalTime checkIn;
     private LocalTime checkOut;
@@ -24,10 +25,11 @@ public class CartRoomResponse {
     private int personnel;
 
     @Builder
-    public CartRoomResponse(Long roomId, String type, LocalTime checkIn, LocalTime checkOut,
-        int capacity, int maxCapacity, int price, LocalDate startDate, LocalDate endDate,
-        String roomImageUrl, int personnel) {
+    public CartRoomResponse(Long roomId, Long roomCartId, String type, LocalTime checkIn,
+        LocalTime checkOut, int capacity, int maxCapacity, int price, LocalDate startDate,
+        LocalDate endDate, String roomImageUrl, int personnel) {
         this.roomId = roomId;
+        this.roomCartId = roomCartId;
         this.type = type;
         this.checkIn = checkIn;
         this.checkOut = checkOut;

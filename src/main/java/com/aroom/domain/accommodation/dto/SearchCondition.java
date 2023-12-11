@@ -37,7 +37,7 @@ public class SearchCondition {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
-    private String orderBy;
+    private String orderBy = "asc";
     private String orderCondition;
 
 }

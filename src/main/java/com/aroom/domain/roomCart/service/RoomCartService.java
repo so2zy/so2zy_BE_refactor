@@ -2,6 +2,8 @@ package com.aroom.domain.roomCart.service;
 
 import com.aroom.domain.accommodation.dto.response.CartAccommodationResponse;
 import com.aroom.domain.accommodation.model.Accommodation;
+import com.aroom.domain.roomCart.dto.request.RemoveRoomCartRequest;
+import com.aroom.domain.roomCart.dto.response.FindCartResponse;
 import com.aroom.domain.cart.model.Cart;
 import com.aroom.domain.cart.repository.CartRepository;
 import com.aroom.domain.member.exception.MemberNotFoundException;
@@ -19,7 +21,9 @@ import com.aroom.domain.roomCart.repository.RoomCartRepository;
 import com.aroom.domain.roomProduct.exception.RoomProductNotFoundException;
 import com.aroom.domain.roomProduct.model.RoomProduct;
 import com.aroom.domain.roomProduct.repository.RoomProductRepository;
+import com.aroom.global.resolver.LoginInfo;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -28,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,11 +57,16 @@ public class RoomCartService {
         List<RoomProduct> roomProductList = new ArrayList<>();
         if (roomCartRequest.getStartDate().equals(roomCartRequest.getEndDate().minusDays(1))) {
             RoomProduct roomProduct = roomProductRepository.findByRoomIdAndStartDate(
-                    room_id, roomCartRequest.getStartDate())
-                .orElseThrow(RoomProductNotFoundException::new);
-            List<RoomCart> roomCartList = roomCartRepository.findByRoomProductId(
-                roomProduct.getId());
-            if (roomProduct.getStock() - roomCartList.size() > 0) {
+                room_id, roomCartRequest.getStartDate()).orElseThrow(RoomProductNotFoundException::new);
+            List<RoomCart> roomCartList = roomCartRepository.findByRoomProductId(roomProduct.getId());
+            List<RoomCart> tempRoomCartList = new ArrayList<>();
+            for (RoomCart roomCart : roomCartList) {
+                if(roomCart.getDeletedAt() == null){
+                    tempRoomCartList.add(roomCart);
+                }
+            }
+
+            if(roomProduct.getStock() - tempRoomCartList.size() > 0) {
                 RoomCart roomCart = RoomCart.builder().cart(cart).roomProduct(roomProduct)
                     .personnel(roomCartRequest.getPersonnel()).build();
                 roomCartRepository.save(roomCart);
@@ -96,8 +106,13 @@ public class RoomCartService {
         Cart cart = getOrCreateCart(optionalCart, memberId);
 
         List<RoomCart> roomCartList = cart.getRoomCartList();
-
-        return createResponse(roomCartList);
+        List<RoomCart> tempRoomCartList = new ArrayList<>();
+        for (RoomCart roomCart : roomCartList) {
+            if(roomCart.getDeletedAt() == null){
+                tempRoomCartList.add(roomCart);
+            }
+        }
+        return createResponse(tempRoomCartList);
     }
 
 
@@ -241,6 +256,25 @@ public class RoomCartService {
         LocalDate endDate = roomCartRequest.getEndDate();
         if (startDate.isAfter(endDate)) {
             throw new WrongDateException();
+        }
+    }
+
+    @Transactional
+    public void removeRoomCart(LoginInfo loginInfo, RemoveRoomCartRequest removeRoomCartRequest) {
+        List<RoomProduct> targetRoomProductList = roomProductRepository.findByRoomIdAndStartDateAndEndDate(
+            removeRoomCartRequest.getRoomId(),
+            removeRoomCartRequest.getStartDate(), removeRoomCartRequest.getEndDate().minusDays(1));
+
+        Member member = memberRepository.findById(loginInfo.memberId()).orElseThrow(MemberNotFoundException::new);
+
+        List<RoomCart> roomCartList = member.getCart().getRoomCartList();
+        for (RoomProduct target : targetRoomProductList) {
+            for (RoomCart roomCart : roomCartList) {
+                if (roomCart.getRoomProduct().equals(target)) {
+                    roomCart.setDeletedAt(LocalDateTime.now());
+                    break;
+                }
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.aroom.domain.roomCart.controller;
 
+import com.aroom.domain.roomCart.dto.request.RemoveRoomCartRequest;
 import com.aroom.domain.roomCart.dto.response.FindCartResponse;
 import com.aroom.domain.roomCart.dto.request.RoomCartRequest;
 import com.aroom.domain.roomCart.dto.response.RoomCartResponse;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,4 +43,14 @@ public class RoomCartRestController {
             new ApiResponse<>(LocalDateTime.now(), "장바구니 조회에 성공했습니다.",
                 roomCartService.getCartList(loginInfo.memberId())));
     }
+
+    @DeleteMapping
+    public ResponseEntity<ApiResponse<Void>> removeRoomCart(@Login LoginInfo loginInfo, @RequestBody
+        RemoveRoomCartRequest removeRoomCartRequest){
+        roomCartService.removeRoomCart(loginInfo, removeRoomCartRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(
+            new ApiResponse<>(LocalDateTime.now(), "장바구니 상품 삭제에 성공했습니다.", null)
+        );
+    }
+
 }

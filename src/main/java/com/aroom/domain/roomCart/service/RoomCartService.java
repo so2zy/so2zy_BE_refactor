@@ -12,7 +12,6 @@ import com.aroom.domain.member.repository.MemberRepository;
 import com.aroom.domain.room.dto.response.CartRoomResponse;
 import com.aroom.domain.room.model.Room;
 import com.aroom.domain.roomCart.dto.request.RoomCartRequest;
-import com.aroom.domain.roomCart.dto.response.FindCartResponse;
 import com.aroom.domain.roomCart.dto.response.RoomCartResponse;
 import com.aroom.domain.roomCart.exception.OutOfStockException;
 import com.aroom.domain.roomCart.exception.WrongDateException;
@@ -32,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -128,8 +126,10 @@ public class RoomCartService {
         Map<Long, List<RoomProduct>> roomProductListMap = createRoomProductListMap(roomCartList);
 
         List<Integer> personnelList = new ArrayList<>();
+        List<Long> roomCartIdList = new ArrayList<>();
         for (RoomCart roomCart : roomCartList) {
             personnelList.add(roomCart.getPersonnel());
+            roomCartIdList.add(roomCart.getId());
         }
 
         List<CartAccommodationResponse> cartAccommodationList = new ArrayList<>();
@@ -137,7 +137,7 @@ public class RoomCartService {
             List<RoomProduct> roomProductList = roomProductListMap.get(id);
 
             List<CartRoomResponse> cartRoomList = createCartRoomList(roomProductList,
-                personnelList);
+                personnelList, roomCartIdList);
 
             Accommodation accommodation = roomProductList.get(0).getRoom().getAccommodation();
 
@@ -176,7 +176,7 @@ public class RoomCartService {
     }
 
     private List<CartRoomResponse> createCartRoomList(List<RoomProduct> roomProductList,
-        List<Integer> personnelList) {
+        List<Integer> personnelList, List<Long> roomCartIdList) {
         List<CartRoomResponse> cartRoomList = new ArrayList<>();
 
         LocalDate preDate = roomProductList.get(0).getStartDate();
@@ -191,6 +191,7 @@ public class RoomCartService {
             } else {
                 cartRoomList.add(CartRoomResponse.builder()
                     .roomId(roomProduct.getRoom().getId())
+                    .roomCartId(roomCartIdList.get(i - 1))
                     .type(roomProduct.getRoom().getType())
                     .checkIn(roomProduct.getRoom().getCheckIn())
                     .checkOut(roomProduct.getRoom().getCheckOut())
@@ -200,7 +201,7 @@ public class RoomCartService {
                     .startDate(startDate)
                     .endDate(preDate.plusDays(1))
                     .roomImageUrl(roomProduct.getRoom().getRoomImageList().get(0).getUrl())
-                    .personnel(personnelList.get(i))
+                    .personnel(personnelList.get(i - 1))
                     .build());
 
                 startDate = roomProduct.getStartDate();
@@ -210,6 +211,7 @@ public class RoomCartService {
 
         cartRoomList.add(CartRoomResponse.builder()
             .roomId(roomProduct.getRoom().getId())
+            .roomCartId(roomCartIdList.get(roomCartIdList.size() - 1))
             .type(roomProduct.getRoom().getType())
             .checkIn(roomProduct.getRoom().getCheckIn())
             .checkOut(roomProduct.getRoom().getCheckOut())

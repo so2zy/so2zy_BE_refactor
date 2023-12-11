@@ -35,7 +35,7 @@ public class SecurityFilterConfig {
 			.cors(cors -> cors.configurationSource(request -> {
                 CorsConfiguration configuration = new CorsConfiguration();
                 configuration.setAllowCredentials(true);
-                configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:3001"));
+                configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:3001", "https://candid-horse-912de6.netlify.app"));
                 configuration.setAllowedHeaders(Arrays.asList("*"));
                 configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
                 configuration.addExposedHeader("X-AUTH-TOKEN");

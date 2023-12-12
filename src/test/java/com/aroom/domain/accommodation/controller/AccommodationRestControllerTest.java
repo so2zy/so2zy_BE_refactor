@@ -2,7 +2,6 @@ package com.aroom.domain.accommodation.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -28,10 +27,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.MediaType;
 
 class AccommodationRestControllerTest extends ControllerTestWithoutSecurityHelper {
@@ -108,13 +104,14 @@ class AccommodationRestControllerTest extends ControllerTestWithoutSecurityHelpe
         void get_accommodation_with_no_search_condition() throws Exception {
             PageRequest pageable = PageRequest.of(0, 10);
             //given
-            given(accommodationService.getAllAccommodation(any()))
+            given(accommodationService.findAccommodations(any(), any()))
                 .willReturn(accommodationListResponse);
 
+            SearchCondition searchCondition = new SearchCondition();
             //when
-            AccommodationListResponse testResponse = accommodationService.getAllAccommodation(
+            AccommodationListResponse testResponse = accommodationService.findAccommodations(
+                searchCondition,
                 pageable);
-
 
             System.out.println(testResponse.getBody().get(0).getName());
 
@@ -152,24 +149,22 @@ class AccommodationRestControllerTest extends ControllerTestWithoutSecurityHelpe
                 .build();
             PageRequest pageable = PageRequest.of(0, 10);
             //given
-            given(accommodationService.getAccommodationListBySearchCondition(any(), any(), any()))
+            given(accommodationService.findAccommodations(any(), any()))
                 .willReturn(accommodationListResponse1);
             SearchCondition searchCondition = SearchCondition.builder()
                 .name("롯데")
                 .build();
 
             //when
-            AccommodationListResponse testResponse = accommodationService.getAccommodationListBySearchCondition(
+            AccommodationListResponse testResponse = accommodationService.findAccommodations(
                 searchCondition,
-                pageable,
-                null);
-
+                pageable);
 
             System.out.println(testResponse.getBody().get(0).getName());
 
             //then
             mockMvc.perform(get("/v2/accommodations")
-                    .queryParam("name","롯데")
+                    .queryParam("name", "롯데")
                     .contentType(contentType))
                 .andExpect(status().isOk())
                 .andDo(print())

@@ -5,7 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import com.aroom.domain.accommodation.dto.AccommodationListResponse;
 import com.aroom.domain.accommodation.dto.AccommodationListResponse.InnerClass;
@@ -25,7 +26,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -33,9 +33,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -57,9 +58,9 @@ public class AccommodationServiceTest {
     private Accommodation accommodation2;
 
     private InnerClass innerClass;
+    private InnerClass innerClass2;
 
     private AccommodationListResponse accommodationListResponse;
-
 
 
     @BeforeEach
@@ -84,7 +85,6 @@ public class AccommodationServiceTest {
             .phoneNumber("02-771-1000").address("경기도 고양시 일산동구").roomList(List.of(room))
             .accommodationImageList(List.of(accommodationImage)).build();
 
-
         accommodation2 = Accommodation.builder()
             .id(2L)
             .name("영주호텔")
@@ -106,6 +106,16 @@ public class AccommodationServiceTest {
             .accommodationImageUrl("www.com")
             .price(110000)
             .build();
+        innerClass2 = InnerClass.builder()
+            .id(2L)
+            .name("아르누보")
+            .likeCount(111)
+            .phoneNumber("02-111-111")
+            .longitude(30)
+            .latitude(30)
+            .accommodationImageUrl("www.com")
+            .price(222200)
+            .build();
         accommodationListResponse = AccommodationListResponse.builder()
             .page(0)
             .size(10)
@@ -115,40 +125,48 @@ public class AccommodationServiceTest {
 
     @Nested
     @DisplayName("숙소 조회를 할 때")
-    @Disabled
     class getAccommodation {
+
         @Test
         @DisplayName("검색조건이 없는 경우")
         void get_accommodation_with_no_search_condition() throws Exception {
-            PageRequest pageable = PageRequest.of(0, 10);
-            List<Accommodation> mockAccommodations = Arrays.asList(accommodation, accommodation2);
-            given(accommodationRepository.getAll())
-                .willReturn(mockAccommodations);
-            //when
-            AccommodationListResponse result = accommodationService.getAllAccommodation(pageable);
+            SearchCondition searchCondition = SearchCondition.builder().build();
+            Pageable pageable = PageRequest.of(0, 10);
 
-            System.out.println(result.getBody().get(0).getName());
-            //then
-            assertEquals(result.getBody().get(0).getLikeCount(), 0);
-            assertEquals(result.getBody().get(0).getName(), "롯데호텔");
+            // Mock data
+            List<InnerClass> mockAccommodations = Arrays.asList(innerClass);
+            Page<InnerClass> mockPage = new PageImpl<>(mockAccommodations, pageable,
+                mockAccommodations.size());
+            given(accommodationRepository.getAll(any())).willReturn(mockPage);
+
+            AccommodationListResponse result = accommodationService.findAccommodations(
+                searchCondition, pageable);
+
+            // Then
+            assertEquals(result.getBody().size(), 1);
+            // Verify repository method calls
+            verify(accommodationRepository, times(1)).getAll(any());
         }
+
         @Test
         @DisplayName("검색조건이 있는 경우")
         void get_accommodation_with_search_condition() throws Exception {
             // Given
             SearchCondition searchCondition = SearchCondition.builder()
-                .name("영주")
+                .name("아르누보")
                 .build();
             Pageable pageable = PageRequest.of(0, 10);
-            Sort sortCondition = Sort.by(Sort.Direction.ASC, "default");
-            List<Accommodation> mockAccommodations = Arrays.asList(accommodation2);
-            // Mock the repository behavior
-            when(accommodationRepository.getAccommodationBySearchCondition(any(), any()))
-                .thenReturn(mockAccommodations);
-            AccommodationListResponse accommodationListResponse = accommodationService.getAccommodationListBySearchCondition(
-                searchCondition, pageable, sortCondition);
-            assertEquals(accommodationListResponse.getBody().size(), 1);
-            assertEquals(accommodationListResponse.getBody().get(0).getName(), "영주호텔");
+
+            List<InnerClass> mockAccommodations = Arrays.asList(innerClass, innerClass2);
+            Page<InnerClass> mockPage = new PageImpl<>(mockAccommodations, pageable,
+                mockAccommodations.size());
+
+            given(accommodationRepository.searchByCondition(any(), any())).willReturn(mockPage);
+
+            AccommodationListResponse accommodationListResponse = accommodationService.findAccommodations(
+                searchCondition, pageable);
+            assertEquals(accommodationListResponse.getBody().size(), 2);
+            assertEquals(accommodationListResponse.getBody().get(1).getName(), "아르누보");
         }
 
         @Test
@@ -156,21 +174,23 @@ public class AccommodationServiceTest {
         void get_accommodation_with_sort_condition() throws Exception {
             // Given
             SearchCondition searchCondition = SearchCondition.builder()
-                .name("영주")
+                .name("아르누보")
                 .orderCondition("likeCount")
                 .orderBy("asc")
                 .build();
             Pageable pageable = PageRequest.of(0, 10);
-            Sort sortCondition = Sort.by(Sort.Direction.ASC, "likeCount");
-            List<Accommodation> mockAccommodations = Arrays.asList(accommodation2);
+
+            List<InnerClass> mockAccommodations = Arrays.asList(innerClass, innerClass2);
+            Page<InnerClass> mockPage = new PageImpl<>(mockAccommodations, pageable,
+                mockAccommodations.size());
             // Mock the repository behavior
-            when(accommodationRepository.getAccommodationBySearchConditionWithSortCondition(any(),
-                any(), any()))
-                .thenReturn(mockAccommodations);
-            AccommodationListResponse accommodationListResponse = accommodationService.getAccommodationListBySearchCondition(
-                searchCondition, pageable, sortCondition);
-            assertEquals(accommodationListResponse.getBody().size(), 1);
-            assertEquals(accommodationListResponse.getBody().get(0).getName(), "영주호텔");
+            given(accommodationRepository.searchByConditionWithSort(any(),
+                any()))
+                .willReturn(mockPage);
+            AccommodationListResponse accommodationListResponse = accommodationService.findAccommodations(
+                searchCondition, pageable);
+            assertEquals(accommodationListResponse.getBody().size(), 2);
+            assertEquals(accommodationListResponse.getBody().get(1).getName(), "아르누보");
         }
     }
 

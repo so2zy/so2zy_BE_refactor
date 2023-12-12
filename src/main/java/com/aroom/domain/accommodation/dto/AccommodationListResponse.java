@@ -2,6 +2,7 @@ package com.aroom.domain.accommodation.dto;
 
 import com.aroom.domain.accommodation.model.Accommodation;
 import com.aroom.domain.room.model.Room;
+import com.querydsl.core.annotations.QueryProjection;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -17,19 +18,22 @@ public class AccommodationListResponse {
 
     private Integer page;
     private Integer size;
-    //private Integer totalPage;
+    private Integer totalPage;
 
-    public void setPaginationInfo(Integer page, Integer size) {
+    public void setPaginationInfo(Integer page, Integer size, Integer totalPage) {
         this.page = page;
         this.size = size;
+        this.totalPage = totalPage;
         //this.totalPage = totalPage;
     }
 
     private List<InnerClass> body = new ArrayList<>();
 
     public void addBody(InnerClass innerClass) {
+        innerClass.hasValidPrice();
         this.body.add(innerClass);
     }
+
 
     @NoArgsConstructor
     @AllArgsConstructor
@@ -53,10 +57,31 @@ public class AccommodationListResponse {
 
         private String accommodationImageUrl;
 
-        private Boolean isAvailable;
+        private Boolean isAvailable = true;
+
+
+        private void hasValidPrice(){
+            if (price == 0 || price == null){
+                isAvailable = false;
+            }
+        }
 
         //객실의 최저가를 숙소 조회할때 대표 가격으로 출력합니다.
-        private Integer price;
+        private Integer price ;
+
+        @QueryProjection
+        public InnerClass(Long id, String name, float latitude, float longitude, String address,
+            int likeCount, String phoneNumber, String accommodationImageUrl, Integer price) {
+            this.id = id;
+            this.name = name;
+            this.latitude = latitude;
+            this.longitude = longitude;
+            this.address = address;
+            this.likeCount = likeCount;
+            this.phoneNumber = phoneNumber;
+            this.accommodationImageUrl = accommodationImageUrl;
+            this.price = price;
+        }
 
         public static InnerClass fromEntity(Accommodation accommodation) {
             String imageUrl = accommodation.getAccommodationImageList()

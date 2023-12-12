@@ -1,7 +1,5 @@
 package com.aroom.domain.accommodation.service;
 
-import static com.aroom.domain.accommodation.controller.AccommodationRestController.NO_ORDER_CONDITION;
-
 import com.aroom.domain.accommodation.dto.AccommodationListResponse;
 import com.aroom.domain.accommodation.dto.AccommodationListResponse.InnerClass;
 import com.aroom.domain.accommodation.dto.SearchCondition;
@@ -10,18 +8,17 @@ import com.aroom.domain.accommodation.dto.response.AccommodationResponse;
 import com.aroom.domain.accommodation.exception.AccommodationNotFoundException;
 import com.aroom.domain.accommodation.model.Accommodation;
 import com.aroom.domain.accommodation.repository.AccommodationRepository;
-import com.aroom.domain.roomCart.dto.request.RoomCartRequest;
 import com.aroom.domain.roomCart.exception.WrongDateException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 @Service
 @Slf4j
 @Transactional
@@ -37,7 +34,7 @@ public class AccommodationService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate startDateTypeChanged = LocalDate.parse(startDate, formatter);
         LocalDate endDateTypeChanged = LocalDate.parse(endDate, formatter);
-        checkStartDateEndDate(startDateTypeChanged,endDateTypeChanged);
+        checkStartDateEndDate(startDateTypeChanged, endDateTypeChanged);
         long betweenDays = ChronoUnit.DAYS.between(startDateTypeChanged, endDateTypeChanged);
 
         try {
@@ -55,75 +52,61 @@ public class AccommodationService {
                     member_id, accommodation_id).isPresent());
         }
     }
-
-    @Transactional(readOnly = true)
-    public AccommodationListResponse getAccommodationListBySearchCondition(
-        SearchCondition searchCondition, Pageable pageable, Sort sortCondition) {
-        if (searchCondition.getOrderCondition() == null && searchCondition.getOrderBy() == null){
-            List<Accommodation> accommodation = accommodationRepository.getAccommodationBySearchCondition(
-                searchCondition, pageable);
-
-            return convertAccommodationListToAccommodationListResponse(
-                pageable, accommodation);
-        }
-        List<Accommodation> accommodation = accommodationRepository.getAccommodationBySearchConditionWithSortCondition(
-            searchCondition, pageable, sortCondition);
-
-        return convertAccommodationListToAccommodationListResponse(
-            pageable, accommodation);
-    }
-
-    @Transactional(readOnly = true)
-    public AccommodationListResponse getAccommodationListByDateSearchCondition(
-        SearchCondition searchCondition,
-        Pageable pageable,
-        Sort sortCondition
-    ) {
-        if (sortCondition.toString().contains(NO_ORDER_CONDITION)) {
-
-            List<Accommodation> accommodation = accommodationRepository.getAccommodationByDateSearchCondition(
-                searchCondition,
-                pageable);
-            return convertAccommodationListToAccommodationListResponse(
-                pageable, accommodation);
-        }
-        List<Accommodation> accommodation = accommodationRepository.getAccommodationByDateSearchConditionWithSortCondition(
-            searchCondition,
-            pageable, sortCondition);
-        return convertAccommodationListToAccommodationListResponse(
-            pageable, accommodation);
-
-    }
-
-    public AccommodationListResponse convertAccommodationListToAccommodationListResponse(Pageable pageable,
-        List<Accommodation> accommodation) {
-        AccommodationListResponse accommodationListResponse = new AccommodationListResponse();
-
-        accommodation.stream().map(InnerClass::fromEntity)
-            .forEach(accommodationListResponse::addBody);
-
-        accommodationListResponse.setPaginationInfo(pageable.getPageNumber(),
-            pageable.getPageSize());
-
-        log.info("page is {}, size is {}", pageable.getPageNumber(),pageable.getPageSize());
-        log.info("AccommodationListResponse Size is {}", accommodationListResponse.getBody().size());
-        return accommodationListResponse;
-    }
-
-    @Transactional(readOnly = true)
-    public AccommodationListResponse getAllAccommodation(Pageable pageable) {
-        List<Accommodation> accommodation = accommodationRepository.getAll(pageable);
-
-        AccommodationListResponse accommodationListResponse = convertAccommodationListToAccommodationListResponse(
-            pageable, accommodation);
-
-        return accommodationListResponse;
-    }
-
     private void checkStartDateEndDate(LocalDate startDate, LocalDate endDate) {
-        if(startDate.isAfter(endDate)){
+        if (startDate.isAfter(endDate)) {
             throw new WrongDateException();
         }
+    }
+
+    @Transactional(readOnly = true)
+    public AccommodationListResponse findAccommodations(SearchCondition searchCondition,
+        Pageable pageable) {
+        if (validateQueryParamIsNull(searchCondition)) {
+            return convertInnerClassToAccommodationListResponse(
+                accommodationRepository.getAll(pageable)
+            );
+        }
+        if (searchCondition.getOrderCondition() == null){
+            return convertInnerClassToAccommodationListResponse(
+                accommodationRepository.searchByCondition(searchCondition, pageable)
+            );
+        }
+            return convertInnerClassToAccommodationListResponse(
+                accommodationRepository.searchByConditionWithSort(searchCondition, pageable)
+            );
+    }
+
+    public AccommodationListResponse convertInnerClassToAccommodationListResponse(Page<InnerClass> innerClasses) {
+        if (innerClasses == null){
+            throw new AccommodationNotFoundException();
+        }
+        AccommodationListResponse accommodationListResponse = new AccommodationListResponse();
+        for (var i : innerClasses) {
+            accommodationListResponse.addBody(i);
+        }
+        accommodationListResponse.setPaginationInfo(
+            innerClasses.getNumber(),
+            innerClasses.getSize(),
+            innerClasses.getTotalPages());
+        return accommodationListResponse;
+    }
+
+    private boolean validateQueryParamIsNull(SearchCondition searchCondition) {
+        if (
+            //하나라도 참이면 true 반환 즉, searchCondition의 하나라도 값이 있으면 true
+            searchCondition.getOrderCondition() == null &&
+                searchCondition.getHighestPrice() == null &&
+                searchCondition.getLowestPrice() == null &&
+                searchCondition.getCheckIn() == null &&
+                searchCondition.getCheckOut() == null &&
+                searchCondition.getLikeCount() == null &&
+                searchCondition.getName() == null &&
+                searchCondition.getPhoneNumber() == null &&
+                searchCondition.getAreaName() == null &&
+                searchCondition.getSigunguName() == null) {
+            return true;
+        }
+        return false;
     }
 }
 

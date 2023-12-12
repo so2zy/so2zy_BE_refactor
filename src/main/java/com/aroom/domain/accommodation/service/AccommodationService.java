@@ -76,7 +76,10 @@ public class AccommodationService {
             );
     }
 
-    private AccommodationListResponse convertInnerClassToAccommodationListResponse(Page<InnerClass> innerClasses) {
+    public AccommodationListResponse convertInnerClassToAccommodationListResponse(Page<InnerClass> innerClasses) {
+        if (innerClasses == null){
+            throw new AccommodationNotFoundException();
+        }
         AccommodationListResponse accommodationListResponse = new AccommodationListResponse();
         for (var i : innerClasses) {
             accommodationListResponse.addBody(i);
@@ -98,7 +101,6 @@ public class AccommodationService {
                 searchCondition.getCheckOut() == null &&
                 searchCondition.getLikeCount() == null &&
                 searchCondition.getName() == null &&
-                searchCondition.getOrderBy() == null &&
                 searchCondition.getPhoneNumber() == null &&
                 searchCondition.getAreaName() == null &&
                 searchCondition.getSigunguName() == null) {

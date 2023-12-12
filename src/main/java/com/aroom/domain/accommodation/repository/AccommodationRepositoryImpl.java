@@ -56,7 +56,7 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
             .join(accommodation.roomList, room)
             .leftJoin(accommodation.accommodationImageList, accommodationImage)
             .groupBy(accommodation.id)
-            .offset(pageable.getPageNumber())
+            .offset((long) pageable.getPageNumber() * pageable.getPageSize())
             .limit(pageable.getPageSize())
             .fetch();
 
@@ -94,7 +94,7 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
             .leftJoin(accommodation.accommodationImageList, accommodationImage)
             .where(booleanBuilderProvider(searchCondition))
             .groupBy(accommodation.id)
-            .offset(pageable.getPageNumber())
+            .offset((long) pageable.getPageNumber() * pageable.getPageSize())
             .limit(pageable.getPageSize())
             .fetch();
 
@@ -136,7 +136,7 @@ public class AccommodationRepositoryImpl implements AccommodationRepositoryCusto
             .leftJoin(accommodation.accommodationImageList, accommodationImage)
             .where(booleanBuilderProvider(searchCondition))
             .groupBy(accommodation.id)
-            .offset(pageable.getPageNumber())
+            .offset((long) pageable.getPageNumber() * pageable.getPageSize())
             .limit(pageable.getPageSize())
             .orderBy(orderSpecifierProvider(searchCondition))
             .fetch();

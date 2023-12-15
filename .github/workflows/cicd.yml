@@ -33,19 +33,27 @@ jobs:
         distribution: 'temurin'
     
     # (+++) application.properties 생성 
-    - name:  make application.properties
-      run:
-        mkdir ./src/main/resources | 
-        touch ./src/main/resources/application.properties 
-      shell: bash
-    - name: deliver application.properties
-      run: echo "${{ secrets.PROPERTIES }}" > ./src/main/resources/application.properties
-      shell: bash
+    # - name:  make application.properties
+    #   run:
+    #     mkdir ./src/main/resources | 
+    #     touch ./src/main/resources/application.properties 
+    #   shell: bash
+    # - name: deliver application.properties
+    #   run: echo "${{ secrets.PROPERTIES }}" > ./src/main/resources/application.properties
+    #   shell: bash
     
-    - uses: actions/upload-artifact@v2
-      with:
-        name: application.properties
-        path: ./src/main/resources/application.properties
+    # - uses: actions/upload-artifact@v2
+    #   with:
+    #     name: application.properties
+    #     path: ./src/main/resources/application.properties
+
+    # (+++) application.yml 생성 
+    - name:  make application.yml
+      run: touch ./src/main/resources/application.yml
+      shell: bash
+    - name: deliver application.yml
+      run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.yml
+      shell: bash 
       
     # (3) gradlew 실행 권한부여
     - name: Grant execute permission for gradlew

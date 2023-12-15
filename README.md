@@ -44,6 +44,7 @@
 * Intellij
 * gradle
 * test - Junit
+* github actions & aws code deploy
 
 
 ## 📄 API Document
@@ -247,8 +248,18 @@ public class JpaConfig {
 </details>
 
 ## 🤖 개인 역량 회고
-**양유림**
+<details>
+<summary>양유림</summary>
+	
 * 2주동안 짧은 시간 내에 FE개발자와 협업하는 것이 생각보다 어려웠다.
 * 하지만, FE개발자와 소통하면서, API를 발전시켜나가는 과정에서 많은 걸 깨달을 수 있었다.
 * 또한, 에러를 겪고 해결한 방안을 정리하면서 다시 한번 성장할 수 있었다.
 * KPT기간에 CICD를 통해 무중단 배포를 도입하니, 빠르게 API를 배포할 수 있어서 시간을 절약할 수 있었다.
+</details>
+<details>
+<summary>권민우</summary>
+	
+* 시간이 부족해 많은 고민과 토론을 진행하지 못해 아쉬웠다.
+* 프로젝트 생성 부터 배포, 어플리케이션 구동까지 모든 프로세스를 경험하게 되어 도움이 됐다.
+* 프로젝트를 진행하며 부족한 부분을 알게 되었고 보충 할 수 있는 시간도 주어져 좋았다.
+</details>

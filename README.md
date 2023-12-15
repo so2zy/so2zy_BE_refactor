@@ -1,27 +1,45 @@
 # Aroom
 
-여행 여정을 기록과 관리하는 서비스
+**여행 여정을 기록과 관리하는 서비스**
 
-## 기간, 참여인원
-* 2023.11.10 ~ 2023.11.16
+## 🧑‍🤝‍🧑 팀원 소개
+
 
 |                                         Backend                                         |                                        Backend                                         |                                        Backend                                         |                                        Backend                                         |
 |:---------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------:|
 | <img src="https://avatars.githubusercontent.com/u/139187207?v=4" width=130px alt="자현"/> | <img src="https://avatars.githubusercontent.com/u/34360434?v=4" width=130px alt="민우"/> | <img src="https://avatars.githubusercontent.com/u/63856521?v=4" width=130px alt="유림"/> | <img src="https://avatars.githubusercontent.com/u/40655807?v=4" width=130px alt="동민"/> |
 |                            [자현](https://github.com/Nine-JH)                             |                          [민우](https://github.com/Kwonminwoo)                           |                           [유림](https://github.com/YurimYang)                           |                          [동민](https://github.com/chadongmin)                           |
-|                            로그인/회원가입                            |                          [민우](https://github.com/Kwonminwoo)                           |                           [유림](https://github.com/YurimYang)                           |                          [동민](https://github.com/chadongmin)                           |
+|                            로그인/회원가입/찜                            |                          장바구니 조회&삭제/예약                      |                           장바구니 추가/숙소목록 상세 조회                          |                          숙소 전체 조회/검색 조회                          |
+
+## 📽️ 프로젝트 소개
+![image](https://github.com/so2zy/so2zy_BE_refactor/assets/63856521/13547e58-ebd2-4c00-8250-57e9b81d083d)
+
+**⏲️ 개발 기간**
+* 1차 : 2023.11.10 ~ 2023.11.16
+* 2차(리팩토링) : 2023.11.04 ~ 2023.11.15
 
 
 <br/>
-ld
-## 구현 환경
+
+**🔗 배포 사이트**
+* https://candid-horse-912de6.netlify.app/
+
+
+ <br/>     
+
+**🔨 구현 환경**
 * Java 17
 * Spring Boot 3.1.5
 * Mysql 8.0, H2, Redis
 * Docker
 * Intellij
 * gradle
-test
+* test - Junit
+
+
+
+
+
 ## API Document
 * https://api.so2zy.com/docs/index.html
 

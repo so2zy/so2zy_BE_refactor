@@ -2,6 +2,15 @@
 
 **여행 여정을 기록과 관리하는 서비스**
 
+## 📢 목차
+1. [팀원 소개](🧑‍🤝‍🧑-팀원-소개)
+2. [프로젝트 소개](📽️-프로젝트-소개)
+3. [API Document](📄-API-Document)
+4. [Release Note](✏️-Release-Note)
+5. [ERD](✅-ERD)
+6. [에러 해결 방법](💯-에러-해결-방안)
+7. [개인 역량 회고](🤖-개인-역량-회고)
+
 ## 🧑‍🤝‍🧑 팀원 소개
 
 
@@ -37,15 +46,16 @@
 * test - Junit
 
 
-
-
-
-## API Document
+## 📄 API Document
 * https://api.so2zy.com/docs/index.html
 
-## Release Note
+## ✏️ Release Note
 * [v2.0 release note](https://github.com/so2zy/so2zy_BE/wiki/So2zy-2.0-Release-Notes)
 * [v1.0 release note](https://github.com/so2zy/so2zy_BE/wiki/So2zy-1.0-Release-Notes)
 
-## ERD
+## ✅ ERD
 ![ERD](https://github.com/so2zy/so2zy_BE/assets/139187207/3c2bdb39-d128-4568-a0f7-f61d746e6897)
+
+## 💯 에러 해결 방안
+
+## 🤖 개인 역량 회고

@@ -9,6 +9,7 @@
 |:---------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------:|
 | <img src="https://avatars.githubusercontent.com/u/139187207?v=4" width=130px alt="자현"/> | <img src="https://avatars.githubusercontent.com/u/34360434?v=4" width=130px alt="민우"/> | <img src="https://avatars.githubusercontent.com/u/63856521?v=4" width=130px alt="유림"/> | <img src="https://avatars.githubusercontent.com/u/40655807?v=4" width=130px alt="동민"/> |
 |                            [자현](https://github.com/Nine-JH)                             |                          [민우](https://github.com/Kwonminwoo)                           |                           [유림](https://github.com/YurimYang)                           |                          [동민](https://github.com/chadongmin)                           |
+|                            로그인/회원가입                            |                          [민우](https://github.com/Kwonminwoo)                           |                           [유림](https://github.com/YurimYang)                           |                          [동민](https://github.com/chadongmin)                           |
 
 
 <br/>
